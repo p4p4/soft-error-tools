@@ -12,3 +12,8 @@ USAGE: ./addParityTool <aiger-input> <percentage> <avg-latches> <aiger-output>
 	 <aiger-output>......path to the aiger input file. The mode used is ASCII for a '.aag'
 	                     suffix and binary mode otherwise.
 
+# ImmortalTool
+in ImmortalTool/
+
+TODO: find a name?
+
