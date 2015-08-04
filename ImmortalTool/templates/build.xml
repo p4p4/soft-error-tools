@@ -1,0 +1,48 @@
+<project name="TestclassGenerator" basedir=".">
+	<property name="template.Dir" value="."/>
+
+        <target name="createtestclass">
+                <property name="target.Dir" value="../tests"/>
+                <input
+                        message="Name for Testclass (without Test prefix i.e. ExternalSolver):"
+                        addproperty="testclass.Name"
+                />
+
+                <copy file="${template.Dir}/TemplateTestclass.h" tofile="${target.Dir}/Test${testclass.Name}.h">
+                        <filterset>
+                                <filter token="TestclassName" value="Test${testclass.Name}"/>
+                        </filterset>
+                </copy>
+                <copy file="${template.Dir}/TemplateTestclass.cpp" tofile="${target.Dir}/Test${testclass.Name}.cpp">
+                        <filterset>
+                                <filter token="TestclassName" value="Test${testclass.Name}"/>
+                        </filterset>
+                </copy>
+                <exec executable="./createExtrasources.pl">
+                    <arg value="Test.+\.cpp"/>
+                    <arg value="${target.Dir}"/>
+                </exec>
+        </target>
+	<target name="createclass">
+		<property name="target.Dir" value="../src"/>
+                <input
+			message="Name of class:"
+			addproperty="class.Name"
+		/>
+		<copy file="${template.Dir}/TemplateClass.h" tofile="${target.Dir}/${class.Name}.h">
+			<filterset>
+				<filter token="ClassName" value="${class.Name}"/>
+			</filterset>
+		</copy>
+		<copy file="${template.Dir}/TemplateClass.cpp" tofile="${target.Dir}/${class.Name}.cpp">
+			<filterset>
+				<filter token="ClassName" value="${class.Name}"/>
+			</filterset>
+		</copy>
+		<exec executable="./createExtrasources.pl">
+                    <arg value=".+\.(c|cc|cpp)"/>
+                    <arg value="${target.Dir}"/>
+                </exec>
+	</target>
+</project>
+	      
