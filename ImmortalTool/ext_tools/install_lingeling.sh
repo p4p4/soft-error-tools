@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ "$DEMIURGETP" = "" ]
+if [ "$IMMORTALTP" = "" ]
 then
-   echo "The Environment variable DEMIURGETP is undefined."
+   echo "The Environment variable IMMORTALTP is undefined."
    exit 1
 fi
 
@@ -18,11 +18,11 @@ then
 fi
 
 echo " Unpacking Lingeling ..."
-rm -rf $DEMIURGETP/lingeling
-unzip $LINGELING_ACHRIVE -d $DEMIURGETP/lingeling
+rm -rf $IMMORTALTP/lingeling
+unzip $LINGELING_ACHRIVE -d $IMMORTALTP/lingeling
 
 echo " Compiling Lingeling ..."
-cd $DEMIURGETP/lingeling/code
-./configure.sh --aiger=$DEMIURGETP/aiger-1.9.4/
+cd $IMMORTALTP/lingeling/code
+./configure.sh --aiger=$IMMORTALTP/aiger-1.9.4/
 make
 
