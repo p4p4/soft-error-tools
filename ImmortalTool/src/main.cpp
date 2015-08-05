@@ -4,13 +4,17 @@
 // Version     : 0.1, 08.2015
 //============================================================================
 #include "CNF.h"
-#include  "Stopwatch.h"
+#include "Stopwatch.h"
+#include "Logger.h"
 #include <iostream>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+	Logger::instance().enable(Logger::DBG);
+	L_DBG("this message is testing the logger");
+
 	PointInTime start_time = Stopwatch::start();
 	cout << "Hello World!" << endl;
 

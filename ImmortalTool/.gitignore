@@ -1,1 +1,5 @@
 build/*
+
+#eclipse project files:
+.cproject
+.project

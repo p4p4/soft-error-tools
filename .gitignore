@@ -1,2 +1,6 @@
 *~
 *.o
+
+#eclipse project files
+*/.cproject
+*/.project
