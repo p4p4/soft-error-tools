@@ -16,7 +16,7 @@ foreach(fil ${project_FILES})
   endif(NOT ${fil} MATCHES main.cpp)
 endforeach(fil)
 
-#include_directories("${AIGER_INCLUDE_DIR}")
+include_directories("${AIGER_INCLUDE_DIR}")
 #include_directories("${DEPQBF_INCLUDE_DIR}")
 #include_directories("${RAREQS_INCLUDE_DIR}")
 #include_directories("${BLOQQER_INCLUDE_DIR}")
@@ -46,7 +46,7 @@ add_library(${PROJECT}
 set_target_properties(${PROJECT} PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC -DNDEBUG -O3")
 
 add_executable(${PROJECT}-bin main)
-#target_link_libraries(${PROJECT}-bin ${AIGER_LIBRARIES})
+target_link_libraries(${PROJECT}-bin ${AIGER_LIBRARIES})
 #target_link_libraries(${PROJECT}-bin ${DEPQBF_LIBRARIES})
 #target_link_libraries(${PROJECT}-bin ${RAREQS_LIBRARIES})
 #target_link_libraries(${PROJECT}-bin ${BLOQQER_LIBRARIES})
@@ -57,6 +57,7 @@ target_link_libraries(${PROJECT}-bin ${PROJECT})
 set_target_properties(${PROJECT}-bin PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC -DNDEBUG")
 
 
+## DEBUG currently not used
 #add_executable(${PROJECT}-debug ${project_SRC} main)
 #target_link_libraries(${PROJECT}-debug ${AIGER_LIBRARIES})
 #target_link_libraries(${PROJECT}-debug ${DEPQBF_LIBRARIES})
