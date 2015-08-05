@@ -38,7 +38,7 @@
 // -------------------------------------------------------------------------------------------
 const string Options::VERSION = string("1.2.0");
 
-const string Options::TP_VAR = string("DEMIURGETP");
+const string Options::TP_VAR = string("IMMORTALTP");
 
 // -------------------------------------------------------------------------------------------
 Options *Options::instance_ = NULL;

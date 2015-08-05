@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ "$DEMIURGETP" = "" ]
+if [ "$IMMORTALTP" = "" ]
 then
-   echo "The Environment variable DEMIURGETP is undefined."
+   echo "The Environment variable IMMORTALTP is undefined."
    exit 1
 fi
 
@@ -18,6 +18,6 @@ tar xzvf $CPPUNIT.tar.gz
 
 export LDFLAGS="-ldl"
 
-(cd $CPPUNIT; ./configure --prefix=$DEMIURGETP/$CPPUNIT; make; make check; make install)
+(cd $CPPUNIT; ./configure --prefix=$IMMORTALTP/$CPPUNIT; make; make check; make install)
 
 

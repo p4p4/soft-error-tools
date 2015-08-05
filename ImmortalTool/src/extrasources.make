@@ -1,8 +1,9 @@
 AIG2CNF.cpp
+AigSimulator.cpp
 CNF.cpp
-Logger.cpp
 LingelingApi.cpp
-Stopwatch.cpp
-SatSolver.cpp
-Utils.cpp
+Logger.cpp
 Options.cpp
+SatSolver.cpp
+Stopwatch.cpp
+Utils.cpp

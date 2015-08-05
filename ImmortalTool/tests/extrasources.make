@@ -1,1 +1,1 @@
-TestInterpolation.cpp
+TestAigSimulator.cpp
