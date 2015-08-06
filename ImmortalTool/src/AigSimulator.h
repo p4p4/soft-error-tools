@@ -57,6 +57,8 @@ public:
 
 
   void simulateOneTimeStep(const vector<int> &input_values);
+  string getInternalStateString();
+  vector<int> getOutputs();
 
 protected:
   aiger* circuit_;
