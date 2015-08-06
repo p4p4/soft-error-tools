@@ -40,7 +40,7 @@
 class TestAigSimulator : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestAigSimulator);
-  CPPUNIT_TEST(test1);
+  CPPUNIT_TEST(test1_sim_combinatoric_circuit);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -59,8 +59,12 @@ protected:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Give brief description of test here.
-  void test1();
+/// @brief Simulates a combinatoric circuit (5 inputs, 2 outputs, no latches)
+///
+/// uses all possible 32 input vectors and compares the results with expected results.
+/// benchmark: IWLS_2002_AIG/LGSynth89/C17_orig.aig
+///
+  void test1_sim_combinatoric_circuit();
 
 };
 

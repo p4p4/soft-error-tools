@@ -22,28 +22,100 @@
 //
 // ----------------------------------------------------------------------------
 
-#include "TestAigSimulator.h"
+#include <vector>
 
-CPPUNIT_TEST_SUITE_REGISTRATION(TestAigSimulator);
+#include "TestAigSimulator.h"
+#include "../src/AigSimulator.h"
+
+extern "C"
+{
+#include "aiger.h"
+}
+
+using namespace std;
+
+CPPUNIT_TEST_SUITE_REGISTRATION (TestAigSimulator);
 
 // -------------------------------------------------------------------------------------------
 void TestAigSimulator::setUp()
 {
-  //setup for testcases
+	//setup for testcases
 }
 
 // -------------------------------------------------------------------------------------------
 void TestAigSimulator::tearDown()
 {
-  //define here post processing steps
+	//define here post processing steps
 }
 
 // -------------------------------------------------------------------------------------------
-void TestAigSimulator::test1()
+void TestAigSimulator::test1_sim_combinatoric_circuit()
 {
-  CPPUNIT_FAIL("test not implemented");
-  CPPUNIT_ASSERT(1 == 1);
-  CPPUNIT_ASSERT_MESSAGE("error occurred", 1 == 0);
-}
 
+	// read file:
+	aiger* aig_input = aiger_init();
+	const char *read_err = aiger_open_and_read_from_file(aig_input,
+			"inputs/C17_orig.aig");
+
+	if (read_err != NULL)
+	{
+		CPPUNIT_FAIL("Error: Could not open AIGER file");
+	}
+
+	AigSimulator sim(aig_input);
+
+	int expected_results[32][2] =
+	{
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 1, 0 },
+	{ 1, 0 },
+	{ 0, 1 },
+	{ 0, 1 },
+	{ 0, 1 },
+	{ 0, 1 },
+	{ 0, 1 },
+	{ 0, 0 },
+	{ 1, 1 },
+	{ 1, 0 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 0, 0 },
+	{ 1, 1 },
+	{ 1, 0 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 0, 0 },
+	{ 1, 1 },
+	{ 1, 0 } };
+
+	vector<int> inputs(5);
+	for (unsigned int i = 0; i < 32; i++)
+	{
+		inputs[4] = i & 1;
+		inputs[3] = (i & 2) >> 1;
+		inputs[2] = (i & 4) >> 2;
+		inputs[1] = (i & 8) >> 3;
+		inputs[0] = (i & 16) >> 4;
+
+		sim.simulateOneTimeStep(inputs);
+		vector<int> outputs = sim.getOutputs();
+
+		for (int out_ctr = 0; out_ctr < outputs.size(); out_ctr++)
+		{
+			CPPUNIT_ASSERT(outputs[out_ctr] == expected_results[i][out_ctr]);
+		}
+	}
+
+}
 
