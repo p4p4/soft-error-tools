@@ -25,6 +25,7 @@ SET_SOURCE_FILES_PROPERTIES(Options.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAG
 add_cppunit_test(${PROJECT}-tester Main.cpp ${test_SRC})
 target_link_libraries(${PROJECT}-tester ${PROJECT})
 target_link_libraries(${PROJECT}-tester ${cppunit_LIBRARIES})
+target_link_libraries(${PROJECT}-tester ${AIGER_LIBRARIES})
 #target_link_libraries(${PROJECT}-tester ${DEPQBF_LIBRARIES})
 #target_link_libraries(${PROJECT}-tester ${BLOQQER_LIBRARIES})
 target_link_libraries(${PROJECT}-tester ${LINGELING_LIBRARIES})
