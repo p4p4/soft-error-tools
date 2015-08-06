@@ -59,7 +59,8 @@ class AigSimulator
 	void setTestcase(const vector<vector<int> > &testcase);
 	bool simulateOneTimeStep();
 	void simulateOneTimeStep(const vector<int> &input_values);
-	string getInternalStateString();
+	string getStateString();
+	string getVerboseStateString();
 	vector<int> getOutputs();
 
 	protected:

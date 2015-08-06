@@ -152,7 +152,54 @@ void AigSimulator::simulateOneTimeStep(const vector<int> &input_values)
 }
 
 // -------------------------------------------------------------------------------------------
-string AigSimulator::getInternalStateString()
+string AigSimulator::getStateString()
+{
+	ostringstream str;
+	// Latch current state values (.lit)
+	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
+	{
+		str << results_[aiger_lit2var(circuit_->latches[cnt].lit)];
+	}
+
+	if(circuit_->num_latches > 0)
+	{
+		str << " ";
+	}
+
+	// Inputs:
+	for (size_t cnt = 0; cnt < circuit_->num_inputs; ++cnt)
+	{
+		str << results_[aiger_lit2var(circuit_->inputs[cnt].lit)];
+	}
+
+	if(circuit_->num_inputs > 0)
+	{
+		str << " ";
+	}
+
+	//Outputs
+	vector<int> out_values = getOutputs();
+	for (size_t cnt = 0; cnt < circuit_->num_outputs; ++cnt)
+	{
+		str << out_values[cnt];
+	}
+
+	if(circuit_->num_outputs > 0 && circuit_->num_latches > 0)
+	{
+		str << " ";
+	}
+
+	// Latch next state values (.next)
+	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
+	{
+		str << results_[aiger_lit2var(circuit_->latches[cnt].next)];
+	}
+
+	return str.str();
+}
+
+// -------------------------------------------------------------------------------------------
+string AigSimulator::getVerboseStateString()
 {
 	ostringstream str;
 	str << "Time-step: " << time_index_ << endl;
@@ -194,6 +241,8 @@ string AigSimulator::getInternalStateString()
 
 	return str.str();
 }
+
+
 
 // -------------------------------------------------------------------------------------------
 vector<int> AigSimulator::getOutputs()

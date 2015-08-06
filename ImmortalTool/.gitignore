@@ -3,3 +3,6 @@ build/*
 #eclipse project files:
 .cproject
 .project
+
+#cppunit test results file
+tests/testresults-cppunit.xml
