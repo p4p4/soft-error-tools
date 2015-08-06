@@ -43,29 +43,32 @@ struct aiger;
 /// @version 1.2.0
 class AigSimulator
 {
-public:
+	public:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-  AigSimulator(aiger* circuit);
+	AigSimulator(aiger* circuit);
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Destructor.
-  virtual ~AigSimulator();
+	virtual ~AigSimulator();
 
+	void setTestcase(char* path_to_aigsim_input);
+	void setTestcase(const vector<vector<int> > &testcase);
+	bool simulateOneTimeStep();
+	void simulateOneTimeStep(const vector<int> &input_values);
+	string getInternalStateString();
+	vector<int> getOutputs();
 
-  void simulateOneTimeStep(const vector<int> &input_values);
-  string getInternalStateString();
-  vector<int> getOutputs();
+	protected:
+	aiger* circuit_;
+	vector<vector<int> > testcase_;
+	int* results_;
+	size_t time_index_;
 
-protected:
-  aiger* circuit_;
-  int* results_;
-  int time_index_;
-
-private:
+	private:
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -74,7 +77,7 @@ private:
 /// The copy constructor is disabled (set private) and not implemented.
 ///
 /// @param other The source for creating the copy.
-  AigSimulator(const AigSimulator &other);
+	AigSimulator(const AigSimulator &other);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -84,7 +87,7 @@ private:
 ///
 /// @param other The source for creating the copy.
 /// @return The result of the assignment, i.e, *this.
-  AigSimulator& operator=(const AigSimulator &other);
+	AigSimulator& operator=(const AigSimulator &other);
 
 };
 

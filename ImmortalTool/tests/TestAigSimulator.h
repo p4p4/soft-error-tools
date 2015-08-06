@@ -26,9 +26,11 @@
 #define CPP_UNIT_TestAigSimulator_H__
 
 
+#include <vector>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+struct aiger;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -41,6 +43,7 @@ class TestAigSimulator : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestAigSimulator);
   CPPUNIT_TEST(test1_sim_combinatoric_circuit);
+  CPPUNIT_TEST(test2_sim_combinatoric_circuit_with_aigsim_inputfile);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -55,6 +58,10 @@ public:
 /// @brief Shuts down the object under test.
   void tearDown();
 
+  aiger* readAigerFile(char* path);
+  void compareOutputVector(int* c_array, std::vector<int> c_vector);
+
+
 protected:
 
 // -------------------------------------------------------------------------------------------
@@ -65,6 +72,16 @@ protected:
 /// benchmark: IWLS_2002_AIG/LGSynth89/C17_orig.aig
 ///
   void test1_sim_combinatoric_circuit();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Same as test1, but reads inputs from aigsim file
+///
+/// Simulates a combinatoric circuit (5 inputs, 2 outputs, no latches)
+/// uses all possible 32 input vectors and compares the results with expected results.
+/// benchmark: IWLS_2002_AIG/LGSynth89/C17_orig.aig
+///
+  void test2_sim_combinatoric_circuit_with_aigsim_inputfile();
 
 };
 

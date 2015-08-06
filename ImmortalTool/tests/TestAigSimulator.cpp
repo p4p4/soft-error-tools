@@ -53,15 +53,7 @@ void TestAigSimulator::test1_sim_combinatoric_circuit()
 {
 
 	// read file:
-	aiger* aig_input = aiger_init();
-	const char *read_err = aiger_open_and_read_from_file(aig_input,
-			"inputs/C17_orig.aig");
-
-	if (read_err != NULL)
-	{
-		CPPUNIT_FAIL("Error: Could not open AIGER file");
-	}
-
+	aiger* aig_input = readAigerFile("inputs/C17_orig.aig");
 	AigSimulator sim(aig_input);
 
 	int expected_results[32][2] =
@@ -109,9 +101,11 @@ void TestAigSimulator::test1_sim_combinatoric_circuit()
 		inputs[0] = (i & 16) >> 4;
 
 		sim.simulateOneTimeStep(inputs);
+
+		// check outputs:
 		vector<int> outputs = sim.getOutputs();
 
-		for (int out_ctr = 0; out_ctr < outputs.size(); out_ctr++)
+		for (unsigned int out_ctr = 0; out_ctr < outputs.size(); out_ctr++)
 		{
 			CPPUNIT_ASSERT(outputs[out_ctr] == expected_results[i][out_ctr]);
 		}
@@ -119,3 +113,91 @@ void TestAigSimulator::test1_sim_combinatoric_circuit()
 
 }
 
+aiger* TestAigSimulator::readAigerFile(char* path)
+{
+	// read file:
+	aiger* aig_input = aiger_init();
+	const char *read_err = aiger_open_and_read_from_file(aig_input, path);
+
+	if (read_err != NULL)
+	{
+		CPPUNIT_FAIL("Error: Could not open AIGER file");
+	}
+
+	return aig_input;
+}
+
+void TestAigSimulator::compareOutputVector(int* c_array,
+		std::vector<int> c_vector)
+{
+	for (unsigned int out_ctr = 0; out_ctr < c_vector.size(); out_ctr++)
+	{
+		CPPUNIT_ASSERT(c_vector[out_ctr] == c_array[out_ctr]);
+	}
+}
+
+void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
+{
+	// read circuit:
+	aiger* aig_input = readAigerFile("inputs/C17_orig.aig");
+	AigSimulator sim(aig_input);
+
+	// read testcase-file
+	sim.setTestcase("inputs/C17_orig.aigsiminput");
+
+	int expected_results[32][2] =
+	{
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 1, 0 },
+	{ 1, 0 },
+	{ 0, 1 },
+	{ 0, 1 },
+	{ 0, 1 },
+	{ 0, 1 },
+	{ 0, 1 },
+	{ 0, 0 },
+	{ 1, 1 },
+	{ 1, 0 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 0, 0 },
+	{ 1, 1 },
+	{ 1, 0 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 1, 1 },
+	{ 0, 0 },
+	{ 1, 1 },
+	{ 1, 0 } };
+
+	for (unsigned int i = 0; i < 32; i++)
+	{
+		bool success = sim.simulateOneTimeStep();
+		CPPUNIT_ASSERT(success == true);
+
+		// check outputs:
+		vector<int> outputs = sim.getOutputs();
+
+		for (unsigned int out_ctr = 0; out_ctr < outputs.size(); out_ctr++)
+		{
+			CPPUNIT_ASSERT(outputs[out_ctr] == expected_results[i][out_ctr]);
+		}
+	}
+
+
+	// there are only 32 input-vectors, after that, simulateOneTimeStep() must return false
+	bool success = sim.simulateOneTimeStep();
+	CPPUNIT_ASSERT(success == false);
+
+
+}

@@ -27,7 +27,10 @@
 /// @brief Contains the definition of the class AigSimulator.
 // -------------------------------------------------------------------------------------------
 
+#include <fstream>
+
 #include "AigSimulator.h"
+#include "Logger.h"
 
 extern "C"
 {
@@ -56,6 +59,66 @@ AigSimulator::~AigSimulator()
 	delete results_;
 }
 
+// -------------------------------------------------------------------------------------------
+void AigSimulator::setTestcase(char* path_to_aigsim_input)
+{
+	ifstream infile(path_to_aigsim_input);
+
+	string input_vector_line;
+	while (infile >> input_vector_line)
+	{
+		MASSERT(input_vector_line.length() == circuit_->num_inputs,
+				"corrupt aigsim-file (does not match number of inputs)!");
+
+		vector<int> input_vector;
+		for (int i = 0; i < input_vector_line.length(); i++)
+		{
+			if (input_vector_line.c_str()[i] == '0')
+			{
+				input_vector.push_back(0);
+			}
+			else if (input_vector_line.c_str()[i] == '1')
+			{
+				input_vector.push_back(1);
+			}
+			else
+			{
+				MASSERT(false, "corrupt aigsim-file (unexpected character)!");
+			}
+		}
+		testcase_.push_back(input_vector);
+	}
+}
+
+// -------------------------------------------------------------------------------------------
+void AigSimulator::setTestcase(const vector<vector<int> >& testcase)
+{
+	MASSERT(testcase.size() > 0 && testcase[0].size() == circuit_->num_inputs,
+			"Wrong test case provided!");
+
+	testcase_ = testcase;
+}
+
+// -------------------------------------------------------------------------------------------
+bool AigSimulator::simulateOneTimeStep()
+{
+	if (testcase_.empty())
+	{
+		L_ERR(
+				"No TCs provided, use AigSimulator::simulateOneTimeStep(const vector<int> &input_values) instead");
+		return false; // TODO: MASSERT?
+	}
+
+	if (time_index_ >= testcase_.size())
+	{
+		return false;
+	}
+
+	simulateOneTimeStep(testcase_[time_index_]);
+	return true;
+}
+
+// -------------------------------------------------------------------------------------------
 void AigSimulator::simulateOneTimeStep(const vector<int> &input_values)
 {
 	MASSERT(input_values.size() == circuit_->num_inputs,
@@ -85,15 +148,10 @@ void AigSimulator::simulateOneTimeStep(const vector<int> &input_values)
 		results_[aiger_lit2var(circuit_->ands[cnt].lhs)] = rhs0_val & rhs1_val;
 	}
 
-	// print values of outputs
-//	for(size_t cnt = 0; cnt < circuit_->num_outputs; ++cnt)
-//	{
-//		cout << results_[aiger_lit2var(circuit_->outputs[cnt].lit)] << endl;
-//	}
-
 	time_index_++;
 }
 
+// -------------------------------------------------------------------------------------------
 string AigSimulator::getInternalStateString()
 {
 	ostringstream str;
@@ -134,11 +192,10 @@ string AigSimulator::getInternalStateString()
 
 	}
 
-	int var, res;
-	res = (var % 2 == 1 ? 2 : 4);
 	return str.str();
 }
 
+// -------------------------------------------------------------------------------------------
 vector<int> AigSimulator::getOutputs()
 {
 	vector<int> outputs(circuit_->num_outputs);
@@ -152,8 +209,10 @@ vector<int> AigSimulator::getOutputs()
 		}
 		else
 		{
-			outputs[cnt] = aiger_not(results_[aiger_lit2var(circuit_->outputs[cnt].lit)]);
+			outputs[cnt] = aiger_not(
+					results_[aiger_lit2var(circuit_->outputs[cnt].lit)]);
 		}
 	}
 	return outputs;
 }
+
