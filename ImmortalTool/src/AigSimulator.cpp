@@ -49,15 +49,10 @@ AigSimulator::AigSimulator(aiger* circuit) :
 	// initialize latches (if any) with FALSE
 	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
 	{
-		results_[aiger_lit2var(circuit_->latches[cnt].lit)] = circuit_->latches[cnt].reset;
+		results_[aiger_lit2var(circuit_->latches[cnt].lit)] =
+				circuit_->latches[cnt].reset;
 		results_[aiger_lit2var(circuit_->latches[cnt].next)] = 0;
 	}
-	vector<int> zero_inputs(circuit_->num_inputs);
-	for(unsigned i = 0; i < circuit_->num_inputs; i++)
-	{
-		zero_inputs.push_back(0);
-	}
-	simulate(zero_inputs);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -131,7 +126,29 @@ void AigSimulator::simulateOneTimeStep(const vector<int> &input_values)
 	MASSERT(input_values.size() == circuit_->num_inputs,
 			"Wrong test case provided!");
 
-	simulate(input_values);
+	// copy inputs into results_
+	for (size_t cnt = 0; cnt < circuit_->num_inputs; ++cnt)
+	{
+		results_[aiger_lit2var(circuit_->inputs[cnt].lit)] = input_values[cnt];
+	}
+
+	// compute AND outputs
+	// initialize latches (if any) with FALSE
+	for (size_t cnt = 0; cnt < circuit_->num_ands; ++cnt)
+	{
+		int rhs0_val = results_[aiger_lit2var(circuit_->ands[cnt].rhs0)];
+		if (circuit_->ands[cnt].rhs0 % 2 != 0)
+		{
+			rhs0_val = aiger_not(rhs0_val);
+		}
+		int rhs1_val = results_[aiger_lit2var(circuit_->ands[cnt].rhs1)];
+		if (circuit_->ands[cnt].rhs1 % 2 != 0)
+		{
+			rhs1_val = aiger_not(rhs1_val);
+		}
+
+		results_[aiger_lit2var(circuit_->ands[cnt].lhs)] = rhs0_val & rhs1_val;
+	}
 
 	time_index_++;
 }
@@ -146,7 +163,7 @@ string AigSimulator::getStateString()
 		str << results_[aiger_lit2var(circuit_->latches[cnt].lit)];
 	}
 
-	if(circuit_->num_latches > 0)
+	if (circuit_->num_latches > 0)
 	{
 		str << " ";
 	}
@@ -157,7 +174,7 @@ string AigSimulator::getStateString()
 		str << results_[aiger_lit2var(circuit_->inputs[cnt].lit)];
 	}
 
-	if(circuit_->num_inputs > 0)
+	if (circuit_->num_inputs > 0)
 	{
 		str << " ";
 	}
@@ -169,7 +186,7 @@ string AigSimulator::getStateString()
 		str << out_values[cnt];
 	}
 
-	if(circuit_->num_outputs > 0 && circuit_->num_latches > 0)
+	if (circuit_->num_outputs > 0 && circuit_->num_latches > 0)
 	{
 		str << " ";
 	}
@@ -236,7 +253,7 @@ void AigSimulator::switchToNextState()
 	{
 		latch_results[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].next)];
 
-		if(circuit_->latches[cnt].next%2 == 1)
+		if (circuit_->latches[cnt].next % 2 == 1)
 		{
 			latch_results[cnt] = aiger_not(latch_results[cnt]);
 		}
@@ -258,7 +275,8 @@ vector<int> AigSimulator::getOutputs()
 
 		if (circuit_->outputs[cnt].lit % 2 == 1)
 		{
-			outputs[cnt] = aiger_not(results_[aiger_lit2var(circuit_->outputs[cnt].lit)]);
+			outputs[cnt] = aiger_not(
+					results_[aiger_lit2var(circuit_->outputs[cnt].lit)]);
 		}
 		else
 		{
@@ -268,30 +286,3 @@ vector<int> AigSimulator::getOutputs()
 	return outputs;
 }
 
-void AigSimulator::simulate(const vector<int> &input_values)
-{
-
-	// copy inputs into results_
-	for (size_t cnt = 0; cnt < circuit_->num_inputs; ++cnt)
-	{
-		results_[aiger_lit2var(circuit_->inputs[cnt].lit)] = input_values[cnt];
-	}
-
-	// compute AND outputs
-		// initialize latches (if any) with FALSE
-		for (size_t cnt = 0; cnt < circuit_->num_ands; ++cnt)
-		{
-			int rhs0_val = results_[aiger_lit2var(circuit_->ands[cnt].rhs0)];
-			if (circuit_->ands[cnt].rhs0 % 2 != 0)
-			{
-				rhs0_val = aiger_not(rhs0_val);
-			}
-			int rhs1_val = results_[aiger_lit2var(circuit_->ands[cnt].rhs1)];
-			if (circuit_->ands[cnt].rhs1 % 2 != 0)
-			{
-				rhs1_val = aiger_not(rhs1_val);
-			}
-
-			results_[aiger_lit2var(circuit_->ands[cnt].lhs)] = rhs0_val & rhs1_val;
-		}
-}
