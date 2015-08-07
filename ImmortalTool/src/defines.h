@@ -46,61 +46,7 @@
 
 using namespace std;
 
-// -------------------------------------------------------------------------------------------
-/// @class DemiurgeException
-/// @brief Generic exception in Demiurge.
-///
-/// @see std::exception
-/// @author Robert Koenighofer (robert.koenighofer@iaik.tugraz.at)
-/// @version 1.2.0
-class DemiurgeException : public std::exception
-{
-public:
-
-
-// -------------------------------------------------------------------------------------------
-/// @brief Constructor
-///
-/// Constructs a DemiurgeException object with a message describing the general cause of the
-/// error. The default message is "Demiurge Exception.". This constructor must not throw an
-/// exception.
-///
-/// @param what A description of the error. It can also be omitted.
-  DemiurgeException(const string &what = "Demiurge Exception.") throw() : what_(what) {}
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Copy Constructor.
-///
-/// Makes a copy of the DemiurgeException. This constructor must not throw an exception.
-///
-/// @param original The source for creating the copy.
-  DemiurgeException(const DemiurgeException &original) throw() : what_(original.what_) {}
-
-// -------------------------------------------------------------------------------------------
-/// @brief Destructor.
-///
-/// Must not throw an exception.
-  virtual ~DemiurgeException() throw() {}
-
-// -------------------------------------------------------------------------------------------
-/// @brief Returns the description of the error.
-///
-/// Returns a C-style character string describing the cause of the error. This method must
-/// not throw an exception.
-///
-/// @return A description of the error as C-stype character string.
-  virtual const char* what() const throw() { return what_.c_str(); }
-
-  protected:
-
-// -------------------------------------------------------------------------------------------
-/// @brief Error description.
-///
-/// A string describing the cause of the error.
-  const string what_;
-
-};
+typedef vector<vector<int> > TestCase;
 
 // -------------------------------------------------------------------------------------------
 ///
