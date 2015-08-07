@@ -105,7 +105,7 @@ class AigSimulator
 ///
 /// @brief Returns a string representation of the current state
 ///
-/// The returned string has the same format as an output-line of the AigSim tool.
+/// The returned storing has the same format as an output-line of the AigSim tool.
 /// It is a line containing the following:
 /// - latch values
 /// - input values
@@ -135,7 +135,7 @@ class AigSimulator
 ///
 ///
 /// @return vector containing the values of the outputs
-	vector<int> getOutputs();
+	const vector<int>& getOutputs() const;
 
 	protected:
 	aiger* circuit_;

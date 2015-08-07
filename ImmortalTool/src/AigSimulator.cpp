@@ -180,7 +180,7 @@ string AigSimulator::getStateString()
 	}
 
 	//Outputs
-	vector<int> out_values = getOutputs();
+	const vector<int>& out_values = getOutputs();
 	for (size_t cnt = 0; cnt < circuit_->num_outputs; ++cnt)
 	{
 		str << out_values[cnt];
@@ -266,7 +266,7 @@ void AigSimulator::switchToNextState()
 }
 
 // -------------------------------------------------------------------------------------------
-vector<int> AigSimulator::getOutputs()
+const vector<int>& AigSimulator::getOutputs() const
 {
 	vector<int> outputs(circuit_->num_outputs);
 
