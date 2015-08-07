@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 {
 	cout << "Welcome to AddParityTool 0.1" << endl;
 
-	bool add_intermediate_err_sigs = true; // TODO: add cmd line argument
+	bool add_intermediate_err_sigs = false; // TODO: add cmd line argument
 
 	if (argc != 5)
 	{
