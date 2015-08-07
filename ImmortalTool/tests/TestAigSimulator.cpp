@@ -23,6 +23,9 @@
 // ----------------------------------------------------------------------------
 
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #include "TestAigSimulator.h"
 #include "../src/AigSimulator.h"
@@ -200,4 +203,41 @@ void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
 	CPPUNIT_ASSERT(success == false);
 
 
+}
+
+void TestAigSimulator::AigSimDiff(aiger* circuit, char* aigsim_input_file, char* aigsim_output_file)
+{
+	// read circuit:
+	AigSimulator sim(circuit);
+
+	// read testcase-file
+	sim.setTestcase(aigsim_input_file);
+
+	ifstream infile(aigsim_output_file);
+	string aigsim_output_file_line;
+
+
+
+	while(sim.simulateOneTimeStep() == true)
+	{
+//		cout << sim.getStateString() << endl;
+
+		CPPUNIT_ASSERT(getline(infile, aigsim_output_file_line));
+		CPPUNIT_ASSERT_EQUAL(aigsim_output_file_line, sim.getStateString());
+
+		sim.switchToNextState();
+
+	}
+
+
+	// there are only 32 input-vectors, after that, simulateOneTimeStep() must return false
+	bool success = sim.simulateOneTimeStep();
+	CPPUNIT_ASSERT(success == false);
+}
+
+void TestAigSimulator::test3_circuit_with_latches_compare_w_aigersim_outputfile()
+{
+	// read circuit:
+	aiger* circuit = readAigerFile("inputs/minmax2_orig.aig");
+	AigSimDiff(circuit, "inputs/C17_orig.aigsiminput", "inputs/minmax2_orig.aig.diff1");
 }

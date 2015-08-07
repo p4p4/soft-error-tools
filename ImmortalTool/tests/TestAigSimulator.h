@@ -44,6 +44,8 @@ class TestAigSimulator : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE(TestAigSimulator);
   CPPUNIT_TEST(test1_sim_combinatoric_circuit);
   CPPUNIT_TEST(test2_sim_combinatoric_circuit_with_aigsim_inputfile);
+  CPPUNIT_TEST(test3_circuit_with_latches_compare_w_aigersim_outputfile);
+
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -59,7 +61,10 @@ public:
   void tearDown();
 
   aiger* readAigerFile(char* path);
+
   void compareOutputVector(int* c_array, std::vector<int> c_vector);
+
+  void AigSimDiff(aiger* circuit, char* aigsim_input_file, char* aigsim_output_file);
 
 
 protected:
@@ -82,6 +87,8 @@ protected:
 /// benchmark: IWLS_2002_AIG/LGSynth89/C17_orig.aig
 ///
   void test2_sim_combinatoric_circuit_with_aigsim_inputfile();
+
+  void test3_circuit_with_latches_compare_w_aigersim_outputfile();
 
 };
 
