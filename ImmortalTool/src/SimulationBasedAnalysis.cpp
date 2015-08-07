@@ -36,13 +36,15 @@ extern "C"
 
 // -------------------------------------------------------------------------------------------
 SimulationBasedAnalysis::SimulationBasedAnalysis(aiger* circuit, int mode) :
-		circuit_(circuit), mode_(mode)
+		circuit_(circuit), mode_(mode), sim_(0)
 {
+	sim_ = new AigSimulator(circuit_);
 }
 
 // -------------------------------------------------------------------------------------------
 SimulationBasedAnalysis::~SimulationBasedAnalysis()
 {
+	delete sim_;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -54,7 +56,12 @@ const set<int>& SimulationBasedAnalysis::getVulnerableElements() const
 // -------------------------------------------------------------------------------------------
 bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 {
-	// TODO implement
+	for (unsigned tc_idx = 0; tc_idx < testcases.size(); tc_idx++)
+	{
+		sim_->setTestcase(testcases[tc_idx]);
+		findVulnerabilitiesForCurrentTC();
+	}
+
 	return (vulnerable_elements_.size() != 0);
 }
 
@@ -62,6 +69,15 @@ bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 bool SimulationBasedAnalysis::findVulnerabilities(
 		vector<const char*> paths_to_TC_files)
 {
-	// TODO implement
+	for (unsigned tc_idx = 0; tc_idx < paths_to_TC_files.size(); tc_idx++)
+	{
+		sim_->setTestcase(paths_to_TC_files[tc_idx]);
+		findVulnerabilitiesForCurrentTC();
+	}
+
 	return (vulnerable_elements_.size() != 0);
+}
+
+void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
+{
 }

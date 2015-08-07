@@ -30,6 +30,7 @@
 #define SimulationBasedAnalysis_H__
 
 #include "defines.h"
+#include "AigSimulator.h"
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -89,8 +90,17 @@ public:
 
 protected:
   aiger* circuit_;
+  AigSimulator* sim_;
   int mode_;
   set<int> vulnerable_elements_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities for the current TestCase.
+///
+/// gets called by the public findVulnerabilities() functions.
+///
+  void findVulnerabilitiesForCurrentTC();
 
 private:
 
