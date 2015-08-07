@@ -163,6 +163,7 @@ bool CNF::addClauseAndSimplify(const vector<int> &clause)
 //  }
 //  clauses_.push_back(clause);
 //  return simplified;
+	MASSERT(false, "TODO: implement me!");
 	return false; // TODO
 }
 
@@ -247,6 +248,7 @@ void CNF::swapPresentToNext()
 //  for(size_t cnt = 0; cnt < ps_vars.size(); ++cnt)
 //    olt_to_new_var_map[ps_vars[cnt]] = ns_vars[cnt];
 //  renameVars(olt_to_new_var_map);
+	MASSERT(false, "TODO: implement me!"); // TODO: implement or remove function
 }
 
 // -------------------------------------------------------------------------------------------
@@ -267,6 +269,7 @@ void CNF::renameTmps()
 //      rename_map[*it] = VarManager::instance().createFreshTmpVar();
 //  }
 //  renameVars(rename_map);
+	MASSERT(false, "TODO: implement me!"); // TODO: implement or remove function
 }
 
 // -------------------------------------------------------------------------------------------
@@ -289,6 +292,7 @@ void CNF::negate()
 //    }
 //  }
 //  clauses_.push_back(one_clause_false);
+	MASSERT(false, "TODO: implement me!"); // TODO: implement or remove function
 }
 
 // -------------------------------------------------------------------------------------------
@@ -393,6 +397,7 @@ void CNF::simplify()
 //  {
 //    L_DBG("CNF size reduction: " << init_size << " --> " << clauses_.size());
 //  }
+	MASSERT(false, "TODO: implement me!"); // TODO: implement or remove function
 }
 
 // -------------------------------------------------------------------------------------------
