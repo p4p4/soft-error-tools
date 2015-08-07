@@ -59,11 +59,13 @@ class AigSimulator
 	void setTestcase(const vector<vector<int> > &testcase);
 	bool simulateOneTimeStep();
 	void simulateOneTimeStep(const vector<int> &input_values);
+	void switchToNextState();
 	string getStateString();
 	string getVerboseStateString();
 	vector<int> getOutputs();
 
 	protected:
+	void simulate(const vector<int> &input_values);
 	aiger* circuit_;
 	vector<vector<int> > testcase_;
 	int* results_;
