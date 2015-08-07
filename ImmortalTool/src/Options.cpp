@@ -36,8 +36,7 @@
 #include <unistd.h>
 
 // -------------------------------------------------------------------------------------------
-const string Options::VERSION = string("1.2.0");
-
+const string Options::VERSION = string("0.1");
 const string Options::TP_VAR = string("IMMORTALTP");
 
 // -------------------------------------------------------------------------------------------
@@ -74,6 +73,8 @@ const string Options::getAigInFileNameOnly() const
   else
     name_start++;
   // the following line also works if '.' is not found:
+  size_t len = aig_in_file_name_.find_last_of(".") - name_start;
+  return aig_in_file_name_.substr(name_start, len);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -89,17 +90,6 @@ int Options::getBackEndMode() const
   return mode_;
 }
 
-// -------------------------------------------------------------------------------------------
-const string& Options::getCircuitExtractionName() const
-{
-  return circuit_extraction_name_;
-}
-
-// -------------------------------------------------------------------------------------------
-int Options::getCircuitExtractionMode() const
-{
-  return circuit_extraction_mode_;
-}
 
 
 
@@ -148,47 +138,6 @@ SatSolver* Options::getSATSolver(bool rand_models, bool min_cores) const
   return NULL;
 }
 
-// -------------------------------------------------------------------------------------------
-SatSolver* Options::getSATSolverExtr(bool rand_models, bool min_cores) const
-{
-  if(circuit_sat_solver_ == "")
-    return getSATSolver(rand_models, min_cores);
-  if(circuit_sat_solver_ == "lin_api")
-    return new LingelingApi(rand_models, min_cores);
-//  if(circuit_sat_solver_ == "min_api")
-//    return new MiniSatApi(rand_models, min_cores);
-//  if(circuit_sat_solver_ == "pic_api")
-//    return new PicoSatApi(rand_models, min_cores);
-  MASSERT(false, "Unknown SAT solver name.");
-  return NULL;
-}
-
-// -------------------------------------------------------------------------------------------
-bool Options::doRealizabilityOnly() const
-{
-  return real_only_;
-}
-
-// -------------------------------------------------------------------------------------------
-size_t Options::getSizeLimitForExpansion() const
-{
-  return exp_limit_in_kb_;
-}
-
-// -------------------------------------------------------------------------------------------
-void Options::setSizeLimitForExpansion(size_t limit_in_kb)
-{
-  exp_limit_in_kb_ = limit_in_kb;
-}
-
-// -------------------------------------------------------------------------------------------
-size_t Options::getEstimatedTimeRemaining() const
-{
-  size_t elapsed = Stopwatch::getRealTimeSec(tool_started_);
-  if(elapsed >= hint_to_in_sec_)
-    return 0;
-  return hint_to_in_sec_ - elapsed;
-}
 
 // -------------------------------------------------------------------------------------------
 void Options::printHelp() const
@@ -230,19 +179,9 @@ void Options::initLogger() const
 // -------------------------------------------------------------------------------------------
 Options::Options():
     aig_in_file_name_(),
-    aig_out_file_name_("stdout"),
-    print_string_("ERWI"),
+    print_string_("ERWILD"),
     tmp_dir_("./tmp"),
-    back_end_("lp1"),
-    mode_(0),
-    circuit_extraction_name_("lp1"),
-    circuit_extraction_mode_(0),
-    qbf_solver_("depqbf_api"),
-    sat_solver_("min_api"),
-    circuit_sat_solver_(""),
-    real_only_(false),
-    exp_limit_in_kb_(3*1024*1024),
-    hint_to_in_sec_(0),
+    sat_solver_("lin_api"),
     tool_started_(Stopwatch::start())
 {
   // nothing to be done

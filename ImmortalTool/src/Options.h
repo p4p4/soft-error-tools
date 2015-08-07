@@ -99,19 +99,15 @@ public:
 /// @return The name (including the path) of the AIGER input file.
   const string& getAigInFileName() const;
 
+
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Returns the name of the input file without path and extension.
 ///
 /// @return The name of the input file without path and extension.
-  const string getAigInFileNameOnly() const;
+    const string getAigInFileNameOnly() const;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Returns the name (including the path) of the AIGER output file.
-///
-/// @return The name (including the path) of the AIGER output file.
-  const string& getAigOutFileName() const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -141,33 +137,7 @@ public:
 /// @return The mode of the back-end selected by the user.
   int getBackEndMode() const;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Returns the name of the circuit extraction method that should be used.
-///
-/// @return The name of the circuit extraction method that should be used.
-  const string& getCircuitExtractionName() const;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Returns the mode of the selected circuit extraction method.
-///
-/// Some circuit extraction methods can be used in several modes (certain optimizations or
-/// heuristics enabled or disabled, etc.). This integer number selects a mode.
-///
-/// @return The mode of the circuit extraction method selected by the user.
-  int getCircuitExtractionMode() const;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief A factory method to construct circuit extractors, depending on the parameters.
-///
-/// This method returns the circuit extractor that has been selected by the user with
-/// command-line parameters.
-///
-/// @note The returned object has to be deleted by the caller.
-/// @return The circuit extractor selected by the user with commend-line options.
-  CNFImplExtractor* getCircuitExtractor() const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -203,15 +173,6 @@ public:
 /// @return A unique name of a temporary file in the directory of temporary files.
   string getUniqueTmpFileName(string start = "") const;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Returns a fresh instance of the QBF-solver selected by the user.
-///
-/// Calling this method several times will give you different instances of the same solver.
-///
-/// @note The returned object instance must be deleted by the caller.
-/// @return A fresh instance of the QBF-solver selected by the user.
-  QBFSolver* getQBFSolver() const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -231,76 +192,7 @@ public:
 /// @return A fresh instance of the SAT-solver selected by the user.
   SatSolver* getSATSolver(bool rand_models = false, bool min_cores = true) const;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Returns an instance of the SAT-solver selected by the user for circuit extraction.
-///
-/// This method is different from getSATSolver because the user can select a different SAT
-/// solver for circuit extraction than for computing the winning region.
-///
-/// Calling this method several times will give you different instances of the same solver.
-///
-/// @note The returned object instance must be deleted by the caller.
-/// @param rand_models A flag indicating if satisfying assignments should be randomized.
-///        This is done in a post-processing step (values are flipped randomly and then we
-///        check if this still constitutes a satisfying assignment). This is expensive.
-///        If this parameter is skipped, then satisfying assignments are not randomized.
-/// @param min_cores A flag indicating if unsatisfiable cores returned by the solver should
-///        be minimized further by trying to drop one literal after the other. This makes the
-///        calls slower but produces potentially smaller cubes. If this parameter is skipped,
-///        then cores will be further minimized.
-/// @return A fresh instance of the SAT-solver selected by the user.
-  SatSolver* getSATSolverExtr(bool rand_models = false, bool min_cores = true) const;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Returns true if the back-ends should only compute a winning region but no circuits.
-///
-/// @return true if the back-ends should only compute a winning region but no circuits.
-  bool doRealizabilityOnly() const;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Returns the maximum memory (in kB) to use in SAT-based learning with expansion.
-///
-/// LearnSynthSAT can be run in a mode where it expands the CNF for computing counterexamples
-/// in order to save iterations. For certain benchmarks, this expansion works well. For other
-/// benchmarks, the CNFs that are computed during expansion get so extremely big that we may
-/// run into memory problems. This method returns a memory limit in kB. If this limit is
-/// exceeded, we stop doing the expansion in order to prevent running out of memory.
-///
-/// @note The limit returned by this method is not enforced strictly. The memory consumption
-/// is only estimated at certain points.
-///
-/// @return The maximum memory (in kB) to use in SAT-based learning with expansion.
-  size_t getSizeLimitForExpansion() const;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Sets the maximum memory (in kB) to use in SAT-based learning with expansion.
-///
-/// LearnSynthSAT can be run in a mode where it expands the CNF for computing counterexamples
-/// in order to save iterations. For certain benchmarks, this expansion works well. For other
-/// benchmarks, the CNFs that are computed during expansion get so extremely big that we may
-/// run into memory problems. This method sets a memory limit in kB. If this limit is
-/// exceeded, we stop doing the expansion in order to prevent running out of memory.
-///
-/// @note The limit set by this method is not enforced strictly. The memory consumption
-/// is only estimated at certain points.
-///
-/// @param limit_in_kb The maximum memory (in kB) to use in SAT-based learning with expansion.
-  void setSizeLimitForExpansion(size_t limit_in_kb);
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief If a hint for a timeout is given, this method returns the remaining time.
-///
-/// If this method returns 0, this intuitively means: "be done as quickly as possible".
-/// The hint_to_in_sec_ field stores a hint about the timeout. By default it is 0, meaning
-/// that we want to be done as quickly as possible.
-///
-/// @return The remaining time until the timeout.
-  size_t getEstimatedTimeRemaining() const;
 
 protected:
 
@@ -318,11 +210,6 @@ protected:
 ///
 /// @brief The name (including the path) of the AIGER input file.
   string aig_in_file_name_;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief The name (including the path) of the AIGER output file.
-  string aig_out_file_name_;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -359,66 +246,13 @@ protected:
 /// or disabled, etc.). This integer number selects a mode.
   int mode_;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief The name of the circuit extraction method that should be used.
-  string circuit_extraction_name_;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief The mode of the selected circuit extraction method.
-///
-/// Some circuit extraction methods can be used in several modes (certain optimizations or
-/// heuristics enabled or disabled, etc.). This integer number selects a mode.
-  int circuit_extraction_mode_;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief The name of the selected QBF-solver.
-  string qbf_solver_;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The name of the selected SAT-solver.
   string sat_solver_;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief The name of the SAT-solver to be used for circuit extraction.
-///
-/// This is different from sat_solver_ because the user may select a different solver for
-/// circuit extraction than for computing the winning region.
-  string circuit_sat_solver_;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief True if the back-ends should only compute a winning region but no circuits.
-  bool real_only_;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief The maximum memory (in kB) to use in SAT-based learning with expansion.
-///
-/// LearnSynthSAT can be run in a mode where it expands the CNF for computing counterexamples
-/// in order to save iterations. For certain benchmarks, this expansion works well. For other
-/// benchmarks, the CNFs that are computed during expansion get so extremely big that we may
-/// run into memory problems. This field stores a memory limit in kB. If this limit is
-/// exceeded, we stop doing the expansion in order to prevent running out of memory.
-///
-/// @note The limit stored in this field is not enforced strictly. The memory consumption
-/// is only estimated at certain points.
-  size_t exp_limit_in_kb_;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief A hint about a timeout.
-///
-/// This timeout is not enforced. This is just a hint for the tool to enable or disable
-/// certain optimizations. If there is still enough time available until the expected timeout,
-/// we can run additional optimizations to get small circuits. If we are already close to the
-/// timeout, then we can tune our heuristics to finish quickly rather than obtaining small
-/// circuits.
-  size_t hint_to_in_sec_;
 
 // -------------------------------------------------------------------------------------------
 ///
