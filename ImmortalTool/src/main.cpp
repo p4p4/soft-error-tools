@@ -25,7 +25,18 @@ int main(int argc, char *argv[])
 	bool quit = Options::instance().parse(argc, argv);
 	if (quit)
 		return 0;
+	//----------------------------------------------------------------------------
+	CNF cnf;
+	LingelingApi ling;
+	cout << "empty cnf satisfiable: " << ling.isSat(cnf) << endl;
 
+	cnf.add1LitClause(0);
+	cout << "cnf with 0 clause: " << ling.isSat(cnf) << endl;
+
+
+
+
+	//----------------------------------------------------------------------------
 
 	double cpu_time = Stopwatch::getCPUTimeSec(start_time);
 	size_t real_time = Stopwatch::getRealTimeSec(start_time);
