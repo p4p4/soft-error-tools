@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -46,13 +45,7 @@ AigSimulator::AigSimulator(aiger* circuit) :
 	results_[0] = 0;
 	results_[1] = 1;
 
-	// initialize latches (if any) with FALSE
-	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
-	{
-		results_[aiger_lit2var(circuit_->latches[cnt].lit)] =
-				circuit_->latches[cnt].reset;
-		results_[aiger_lit2var(circuit_->latches[cnt].next)] = 0;
-	}
+	init();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -64,8 +57,9 @@ AigSimulator::~AigSimulator()
 // -------------------------------------------------------------------------------------------
 void AigSimulator::setTestcase(char* path_to_aigsim_input)
 {
-	ifstream infile(path_to_aigsim_input);
+	init();
 
+	ifstream infile(path_to_aigsim_input);
 	string input_vector_line;
 	while (infile >> input_vector_line)
 	{
@@ -97,7 +91,7 @@ void AigSimulator::setTestcase(const vector<vector<int> >& testcase)
 {
 	MASSERT(testcase.size() > 0 && testcase[0].size() == circuit_->num_inputs,
 			"Wrong test case provided!");
-
+	init();
 	testcase_ = testcase;
 }
 
@@ -286,3 +280,13 @@ vector<int> AigSimulator::getOutputs()
 	return outputs;
 }
 
+void AigSimulator::init()
+{
+	// initialize latches (if any) with FALSE
+	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
+	{
+		results_[aiger_lit2var(circuit_->latches[cnt].lit)] =
+				circuit_->latches[cnt].reset;
+		results_[aiger_lit2var(circuit_->latches[cnt].next)] = 0;
+	}
+}

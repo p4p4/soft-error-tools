@@ -28,7 +28,6 @@
 #include <string>
 
 #include "TestAigSimulator.h"
-#include "../src/AigSimulator.h"
 
 extern "C"
 {
@@ -37,7 +36,7 @@ extern "C"
 
 using namespace std;
 
-CPPUNIT_TEST_SUITE_REGISTRATION (TestAigSimulator);
+CPPUNIT_TEST_SUITE_REGISTRATION(TestAigSimulator);
 
 // -------------------------------------------------------------------------------------------
 void TestAigSimulator::setUp()
@@ -146,7 +145,7 @@ void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
 	AigSimulator sim(aig_input);
 
 	// read testcase-file
-	sim.setTestcase("inputs/C17_orig.aigsiminput");
+	sim.setTestcase("inputs/5_bit_input");
 
 	int expected_results[32][2] =
 	{
@@ -197,30 +196,24 @@ void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
 		}
 	}
 
-
 	// there are only 32 input-vectors, after that, simulateOneTimeStep() must return false
 	bool success = sim.simulateOneTimeStep();
 	CPPUNIT_ASSERT(success == false);
 
-
 }
 
-void TestAigSimulator::AigSimDiff(aiger* circuit, char* aigsim_input_file, char* aigsim_output_file)
+void TestAigSimulator::AigSimDiff(AigSimulator& sim, char* aigsim_input_file,
+		char* aigsim_output_file)
 {
-	// read circuit:
-	AigSimulator sim(circuit);
-
 	// read testcase-file
 	sim.setTestcase(aigsim_input_file);
 
 	ifstream infile(aigsim_output_file);
 	string aigsim_output_file_line;
 
-
-
-	while(sim.simulateOneTimeStep() == true)
+	while (sim.simulateOneTimeStep() == true)
 	{
-//		cout << sim.getStateString() << endl;
+		//		cout << sim.getStateString() << endl;
 
 		CPPUNIT_ASSERT(getline(infile, aigsim_output_file_line));
 		CPPUNIT_ASSERT_EQUAL(aigsim_output_file_line, sim.getStateString());
@@ -229,15 +222,42 @@ void TestAigSimulator::AigSimDiff(aiger* circuit, char* aigsim_input_file, char*
 
 	}
 
-
 	// there are only 32 input-vectors, after that, simulateOneTimeStep() must return false
 	bool success = sim.simulateOneTimeStep();
 	CPPUNIT_ASSERT(success == false);
+}
+
+void TestAigSimulator::AigSimDiff(aiger* circuit, char* aigsim_input_file,
+		char* aigsim_output_file)
+{
+	// read circuit:
+	AigSimulator sim(circuit);
+	AigSimDiff(sim, aigsim_input_file, aigsim_output_file);
+
 }
 
 void TestAigSimulator::test3_circuit_with_latches_compare_w_aigersim_outputfile()
 {
 	// read circuit:
 	aiger* circuit = readAigerFile("inputs/minmax2_orig.aig");
-	AigSimDiff(circuit, "inputs/C17_orig.aigsiminput", "inputs/minmax2_orig.aig.diff1");
+	AigSimDiff(circuit, "inputs/5_bit_input",
+			"inputs/minmax2_orig.aig.diff1");
+}
+
+void TestAigSimulator::test4_reuse_aigsim_object()
+{
+	aiger* circuit = readAigerFile("inputs/minmax2_orig.aig");
+	AigSimulator sim(circuit);
+
+	AigSimDiff(sim, "inputs/5_bit_input",
+				"inputs/minmax2_orig.aig.diff1");
+
+	AigSimDiff(sim, "inputs/5_bit_input_shuffle1",
+				"inputs/minmax2_orig.out.shuffle1");
+
+	AigSimDiff(sim, "inputs/5_bit_input_shuffle2",
+				"inputs/minmax2_orig.out.shuffle2");
+
+	AigSimDiff(sim, "inputs/5_bit_input_shuffle3",
+				"inputs/minmax2_orig.out.shuffle3");
 }

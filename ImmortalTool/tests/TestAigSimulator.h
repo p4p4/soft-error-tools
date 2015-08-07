@@ -30,6 +30,8 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "../src/AigSimulator.h"
+
 struct aiger;
 
 // -------------------------------------------------------------------------------------------
@@ -45,6 +47,7 @@ class TestAigSimulator : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test1_sim_combinatoric_circuit);
   CPPUNIT_TEST(test2_sim_combinatoric_circuit_with_aigsim_inputfile);
   CPPUNIT_TEST(test3_circuit_with_latches_compare_w_aigersim_outputfile);
+  CPPUNIT_TEST(test4_reuse_aigsim_object);
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -65,6 +68,7 @@ public:
   void compareOutputVector(int* c_array, std::vector<int> c_vector);
 
   void AigSimDiff(aiger* circuit, char* aigsim_input_file, char* aigsim_output_file);
+  void AigSimDiff(AigSimulator& sim, char* aigsim_input_file, char* aigsim_output_file);
 
 
 protected:
@@ -89,6 +93,8 @@ protected:
   void test2_sim_combinatoric_circuit_with_aigsim_inputfile();
 
   void test3_circuit_with_latches_compare_w_aigersim_outputfile();
+
+  void test4_reuse_aigsim_object();
 
 };
 

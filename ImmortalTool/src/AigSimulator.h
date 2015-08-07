@@ -142,6 +142,7 @@ class AigSimulator
 	vector<vector<int> > testcase_;
 	int* results_;
 	size_t time_index_;
+	void init();
 
 	private:
 
