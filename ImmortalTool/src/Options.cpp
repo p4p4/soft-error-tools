@@ -55,7 +55,7 @@ Options &Options::instance()
 bool Options::parse(int argc, char **argv)
 {
 	// TODO
-	return false;
+	return false; // false = do not quit the tool
 }
 
 // -------------------------------------------------------------------------------------------

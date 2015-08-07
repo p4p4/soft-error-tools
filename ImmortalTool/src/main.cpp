@@ -9,43 +9,28 @@
 #include "defines.h"
 #include "Logger.h"
 #include "LingelingApi.h"
+
+extern "C"
+{
+#include "aiger.h"
+}
+
 #include <iostream>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-	Logger::instance().enable(Logger::DBG);
-	L_DBG("this message is testing the logger");
-
 	PointInTime start_time = Stopwatch::start();
-	cout << "Hello World!" << endl;
-
-	CNF test;
-
-	test.add1LitClause(2);
-	cout << test.toString() << endl;
-
-	LingelingApi sat;
-	CNF unsat;
-	unsat.add1LitClause(3);
-	unsat.add1LitClause(-3);
+	bool quit = Options::instance().parse(argc, argv);
+	if (quit)
+		return 0;
 
 
-	if(sat.isSat(test))
-	{
-		cout << "is satisfiable :)" << endl;
-	}
-
-	if(!sat.isSat(unsat))
-	{
-		cout << "is unsatisfiable :)" << endl;
-	}
-	else
-		cout << "should not happen..." << endl;
-
-	cout << "Totoal execution time: " << Stopwatch::getTimeAsString(start_time)
-			<< endl;
+	double cpu_time = Stopwatch::getCPUTimeSec(start_time);
+	size_t real_time = Stopwatch::getRealTimeSec(start_time);
+	L_LOG("Overall execution time: " << cpu_time << " sec CPU time.");
+	L_LOG("Overall execution time: " << real_time << " sec real time.");
 	return 0;
 }
 
