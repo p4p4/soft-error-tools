@@ -137,6 +137,8 @@ class AigSimulator
 /// @return vector containing the values of the outputs
 	vector<int> getOutputs();
 
+	vector<int> getLatchValues();
+
 	protected:
 	aiger* circuit_;
 	vector<vector<int> > testcase_;

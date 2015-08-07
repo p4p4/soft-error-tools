@@ -280,6 +280,27 @@ vector<int> AigSimulator::getOutputs()
 	return outputs;
 }
 
+// -------------------------------------------------------------------------------------------
+vector<int> AigSimulator::getLatchValues()
+{
+	vector<int> latches(circuit_->num_latches);
+
+	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
+	{
+
+		// TODO: check if a latch output can really be inverted
+//		if (circuit_->latches[cnt].lit % 2 == 1)
+//		{
+//			latches[cnt] = aiger_not(
+//					results_[aiger_lit2var(circuit_->latches[cnt].lit)]);
+//		}
+//		else
+//		{
+			latches[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].lit)];
+//		}
+	}
+	return latches;
+}
 void AigSimulator::init()
 {
 	// initialize latches (if any) with FALSE

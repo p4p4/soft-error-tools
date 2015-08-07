@@ -48,7 +48,7 @@ SimulationBasedAnalysis::~SimulationBasedAnalysis()
 }
 
 // -------------------------------------------------------------------------------------------
-const set<int>& SimulationBasedAnalysis::getVulnerableElements() const
+const set<unsigned>& SimulationBasedAnalysis::getVulnerableElements() const
 {
 	return vulnerable_elements_;
 }
@@ -80,4 +80,54 @@ bool SimulationBasedAnalysis::findVulnerabilities(
 
 void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 {
+//	vulnerable_latches = empty_set/list
+//for each test case t[][]
+
+	vector<vector<int> > outputs;
+	vector<vector<int> > states;
+
+//  states[][], outputs[][] = simulate(t)
+	while (sim_->simulateOneTimeStep() == true)
+	{
+		// TODO: this could be done more efficient if we directly read from sim_->res_[]
+		outputs.push_back(sim_->getOutputs());
+		states.push_back(sim_->getLatchValues());
+
+		sim_->switchToNextState();
+	}
+
+
+//  for each latch l without vulnerable_latches:
+	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
+	{
+		// skip latches where we already know that they are vulnerable
+		if(vulnerable_elements_.find(circuit_->latches[cnt].lit) != vulnerable_elements_.end())
+		{
+			continue;
+		}
+		//    l_is_vulnerable = false
+		bool l_is_vulnerable = false;
+		//    for all time steps i von t:
+		for (unsigned timestep=0; timestep < states.size(); timestep++)
+		{
+			//       if(l_is_vulnerable)
+			//          break;
+			if(l_is_vulnerable)
+				break;
+			//       state[] = states[i][]
+			vector<int> &state = states[timestep];
+			//       state[l] = !state[l]
+			//       for all j >= i:
+			//         next_state[], out[], alarm = simulate1step(state[], t[j])
+			//         if(alarm)
+			//            break;
+			//         if(out[] != outputs[j][])
+			//           vulnerable_latches.add(l)
+			//           l_is_vulnerable = true
+			//           break; // continue with next l
+			//         if(next_state[] == states[j+1][])
+			//           break;
+		}
+	}
+
 }

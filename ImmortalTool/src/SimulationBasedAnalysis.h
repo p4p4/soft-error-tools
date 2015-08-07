@@ -63,7 +63,7 @@ public:
 /// @brief Returns the set of vulnerable elements of the circuit
 ///
 /// @return The set of vulnerable elements of the circuit
-	const set<int>& getVulnerableElements() const;
+	const set<unsigned>& getVulnerableElements() const;
 
 
 // -------------------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ protected:
   aiger* circuit_;
   AigSimulator* sim_;
   int mode_;
-  set<int> vulnerable_elements_;
+  set<unsigned> vulnerable_elements_;
 
 // -------------------------------------------------------------------------------------------
 ///

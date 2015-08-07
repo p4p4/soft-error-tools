@@ -50,6 +50,64 @@ void TestAigSimulator::tearDown()
 	//define here post processing steps
 }
 
+aiger* TestAigSimulator::readAigerFile(char* path)
+{
+	// read file:
+	aiger* aig_input = aiger_init();
+	const char *read_err = aiger_open_and_read_from_file(aig_input, path);
+
+	if (read_err != NULL)
+	{
+		CPPUNIT_FAIL("Error: Could not open AIGER file");
+	}
+
+	return aig_input;
+}
+
+void TestAigSimulator::compareOutputVector(int* c_array,
+		std::vector<int> c_vector)
+{
+	for (unsigned int out_ctr = 0; out_ctr < c_vector.size(); out_ctr++)
+	{
+		CPPUNIT_ASSERT(c_vector[out_ctr] == c_array[out_ctr]);
+	}
+}
+
+
+void TestAigSimulator::AigSimDiff(AigSimulator& sim, char* aigsim_input_file,
+		char* aigsim_output_file)
+{
+	// read testcase-file
+	sim.setTestcase(aigsim_input_file);
+
+	ifstream infile(aigsim_output_file);
+	string aigsim_output_file_line;
+
+	while (sim.simulateOneTimeStep() == true)
+	{
+		//		cout << sim.getStateString() << endl;
+
+		CPPUNIT_ASSERT(getline(infile, aigsim_output_file_line));
+		CPPUNIT_ASSERT_EQUAL(aigsim_output_file_line, sim.getStateString());
+
+		sim.switchToNextState();
+
+	}
+
+	// there are only 32 input-vectors, after that, simulateOneTimeStep() must return false
+	bool success = sim.simulateOneTimeStep();
+	CPPUNIT_ASSERT(success == false);
+}
+
+void TestAigSimulator::AigSimDiff(aiger* circuit, char* aigsim_input_file,
+		char* aigsim_output_file)
+{
+	// read circuit:
+	AigSimulator sim(circuit);
+	AigSimDiff(sim, aigsim_input_file, aigsim_output_file);
+
+}
+
 // -------------------------------------------------------------------------------------------
 void TestAigSimulator::test1_sim_combinatoric_circuit()
 {
@@ -115,28 +173,7 @@ void TestAigSimulator::test1_sim_combinatoric_circuit()
 
 }
 
-aiger* TestAigSimulator::readAigerFile(char* path)
-{
-	// read file:
-	aiger* aig_input = aiger_init();
-	const char *read_err = aiger_open_and_read_from_file(aig_input, path);
 
-	if (read_err != NULL)
-	{
-		CPPUNIT_FAIL("Error: Could not open AIGER file");
-	}
-
-	return aig_input;
-}
-
-void TestAigSimulator::compareOutputVector(int* c_array,
-		std::vector<int> c_vector)
-{
-	for (unsigned int out_ctr = 0; out_ctr < c_vector.size(); out_ctr++)
-	{
-		CPPUNIT_ASSERT(c_vector[out_ctr] == c_array[out_ctr]);
-	}
-}
 
 void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
 {
@@ -202,39 +239,6 @@ void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
 
 }
 
-void TestAigSimulator::AigSimDiff(AigSimulator& sim, char* aigsim_input_file,
-		char* aigsim_output_file)
-{
-	// read testcase-file
-	sim.setTestcase(aigsim_input_file);
-
-	ifstream infile(aigsim_output_file);
-	string aigsim_output_file_line;
-
-	while (sim.simulateOneTimeStep() == true)
-	{
-		//		cout << sim.getStateString() << endl;
-
-		CPPUNIT_ASSERT(getline(infile, aigsim_output_file_line));
-		CPPUNIT_ASSERT_EQUAL(aigsim_output_file_line, sim.getStateString());
-
-		sim.switchToNextState();
-
-	}
-
-	// there are only 32 input-vectors, after that, simulateOneTimeStep() must return false
-	bool success = sim.simulateOneTimeStep();
-	CPPUNIT_ASSERT(success == false);
-}
-
-void TestAigSimulator::AigSimDiff(aiger* circuit, char* aigsim_input_file,
-		char* aigsim_output_file)
-{
-	// read circuit:
-	AigSimulator sim(circuit);
-	AigSimDiff(sim, aigsim_input_file, aigsim_output_file);
-
-}
 
 void TestAigSimulator::test3_circuit_with_latches_compare_w_aigersim_outputfile()
 {
