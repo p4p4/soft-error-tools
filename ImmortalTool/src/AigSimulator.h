@@ -135,7 +135,7 @@ class AigSimulator
 ///
 ///
 /// @return vector containing the values of the outputs
-	const vector<int>& getOutputs() const;
+	vector<int> getOutputs();
 
 	protected:
 	aiger* circuit_;

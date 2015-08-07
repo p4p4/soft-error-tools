@@ -85,7 +85,7 @@ public:
 ///
 /// @param paths_to_TC_files a vector of paths to TestCase files.
 /// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(vector<const char*> paths_to_TC_files);
+	bool findVulnerabilities(vector<char*> paths_to_TC_files);
 
 
 protected:

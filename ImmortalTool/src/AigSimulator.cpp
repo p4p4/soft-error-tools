@@ -266,7 +266,7 @@ void AigSimulator::switchToNextState()
 }
 
 // -------------------------------------------------------------------------------------------
-const vector<int>& AigSimulator::getOutputs() const
+vector<int> AigSimulator::getOutputs()
 {
 	vector<int> outputs(circuit_->num_outputs);
 

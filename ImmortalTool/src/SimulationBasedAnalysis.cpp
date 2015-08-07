@@ -36,7 +36,7 @@ extern "C"
 
 // -------------------------------------------------------------------------------------------
 SimulationBasedAnalysis::SimulationBasedAnalysis(aiger* circuit, int mode) :
-		circuit_(circuit), mode_(mode), sim_(0)
+		circuit_(circuit), sim_(0), mode_(mode)
 {
 	sim_ = new AigSimulator(circuit_);
 }
@@ -67,7 +67,7 @@ bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 
 // -------------------------------------------------------------------------------------------
 bool SimulationBasedAnalysis::findVulnerabilities(
-		vector<const char*> paths_to_TC_files)
+		vector<char*> paths_to_TC_files)
 {
 	for (unsigned tc_idx = 0; tc_idx < paths_to_TC_files.size(); tc_idx++)
 	{
