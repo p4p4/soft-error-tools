@@ -5,6 +5,8 @@
 //============================================================================
 #include "CNF.h"
 #include "Stopwatch.h"
+#include "Options.h"
+#include "defines.h"
 #include "Logger.h"
 #include "LingelingApi.h"
 #include <iostream>
