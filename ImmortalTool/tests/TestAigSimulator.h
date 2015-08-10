@@ -48,6 +48,7 @@ class TestAigSimulator : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test2_sim_combinatoric_circuit_with_aigsim_inputfile);
   CPPUNIT_TEST(test3_circuit_with_latches_compare_w_aigersim_outputfile);
   CPPUNIT_TEST(test4_reuse_aigsim_object);
+  CPPUNIT_TEST(test5_simulate_with_provided_state);
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -95,6 +96,8 @@ protected:
   void test3_circuit_with_latches_compare_w_aigersim_outputfile();
 
   void test4_reuse_aigsim_object();
+
+  void test5_simulate_with_provided_state();
 
 };
 

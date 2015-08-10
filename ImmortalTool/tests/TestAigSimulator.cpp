@@ -269,3 +269,33 @@ void TestAigSimulator::test4_reuse_aigsim_object()
 	AigSimDiff(sim, "inputs/5_bit_input_shuffle3",
 				"inputs/minmax2_orig.out.shuffle3");
 }
+
+void TestAigSimulator::test5_simulate_with_provided_state()
+{
+	aiger* circuit = readAigerFile("inputs/minmax2_perfect.aag");
+	AigSimulator sim(circuit);
+
+	// 10001011 00101
+	vector<int> inputs;
+	inputs.push_back(0);
+	inputs.push_back(0);
+	inputs.push_back(1);
+	inputs.push_back(0);
+	inputs.push_back(1);
+
+	vector<int> latches;
+	latches.push_back(1);
+	latches.push_back(0);
+	latches.push_back(0);
+	latches.push_back(0);
+	latches.push_back(1);
+	latches.push_back(0);
+	latches.push_back(1);
+	latches.push_back(1);
+
+	sim.simulateOneTimeStep(inputs, latches);
+
+	string shouldbe = "10001011 00101 011 11101011";
+	CPPUNIT_ASSERT_EQUAL(shouldbe, sim.getStateString());
+
+}

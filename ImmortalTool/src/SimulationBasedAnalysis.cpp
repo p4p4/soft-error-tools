@@ -28,6 +28,7 @@
 // -------------------------------------------------------------------------------------------
 
 #include "SimulationBasedAnalysis.h"
+#include "Logger.h"
 
 extern "C"
 {
@@ -159,6 +160,17 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				//   break; // continue with next l
 				if(outputs_w_flip != outputs[j])
 				{
+					//DEBUG
+//					L_DBG("vulnerable latch:" << circuit_->latches[l_cnt].lit)
+//					for(unsigned i=0; i < outputs_w_flip.size(); i++)
+//					{
+//						if(circuit_->outputs[i].name)
+//						{
+//							cout << circuit_->outputs[i].name;
+//						}
+//						L_DBG("out["<<i<<"] is:"<<outputs_w_flip[i] << ", shouldbe:"<<outputs[j][i]);
+//
+//					}
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					vulnerable_elements_.insert(circuit_->latches[l_cnt].lit);
 					l_is_vulnerable = true;
