@@ -93,6 +93,8 @@ protected:
   AigSimulator* sim_;
   int mode_;
   set<unsigned> vulnerable_elements_;
+  TestCase &current_TC_;
+  TestCase empty_;
 
 // -------------------------------------------------------------------------------------------
 ///
