@@ -94,6 +94,17 @@ class AigSimulator
 
 // -------------------------------------------------------------------------------------------
 //
+/// @brief Simpulates one Timestep using an input-vector and a state-vector
+///
+/// Computes all outputs of a circuit according to the provided input-vector
+/// and the *provided* latch values
+///
+/// @param input_values The input vector
+/// @param latch_values The state vector containing the values of the latches
+	void simulateOneTimeStep(const vector<int> &input_values, const vector<int> &latch_values);
+
+// -------------------------------------------------------------------------------------------
+//
 /// @brief Switch to next State: Latch-outputs get their next-state values
 ///
 /// Computes all outputs of a circuit according to the current input-vector
@@ -138,6 +149,11 @@ class AigSimulator
 	vector<int> getOutputs();
 
 	vector<int> getLatchValues();
+
+	const vector<vector<int> >& getTestcase() const
+	{
+		return testcase_;
+	}
 
 	protected:
 	aiger* circuit_;
