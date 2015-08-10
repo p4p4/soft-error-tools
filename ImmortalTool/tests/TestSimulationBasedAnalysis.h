@@ -61,9 +61,9 @@ public:
 /// @brief Shuts down the object under test.
   void tearDown();
 
-  aiger* readAigerFile(char* path);
+  aiger* readAigerFile(string path);
 
-  void checkVulnerabilities(char* path_to_aiger_circuit, vector<char*> tc_files, set<unsigned> should_be_vulnerable, int num_err_latches);
+  void checkVulnerabilities(string path_to_aiger_circuit, vector<string> tc_files, set<unsigned> should_be_vulnerable, int num_err_latches);
 
 protected:
 

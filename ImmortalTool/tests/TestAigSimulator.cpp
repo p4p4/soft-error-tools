@@ -51,11 +51,11 @@ void TestAigSimulator::tearDown()
 }
 
 // -------------------------------------------------------------------------------------------
-aiger* TestAigSimulator::readAigerFile(char* path)
+aiger* TestAigSimulator::readAigerFile(string path)
 {
 	// read file:
 	aiger* aig_input = aiger_init();
-	const char *read_err = aiger_open_and_read_from_file(aig_input, path);
+	const char *read_err = aiger_open_and_read_from_file(aig_input, path.c_str());
 
 	if (read_err != NULL)
 	{
@@ -76,13 +76,13 @@ void TestAigSimulator::compareOutputVector(int* c_array,
 }
 
 // -------------------------------------------------------------------------------------------
-void TestAigSimulator::AigSimDiff(AigSimulator& sim, char* aigsim_input_file,
-		char* aigsim_output_file)
+void TestAigSimulator::AigSimDiff(AigSimulator& sim, string aigsim_input_file,
+		string aigsim_output_file)
 {
 	// read testcase-file
-	sim.setTestcase(aigsim_input_file);
+	sim.setTestcase(aigsim_input_file.c_str());
 
-	ifstream infile(aigsim_output_file);
+	ifstream infile(aigsim_output_file.c_str());
 	string aigsim_output_file_line;
 
 	while (sim.simulateOneTimeStep() == true)
@@ -102,8 +102,8 @@ void TestAigSimulator::AigSimDiff(AigSimulator& sim, char* aigsim_input_file,
 }
 
 // -------------------------------------------------------------------------------------------
-void TestAigSimulator::AigSimDiff(aiger* circuit, char* aigsim_input_file,
-		char* aigsim_output_file)
+void TestAigSimulator::AigSimDiff(aiger* circuit, string aigsim_input_file,
+		string aigsim_output_file)
 {
 	// read circuit:
 	AigSimulator sim(circuit);

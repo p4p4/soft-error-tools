@@ -62,7 +62,7 @@ class AigSimulator
 /// A testcase is a set of input-vectors
 ///
 /// @param path_to_aigsim_input The path to the AigSim input file
-	void setTestcase(char* path_to_aigsim_input);
+	void setTestcase(string path_to_aigsim_input);
 
 // -------------------------------------------------------------------------------------------
 //

@@ -64,12 +64,12 @@ public:
 /// @brief Shuts down the object under test.
   void tearDown();
 
-  aiger* readAigerFile(char* path);
+  aiger* readAigerFile(string path);
 
   void compareOutputVector(int* c_array, std::vector<int> c_vector);
 
-  void AigSimDiff(aiger* circuit, char* aigsim_input_file, char* aigsim_output_file);
-  void AigSimDiff(AigSimulator& sim, char* aigsim_input_file, char* aigsim_output_file);
+  void AigSimDiff(aiger* circuit, string aigsim_input_file, string aigsim_output_file);
+  void AigSimDiff(AigSimulator& sim, string aigsim_input_file, string aigsim_output_file);
 
 
 protected:

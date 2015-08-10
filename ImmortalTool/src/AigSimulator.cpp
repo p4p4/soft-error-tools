@@ -55,11 +55,11 @@ AigSimulator::~AigSimulator()
 }
 
 // -------------------------------------------------------------------------------------------
-void AigSimulator::setTestcase(char* path_to_aigsim_input)
+void AigSimulator::setTestcase(string path_to_aigsim_input)
 {
 	init();
 
-	ifstream infile(path_to_aigsim_input);
+	ifstream infile(path_to_aigsim_input.c_str());
 	string input_vector_line;
 	while (infile >> input_vector_line)
 	{

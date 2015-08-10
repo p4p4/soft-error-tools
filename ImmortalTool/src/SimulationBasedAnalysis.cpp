@@ -72,7 +72,7 @@ bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 
 // -------------------------------------------------------------------------------------------
 bool SimulationBasedAnalysis::findVulnerabilities(
-		vector<char*> paths_to_TC_files)
+		vector<string> paths_to_TC_files)
 {
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();

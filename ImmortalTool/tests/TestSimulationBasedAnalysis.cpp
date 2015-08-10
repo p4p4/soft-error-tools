@@ -44,11 +44,11 @@ void TestSimulationBasedAnalysis::tearDown()
 }
 
 // -------------------------------------------------------------------------------------------
-aiger* TestSimulationBasedAnalysis::readAigerFile(char* path)
+aiger* TestSimulationBasedAnalysis::readAigerFile(string path)
 {
 	// read file:
 	aiger* aig_input = aiger_init();
-	const char *read_err = aiger_open_and_read_from_file(aig_input, path);
+	const char *read_err = aiger_open_and_read_from_file(aig_input, path.c_str());
 
 	if (read_err != NULL)
 	{
@@ -60,7 +60,7 @@ aiger* TestSimulationBasedAnalysis::readAigerFile(char* path)
 
 // -------------------------------------------------------------------------------------------
 void TestSimulationBasedAnalysis::checkVulnerabilities(
-		char* path_to_aiger_circuit, vector<char*> tc_files,
+		string path_to_aiger_circuit, vector<string> tc_files,
 		set<unsigned> should_be_vulnerable, int num_err_latches)
 {
 
@@ -85,7 +85,7 @@ void TestSimulationBasedAnalysis::test1_simulation_analysis_w_1_extra_latch()
 
 	// Paths to TestCase files
 	// A TestCase file contains vectors of input values
-	vector<char*> tc_files;
+	vector<string> tc_files;
 	tc_files.push_back("inputs/3_bit_input_1");
 	tc_files.push_back("inputs/3_bit_input_2");
 	tc_files.push_back("inputs/3_bit_input_3");
@@ -124,7 +124,7 @@ void TestSimulationBasedAnalysis::test2_simulation_analysis_w_2_extra_latch()
 {
 	// Paths to TestCase files
 	// A TestCase file contains vectors of input values
-	vector<char*> tc_files;
+	vector<string> tc_files;
 	tc_files.push_back("inputs/3_bit_input_1");
 	tc_files.push_back("inputs/3_bit_input_2");
 	tc_files.push_back("inputs/3_bit_input_3");

@@ -27,40 +27,9 @@ int main(int argc, char *argv[])
 	if (quit)
 		return 0;
 	//----------------------------------------------------------------------------
+	Logger::instance().enable(Logger::DBG);
 	// Playground starts here
-	CNF cnf;
-	LingelingApi ling;
-	cout << "empty cnf satisfiable: " << ling.isSat(cnf) << endl;
 
-	cnf.add1LitClause(0);
-	cout << "cnf with 0 clause: " << ling.isSat(cnf) << endl;
-
-	// read file:
-	aiger* circuit = aiger_init();
-//	const char *read_err = aiger_open_and_read_from_file(circuit,
-//			"tests/inputs/minmax2_weak.aag");
-
-	const char *read_err = aiger_open_and_read_from_file(circuit,
-			"tests/inputs/minmax2_perfect.aag");
-
-	if (read_err != NULL)
-	{
-		return -1;
-	}
-	L_LOG("file opened");
-
-	SimulationBasedAnalysis sba(circuit,2);
-	vector<char*> tc_files;
-	tc_files.push_back("tests/inputs/5_bit_input");
-	sba.findVulnerabilities(tc_files);
-	const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
-
-	L_LOG("Number of vulnerabilities: " << vulnerabilities.size() << ":");
-	for (set<unsigned>::iterator it = vulnerabilities.begin();
-			it != vulnerabilities.end(); ++it)
-	{
-		L_LOG("  Latch " << *it);
-	}
 
 	// Playground ends here
 	//----------------------------------------------------------------------------
