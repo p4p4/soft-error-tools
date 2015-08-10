@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
 	cout << "Number of Latches: " << aig_input->num_latches << endl;
 	cout << "Number of Latches to protect(" << percentage << "%): "
 			<< latches_to_protect << endl;
-	cout << "Number of error signals to create: " << num_error_signals << " (~"
-			<< latches_per_error_signal << " latches per error signal)" << endl;
+	cout << "Number of additional latches and error signals to create: " << num_error_signals << " protect (~"
+			<< latches_per_error_signal << " latches per additional latch)" << endl;
 
 	// create a random permutation of all the latches.
 	// pick the first *latches_to_protect* indices to pick a random subset of
