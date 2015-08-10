@@ -35,8 +35,8 @@ extern "C"
 }
 
 // -------------------------------------------------------------------------------------------
-SimulationBasedAnalysis::SimulationBasedAnalysis(aiger* circuit, int mode) :
-		circuit_(circuit), sim_(0), mode_(mode), current_TC_(empty_)
+SimulationBasedAnalysis::SimulationBasedAnalysis(aiger* circuit, int num_err_latches, int mode) :
+		circuit_(circuit), sim_(0), mode_(mode), current_TC_(empty_), num_err_latches_(num_err_latches)
 {
 	sim_ = new AigSimulator(circuit_);
 }
@@ -108,7 +108,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 
 
 //  for each latch l without vulnerable_latches:
-	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches; ++l_cnt)
+	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches - num_err_latches_; ++l_cnt)
 	{
 		// skip latches where we already know that they are vulnerable
 		if(vulnerable_elements_.find(circuit_->latches[l_cnt].lit) != vulnerable_elements_.end())

@@ -49,7 +49,7 @@ public:
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-  SimulationBasedAnalysis(aiger* circuit, int mode=0);
+  SimulationBasedAnalysis(aiger* circuit, int num_err_latches, int mode=0);
 
 
 // -------------------------------------------------------------------------------------------
@@ -95,6 +95,7 @@ protected:
   set<unsigned> vulnerable_elements_;
   TestCase &current_TC_;
   TestCase empty_;
+  unsigned num_err_latches_;
 
 // -------------------------------------------------------------------------------------------
 ///

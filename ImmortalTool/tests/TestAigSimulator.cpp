@@ -50,6 +50,7 @@ void TestAigSimulator::tearDown()
 	//define here post processing steps
 }
 
+// -------------------------------------------------------------------------------------------
 aiger* TestAigSimulator::readAigerFile(char* path)
 {
 	// read file:
@@ -64,6 +65,7 @@ aiger* TestAigSimulator::readAigerFile(char* path)
 	return aig_input;
 }
 
+// -------------------------------------------------------------------------------------------
 void TestAigSimulator::compareOutputVector(int* c_array,
 		std::vector<int> c_vector)
 {
@@ -73,7 +75,7 @@ void TestAigSimulator::compareOutputVector(int* c_array,
 	}
 }
 
-
+// -------------------------------------------------------------------------------------------
 void TestAigSimulator::AigSimDiff(AigSimulator& sim, char* aigsim_input_file,
 		char* aigsim_output_file)
 {
@@ -99,6 +101,7 @@ void TestAigSimulator::AigSimDiff(AigSimulator& sim, char* aigsim_input_file,
 	CPPUNIT_ASSERT(success == false);
 }
 
+// -------------------------------------------------------------------------------------------
 void TestAigSimulator::AigSimDiff(aiger* circuit, char* aigsim_input_file,
 		char* aigsim_output_file)
 {
@@ -174,7 +177,7 @@ void TestAigSimulator::test1_sim_combinatoric_circuit()
 }
 
 
-
+// -------------------------------------------------------------------------------------------
 void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
 {
 	// read circuit:
@@ -239,7 +242,7 @@ void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
 
 }
 
-
+// -------------------------------------------------------------------------------------------
 void TestAigSimulator::test3_circuit_with_latches_compare_w_aigersim_outputfile()
 {
 	// read circuit:
@@ -248,6 +251,7 @@ void TestAigSimulator::test3_circuit_with_latches_compare_w_aigersim_outputfile(
 			"inputs/minmax2_orig.aig.diff1");
 }
 
+// -------------------------------------------------------------------------------------------
 void TestAigSimulator::test4_reuse_aigsim_object()
 {
 	aiger* circuit = readAigerFile("inputs/minmax2_orig.aig");

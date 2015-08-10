@@ -54,6 +54,7 @@ Options &Options::instance()
 // -------------------------------------------------------------------------------------------
 bool Options::parse(int argc, char **argv)
 {
+	L_LOG("Tool has been started");
 	// TODO
 	return false; // false = do not quit the tool
 }
