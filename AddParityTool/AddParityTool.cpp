@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
 	int percentage;
 	istringstream(argv[2]) >> percentage;
-	if (percentage <= 0 || percentage > 100)
+	if (percentage < 0 || percentage > 100)
 	{
 		cout << "Error: Wrong parameter <percentage> provided" << endl << endl;
 		print_help(argc, argv);
