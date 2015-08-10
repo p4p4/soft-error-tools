@@ -295,7 +295,7 @@ void TestAigSimulator::test5_simulate_with_provided_state()
 
 	sim.simulateOneTimeStep(inputs, latches);
 
-	string shouldbe = "10001011 00101 011 11101011";
+	string shouldbe = "10001011 00101 010 11101000";
 	CPPUNIT_ASSERT_EQUAL(shouldbe, sim.getStateString());
 
 }
