@@ -80,18 +80,11 @@ void TestSimulationBasedAnalysis::checkVulnerabilities(
 }
 
 // -------------------------------------------------------------------------------------------
-void TestSimulationBasedAnalysis::test1()
+void TestSimulationBasedAnalysis::test1_simulation_analysis_w_1_extra_latch()
 {
 
-	// OK:
-//	const char *read_err = aiger_open_and_read_from_file(circuit,
-//			"tests/inputs/toggle.perfect.aag");
-
-// OK
-//	const char *read_err = aiger_open_and_read_from_file(circuit,
-//			"tests/inputs/toggle.2vulnerabilities.aag");
-
-
+	// Paths to TestCase files
+	// A TestCase file contains vectors of input values
 	vector<char*> tc_files;
 	tc_files.push_back("inputs/3_bit_input_1");
 	tc_files.push_back("inputs/3_bit_input_2");
@@ -99,33 +92,50 @@ void TestSimulationBasedAnalysis::test1()
 	tc_files.push_back("inputs/3_bit_input_4");
 	tc_files.push_back("inputs/3_bit_input_5");
 
-
 	//-------------------------------------------
 	// test 1a: 3 of 3 latches protected
 
 	set<unsigned> should_be_vulnerable; // empty
-
 	checkVulnerabilities("inputs/toggle.perfect.aag", tc_files,
 			should_be_vulnerable, 1);
 
 	//-------------------------------------------
 	// test 1b: 2 of 3 latches protected
 
-	should_be_vulnerable.insert(10);
+	should_be_vulnerable.insert(10); // 10 is vulnerable
 	checkVulnerabilities("inputs/toggle.1vulnerability.aag", tc_files,
 			should_be_vulnerable, 1);
 
 	//-------------------------------------------
 	// test 1c: 1 of 3 latches protected
-	should_be_vulnerable.insert(12);
+	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
 	checkVulnerabilities("inputs/toggle.2vulnerabilities.aag", tc_files,
 			should_be_vulnerable, 1);
 
 	//-------------------------------------------
 	// test 1d: 0 of 3 latches protected
-	should_be_vulnerable.insert(8);
+	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
 	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
 			should_be_vulnerable, 0);
 
 }
 
+void TestSimulationBasedAnalysis::test2_simulation_analysis_w_2_extra_latch()
+{
+	// Paths to TestCase files
+	// A TestCase file contains vectors of input values
+	vector<char*> tc_files;
+	tc_files.push_back("inputs/3_bit_input_1");
+	tc_files.push_back("inputs/3_bit_input_2");
+	tc_files.push_back("inputs/3_bit_input_3");
+	tc_files.push_back("inputs/3_bit_input_4");
+	tc_files.push_back("inputs/3_bit_input_5");
+
+	//-------------------------------------------
+	// test 1a: 3 of 3 latches protected
+
+	set<unsigned> should_be_vulnerable;
+	should_be_vulnerable.insert(10); // Latch 10 in vulnerable
+	checkVulnerabilities("inputs/toggle2l.aag", tc_files,
+			should_be_vulnerable, 1);
+}

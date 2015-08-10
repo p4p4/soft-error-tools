@@ -139,8 +139,8 @@ int main(int argc, char *argv[])
 	{
 		if (partition_ctr == 0)
 		{
-			latch_lit_result = aig_input->latches[indices[0]].lit;
-			latch_next_result = aig_input->latches[indices[0]].next;
+			latch_lit_result = aig_input->latches[indices[latch_ctr]].lit;
+			latch_next_result = aig_input->latches[indices[latch_ctr]].next;
 		}
 		else
 		{
@@ -168,11 +168,11 @@ int main(int argc, char *argv[])
 			latch_name += to_string(error_output_counter);
 
 			// aiger_add_latch (aiger *, unsigned lit, unsigned next, const char *);
-			// TODO: not sure if add_latch for lit or for next
 			unsigned int new_latch_lit = next_free_aig_lit;
 			next_free_aig_lit += 2;
 			aiger_add_latch(aig_input, new_latch_lit, latch_next_result,
 					latch_name.c_str());
+
 
 			// new_latch_lit XOR latch_lit_result
 			unsigned int new_err_signal = aiger_add_xor(aig_input,
@@ -200,6 +200,8 @@ int main(int argc, char *argv[])
 				final_error_output = aiger_not(next_free_aig_lit);
 				next_free_aig_lit += 2;
 			}
+
+			// set intermediate results to 0,
 			error_output_counter++;
 		};
 	}

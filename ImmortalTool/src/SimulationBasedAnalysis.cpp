@@ -96,7 +96,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	vector<vector<int> > states;
 
 //  states[][], outputs[][] = simulate(t)
-	// simulate whole TestCase
+	// simulate whole TestCase without error
 	while (sim_->simulateOneTimeStep() == true)
 	{
 		// store results
@@ -108,7 +108,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	}
 
 
-//  for each latch l without vulnerable_latches:
+//  for each latch l
 	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches - num_err_latches_; ++l_cnt)
 	{
 		// skip latches where we already know that they are vulnerable

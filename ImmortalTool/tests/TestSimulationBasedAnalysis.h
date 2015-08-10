@@ -45,7 +45,8 @@ struct aiger;
 class TestSimulationBasedAnalysis : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestSimulationBasedAnalysis);
-  CPPUNIT_TEST(test1);
+  CPPUNIT_TEST(test1_simulation_analysis_w_1_extra_latch);
+  CPPUNIT_TEST(test2_simulation_analysis_w_2_extra_latch);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -55,7 +56,7 @@ public:
 /// @brief Initializes the object under test.
   void setUp();
 
-// -------------------------------------------------------------------------------------------
+// -------------------------------F------------------------------------------------------------
 ///
 /// @brief Shuts down the object under test.
   void tearDown();
@@ -68,8 +69,13 @@ protected:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Give brief description of test here.
-  void test1();
+/// @brief Tests the found vulnerabilities of a circuit, which is protected with 1 extra latch
+  void test1_simulation_analysis_w_1_extra_latch();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Tests the found vulnerabilities of a circuit, which is protected with 2 extra latches
+  void test2_simulation_analysis_w_2_extra_latch();
 
 };
 
