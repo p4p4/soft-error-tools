@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
 			//		next-output result will be previous output-result XOR
 			//		current latch-output
 			latch_next_result = aiger_add_xor(aig_input, latch_next_result,
-					aig_input->latches[indices[0]].next);
+					aig_input->latches[indices[latch_ctr]].next);
 		}
 		partition_ctr++;
 
