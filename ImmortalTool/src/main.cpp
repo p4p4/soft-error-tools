@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 	bool quit = Options::instance().parse(argc, argv);
 	if (quit)
 		return 0;
+
+	srand(time(0));
 	//----------------------------------------------------------------------------
 	Logger::instance().enable(Logger::DBG);
 	// Playground starts here

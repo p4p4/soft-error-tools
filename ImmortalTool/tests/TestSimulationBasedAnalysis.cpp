@@ -139,3 +139,27 @@ void TestSimulationBasedAnalysis::test2_simulation_analysis_w_2_extra_latch()
 	checkVulnerabilities("inputs/toggle2l.aag", tc_files,
 			should_be_vulnerable, 1);
 }
+
+void TestSimulationBasedAnalysis::test3_simulation_w_random_inputs()
+{
+
+	// use constant seed, so that we don't have any non-determinism in the test-case ;-)
+	srand(0xCAFECAFE);
+
+	aiger* circuit = readAigerFile("inputs/toggle.2vulnerabilities.aag");
+		SimulationBasedAnalysis sba(circuit, 1);
+		sba.findVulnerabilities(1,2);
+		const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
+
+		// DEBUG: print the vulnerable latches
+//		for (set<unsigned>::iterator it = vulnerabilities.begin();
+//				it != vulnerabilities.end(); ++it)
+//		{
+//			cout << "  Latch " << *it << endl;
+//		}
+
+		set<unsigned> should_be_vulnerable; // empty
+		should_be_vulnerable.insert(10);
+		should_be_vulnerable.insert(12);
+		CPPUNIT_ASSERT(vulnerabilities == should_be_vulnerable);
+}

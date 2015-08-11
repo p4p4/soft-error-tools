@@ -88,6 +88,17 @@ public:
 	bool findVulnerabilities(vector<string> paths_to_TC_files);
 
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities using random input vectors
+///
+/// tries to find vulnerabilities using num_of_timesteps random input vectors
+///
+/// @param num_of_TCs the number of random testcases to use
+/// @param num_of_timesteps the number random input vectors to test
+/// @return TRUE if vulnerabilities were found.
+	bool findVulnerabilities(unsigned num_of_TCs, unsigned num_of_timesteps);
+
 protected:
   aiger* circuit_;
   AigSimulator* sim_;
@@ -97,6 +108,7 @@ protected:
   TestCase empty_;
   unsigned num_err_latches_;
 
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief tries to find vulnerabilities for the current TestCase.
@@ -105,6 +117,13 @@ protected:
 ///
   void findVulnerabilitiesForCurrentTC();
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities for a random TestCase.
+///
+/// gets called by the public findVulnerabilities(num_of_TCs,num_of_timesteps) function.
+///
+	void findVulnerabilitiesForRandomTC(unsigned num_of_timesteps);
 private:
 
 // -------------------------------------------------------------------------------------------

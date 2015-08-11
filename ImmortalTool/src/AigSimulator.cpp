@@ -27,6 +27,7 @@
 // -------------------------------------------------------------------------------------------
 
 #include <fstream>
+#include <algorithm>
 
 #include "AigSimulator.h"
 #include "Logger.h"
@@ -38,7 +39,7 @@ extern "C"
 
 // -------------------------------------------------------------------------------------------
 AigSimulator::AigSimulator(aiger* circuit) :
-		time_index_(0)
+		time_index_(0), mode_(AigSimulator::GIVEN_TC_MODE)
 {
 	circuit_ = circuit;
 	results_ = new int[circuit_->maxvar + 1];
@@ -58,6 +59,7 @@ AigSimulator::~AigSimulator()
 void AigSimulator::setTestcase(string path_to_aigsim_input)
 {
 	init();
+	mode_ = GIVEN_TC_MODE;
 
 	ifstream infile(path_to_aigsim_input.c_str());
 	string input_vector_line;
@@ -67,7 +69,7 @@ void AigSimulator::setTestcase(string path_to_aigsim_input)
 				"corrupt aigsim-file (does not match number of inputs)!");
 
 		vector<int> input_vector;
-		for (int i = 0; i < input_vector_line.length(); i++)
+		for (unsigned i = 0; i < input_vector_line.length(); i++)
 		{
 			if (input_vector_line.c_str()[i] == '0')
 			{
@@ -91,6 +93,7 @@ void AigSimulator::setTestcase(const vector<vector<int> >& testcase)
 {
 	MASSERT(testcase.size() > 0 && testcase[0].size() == circuit_->num_inputs,
 			"Wrong test case provided!");
+	mode_ = GIVEN_TC_MODE;
 	init();
 	testcase_ = testcase;
 }
@@ -98,20 +101,41 @@ void AigSimulator::setTestcase(const vector<vector<int> >& testcase)
 // -------------------------------------------------------------------------------------------
 bool AigSimulator::simulateOneTimeStep()
 {
-	if (testcase_.empty())
+	if (mode_ == GIVEN_TC_MODE && testcase_.empty())
 	{
 		L_ERR(
 				"No TCs provided, use AigSimulator::simulateOneTimeStep(const vector<int> &input_values) instead");
 		return false; // TODO: MASSERT?
 	}
 
-	if (time_index_ >= testcase_.size())
+	if (mode_ == GIVEN_TC_MODE && time_index_ >= testcase_.size())
 	{
 		return false;
 	}
 
-	simulateOneTimeStep(testcase_[time_index_]);
-	return true;
+	if(mode_ == GIVEN_TC_MODE)
+	{
+		simulateOneTimeStep(testcase_[time_index_]);
+		return true;
+	}
+	else if(mode_ == RANDOM_TC_MODE)
+	{
+		vector<int> inputs;
+		inputs.reserve(circuit_->num_inputs);
+		generate_n(back_inserter(inputs), circuit_->num_inputs, gen_rand());
+		testcase_.push_back(inputs);
+//		cout << "TC size = " << testcase_.size() << endl;
+//		for (int i=0; i< inputs.size();i++)
+//		{
+//			cout << inputs[i];
+//		}
+//		cout << "]" << endl;
+		simulateOneTimeStep(inputs);
+		return true;
+	}
+
+	MASSERT(false, "Wrong mode!");
+	return false;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -277,7 +301,7 @@ void AigSimulator::switchToNextState()
 	}
 }
 
-// -------------------------------------------------------------------------------------------
+// ------------------------------------current_TC_ = sim_->getTestcase();-------------------------------------------------------
 vector<int> AigSimulator::getOutputs()
 {
 	vector<int> outputs(circuit_->num_outputs);
@@ -331,3 +355,4 @@ void AigSimulator::init()
 		results_[aiger_lit2var(circuit_->latches[cnt].next)] = 0;
 	}
 }
+

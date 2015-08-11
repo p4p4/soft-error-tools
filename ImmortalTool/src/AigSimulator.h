@@ -55,6 +55,12 @@ class AigSimulator
 /// @brief Destructor.
 	virtual ~AigSimulator();
 
+
+	enum SimMode {
+		GIVEN_TC_MODE = 1,
+		RANDOM_TC_MODE = 2
+	};
+
 // -------------------------------------------------------------------------------------------
 //
 /// @brief Parses an AigSim input file and sets the Testcase accordingly.
@@ -155,12 +161,32 @@ class AigSimulator
 		return testcase_;
 	}
 
+	void setMode(SimMode mode)
+	{
+		mode_ = mode;
+		if(mode_ == AigSimulator::RANDOM_TC_MODE)
+		{
+			testcase_.clear();
+			time_index_=0;
+			init();
+		}
+	}
+
 	protected:
 	aiger* circuit_;
 	vector<vector<int> > testcase_;
 	int* results_;
 	size_t time_index_;
 	void init();
+	SimMode mode_;
+
+	struct gen_rand {
+	public:
+	    gen_rand() {}
+	    int operator()() {
+	        return rand() % 2;
+	    }
+	};
 
 	private:
 
