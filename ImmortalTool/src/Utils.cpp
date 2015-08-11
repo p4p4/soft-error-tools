@@ -297,3 +297,13 @@ void Utils::debugPrintCurrentMemUsage()
   L_DBG("Virtual Memory: " << vm_usage << " kB.");
 }
 
+aiger* Utils::readAiger(string path)
+{
+	// read file:
+		aiger* aig_input = aiger_init();
+		const char *read_err = aiger_open_and_read_from_file(aig_input, path.c_str());
+
+		MASSERT(read_err == NULL, "Error: Could not open AIGER file!");
+
+		return aig_input;
+}

@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology
+// Copyright (c) 2013-2014 by Graz University of Technology and
+//                            Johannes Kepler University Linz
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,49 +17,56 @@
 // <http://www.gnu.org/licenses/>.
 //
 // For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
+//   <http://www.iaik.tugraz.at/content/research/design_verification/demiurge/>
 // or email the authors directly.
 //
 // ----------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------
-/// @file SimulationBasedAnalysis.h
-/// @brief Contains the declaration of the class SimulationBasedAnalysis.
+/// @file BackEnd.h
+/// @brief Contains the declaration of the class BackEnd.
 // -------------------------------------------------------------------------------------------
 
-#ifndef SimulationBasedAnalysis_H__
-#define SimulationBasedAnalysis_H__
+#ifndef BackEnd_H__
+#define BackEnd_H__
 
 #include "defines.h"
-#include "AigSimulator.h"
-#include "BackEnd.h"
-
-// -------------------------------------------------------------------------------------------
-///
-/// @class SimulationBasedAnalysis
-/// @brief TODO
-///
-/// @author TODO
-/// @version 1.2.0
 
 struct aiger;
-
-class SimulationBasedAnalysis : public BackEnd
+// -------------------------------------------------------------------------------------------
+///
+/// @class BackEnd
+/// @brief An interface for the back-ends.
+///
+/// This class provides an interface for all back-ends. Every back-end implements a different
+/// synthesis algorithm. This class is abstract, i.e., objects of this class cannot be
+/// instantiated. Instantiate one of the derived classes instead.
+///
+/// Many back-ends can be parameterized with a circuit extraction engine that extracts a
+/// circuit from the winning region once the winning region has been computed.
+///
+/// @author Robert Koenighofer (robert.koenighofer@iaik.tugraz.at)
+/// @version 1.2.0
+class BackEnd
 {
 public:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-  SimulationBasedAnalysis(aiger* circuit, int num_err_latches, int mode=0);
-
+	BackEnd(aiger* circuit, int num_err_latches, int mode);
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Destructor.
-  virtual ~SimulationBasedAnalysis();
+/// @brief Constructor.
+	virtual ~BackEnd();
 
-
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Returns the set of vulnerable elements of the circuit
+///
+/// @return The set of vulnerable elements of the circuit
+	const set<unsigned>& getVulnerableElements() const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -68,8 +76,7 @@ public:
 ///
 /// @param testcases a vector of TestCases.
 /// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(vector<TestCase> &testcases);
-
+	virtual bool findVulnerabilities(vector<TestCase> &testcases) = 0;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -79,8 +86,7 @@ public:
 ///
 /// @param paths_to_TC_files a vector of paths to TestCase files.
 /// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(vector<string> paths_to_TC_files);
-
+	virtual bool findVulnerabilities(vector<string> paths_to_TC_files) = 0;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -91,28 +97,17 @@ public:
 /// @param num_of_TCs the number of random testcases to use
 /// @param num_of_timesteps the number random input vectors to test
 /// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(unsigned num_of_TCs, unsigned num_of_timesteps);
+	virtual bool findVulnerabilities(unsigned num_of_TCs,
+		unsigned num_of_timesteps) = 0;
 
 protected:
-  AigSimulator* sim_;
+	aiger* circuit_;
+	int mode_;
+	set<unsigned> vulnerable_elements_;
+	TestCase &current_TC_;
+	TestCase empty_; // DUMMY TC
+	unsigned num_err_latches_;
 
-
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities for the current TestCase.
-///
-/// gets called by the public findVulnerabilities() functions.
-///
-  void findVulnerabilitiesForCurrentTC();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities for a random TestCase.
-///
-/// gets called by the public findVulnerabilities(num_of_TCs,num_of_timesteps) function.
-///
-	void findVulnerabilitiesForRandomTC(unsigned num_of_timesteps);
 private:
 
 // -------------------------------------------------------------------------------------------
@@ -122,7 +117,7 @@ private:
 /// The copy constructor is disabled (set private) and not implemented.
 ///
 /// @param other The source for creating the copy.
-  SimulationBasedAnalysis(const SimulationBasedAnalysis &other);
+	BackEnd(const BackEnd &other);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -132,8 +127,8 @@ private:
 ///
 /// @param other The source for creating the copy.
 /// @return The result of the assignment, i.e, *this.
-  SimulationBasedAnalysis& operator=(const SimulationBasedAnalysis &other);
+	BackEnd& operator=(const BackEnd &other);
 
 };
 
-#endif // SimulationBasedAnalysis_H__
+#endif // BackEnd_H__

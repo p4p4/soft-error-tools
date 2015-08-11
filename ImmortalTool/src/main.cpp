@@ -33,6 +33,9 @@ int main(int argc, char *argv[])
 	// Playground starts here
 	L_LOG("File: " << Options::instance().getAigInFileNameOnly());
 
+	BackEnd* sea = Options::instance().getBackEnd();
+	sea->findVulnerabilities(10,10); // TODO
+
 
 	// Playground ends here
 	//----------------------------------------------------------------------------

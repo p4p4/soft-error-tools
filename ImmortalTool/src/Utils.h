@@ -34,6 +34,9 @@
 
 class CNF;
 
+
+struct aiger;
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @class Utils
@@ -321,6 +324,9 @@ public:
 /// @param winning_region The winning region to check.
 /// @param neg_winning_region The negation of the winning region to check.
   static void debugCheckWinReg(const CNF &winning_region, const CNF &neg_winning_region);
+
+
+  static aiger* readAiger(string path);
 
 // -------------------------------------------------------------------------------------------
 ///

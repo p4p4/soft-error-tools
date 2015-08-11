@@ -39,6 +39,8 @@ class CNFImplExtractor;
 
 typedef pair<clock_t, time_t> PointInTime;
 
+struct aiger;
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @class Options
@@ -125,12 +127,12 @@ public:
 ///
 /// @note The returned object has to be deleted by the caller.
 /// @return The back-end selected by the user with commend-line options.
-  BackEnd* getBackEnd() const;
+  BackEnd* getBackEnd();
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Returns the mode of the back-end selected by the user.
-///
+///BackEnd
 /// Some back-ends can be used in several modes (certain optimizations or heuristics enabled
 /// or disabled, etc.). This integer number selects a mode.
 ///
@@ -206,6 +208,8 @@ protected:
 /// @brief Initializes the Logger by enabling the selected message kinds.
   void initLogger() const;
 
+  void initInputCircuit();
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The name (including the path) of the AIGER input file.
@@ -238,6 +242,8 @@ protected:
 /// @brief The name of the selected back-end.
   string back_end_;
 
+  BackEnd* back_end_instance_;
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The mode of the back-end selected by the user.
@@ -261,6 +267,10 @@ protected:
 /// It will be used to estimate how close the timeout is. It may also be used for logging
 /// statistics.
   PointInTime tool_started_;
+
+  aiger* circuit_;
+
+  unsigned num_err_latches_;
 
 private:
 

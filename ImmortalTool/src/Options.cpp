@@ -32,9 +32,16 @@
 #include "LingelingApi.h"
 #include "Stopwatch.h"
 #include "StringUtils.h"
+#include "SimulationBasedAnalysis.h"
+#include "Utils.h"
 
 #include <sys/stat.h>
 #include <unistd.h>
+
+extern "C"
+{
+#include "aiger.h"
+}
 
 // -------------------------------------------------------------------------------------------
 const string Options::VERSION = string("0.1");
@@ -174,10 +181,32 @@ bool Options::parse(int argc, char **argv)
 				return true;
 			}
 		}
-
-		initLogger();
-
+		else if (arg.find("--err_latches=") == 0)
+		{
+			istringstream iss(arg.substr(14, string::npos));
+			iss >> num_err_latches_;
+		}
+		else if (arg == "-e")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr << "Option -e must be followed by an integer number." << endl;
+				return true;
+			}
+			istringstream iss(argv[arg_count]);
+			iss >> num_err_latches_;
+		}
 	}
+
+	if (aig_in_file_name_ == "")
+	{
+		cerr << "No input file given." << endl;
+		return true;
+	}
+	initInputCircuit();
+	initLogger();
+
 	return false; // false = do not quit the tool
 }
 
@@ -207,13 +236,22 @@ const string& Options::getBackEndName() const
 }
 
 // -------------------------------------------------------------------------------------------
-BackEnd* Options::getBackEnd() const
+BackEnd* Options::getBackEnd()
 {
-  if(back_end_ == "sim")
-    return new EPRSynthesizer();
+	if (back_end_instance_ != 0)
+	{
+		return back_end_instance_;
+	}
 
-  L_ERR("Unknown back-end '" << back_end_ <<"'.");
-  exit(-1);
+	if (back_end_ == "sim")
+	{
+		back_end_instance_ = new SimulationBasedAnalysis(circuit_, num_err_latches_,
+				mode_);
+		return back_end_instance_;
+	}
+
+	L_ERR("Unknown back-end '" << back_end_ <<"'.");
+	exit(-1);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -311,10 +349,35 @@ void Options::initLogger() const
 }
 
 // -------------------------------------------------------------------------------------------
+void Options::initInputCircuit()
+{
+	circuit_ = Utils::readAiger(aig_in_file_name_);
+	const string prefix("Err_latch_");
+
+	if (num_err_latches_ == 0)
+	{
+
+		for (unsigned i = 0; i < circuit_->num_latches; i++)
+		{
+			if (!circuit_->latches[i].name)
+				continue;
+
+			string latch_name_str(circuit_->latches[i].name);
+			if (latch_name_str.compare(0, prefix.size(), prefix) == 0)
+			{
+				num_err_latches_++;
+			}
+
+		}
+	}
+
+}
+
+// -------------------------------------------------------------------------------------------
 Options::Options() :
 		aig_in_file_name_(), print_string_("ERWILD"), tmp_dir_("./tmp"), back_end_(
-				"sim"), mode_(0), sat_solver_("lin_api"), tool_started_(
-				Stopwatch::start())
+				"sim"), back_end_instance_(0), mode_(0), sat_solver_("lBackEndin_api"), tool_started_(
+				Stopwatch::start()), circuit_(0), num_err_latches_(0)
 {
 	// nothing to be done
 }
@@ -322,5 +385,9 @@ Options::Options() :
 // -------------------------------------------------------------------------------------------
 Options::~Options()
 {
-	// nothing to be done
+	if (back_end_instance_ != 0)
+	{
+		delete back_end_instance_;
+	}
 }
+
