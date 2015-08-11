@@ -31,6 +31,7 @@
 #include "Logger.h"
 #include "LingelingApi.h"
 #include "Stopwatch.h"
+#include "StringUtils.h"
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -45,151 +46,281 @@ Options *Options::instance_ = NULL;
 // -------------------------------------------------------------------------------------------
 Options &Options::instance()
 {
-  if(instance_ == NULL)
-    instance_ = new Options;
-  MASSERT(instance_ != NULL, "Could not create Options instance.");
-  return *instance_;
+	if (instance_ == NULL)
+		instance_ = new Options;
+	MASSERT(instance_ != NULL, "Could not create Options instance.");
+	return *instance_;
 }
 
 // -------------------------------------------------------------------------------------------
 bool Options::parse(int argc, char **argv)
 {
 	L_LOG("Tool has been started");
-	// TODO
+	for (int arg_count = 1; arg_count < argc; ++arg_count)
+	{
+		string arg(argv[arg_count]);
+		if (arg == "--help" || arg == "-h")
+		{
+			printHelp();
+			return true;
+		}
+		else if (arg == "--version" || arg == "-v")
+		{
+			cout << "tool version " << Options::VERSION << endl;
+			return true;
+		}
+		else if (arg.find("--in=") == 0)
+		{
+			aig_in_file_name_ = arg.substr(5, string::npos);
+		}
+		else if (arg == "-i")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr << "Option -i must be followed by a filename." << endl;
+				return true;
+			}
+			aig_in_file_name_ = string(argv[arg_count]);
+		}
+
+		else if (arg.find("--print=") == 0)
+		{
+			print_string_ = arg.substr(8, string::npos);
+		}
+		else if (arg == "-p")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr
+						<< "Option -p must be followed by a string indicating what to print."
+						<< endl;
+				return true;
+			}
+			print_string_ = string(argv[arg_count]);
+		}
+		else if (arg.find("--tmp=") == 0)
+		{
+			tmp_dir_ = arg.substr(6, string::npos);
+		}
+		else if (arg == "-t")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr << "Option -t must be followed by a directory name." << endl;
+				return true;
+			}
+			tmp_dir_ = string(argv[arg_count]);
+		}
+		else if (arg.find("--backend=") == 0)
+		{
+			back_end_ = arg.substr(10, string::npos);
+			StringUtils::toLowerCaseIn(back_end_);
+		}
+		else if (arg == "-b")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr << "Option -b must be followed by a back-end name." << endl;
+				return true;
+			}
+			back_end_ = string(argv[arg_count]);
+			StringUtils::toLowerCaseIn(back_end_);
+		}
+		else if (arg.find("--mode=") == 0)
+		{
+			istringstream iss(arg.substr(7, string::npos));
+			iss >> mode_;
+		}
+		else if (arg == "-m")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr << "Option -m must be followed by an integer number." << endl;
+				return true;
+			}
+			istringstream iss(argv[arg_count]);
+			iss >> mode_;
+		}
+		else if (arg.find("--sat_sv=") == 0)
+		{
+			sat_solver_ = arg.substr(9, string::npos);
+			StringUtils::toLowerCaseIn(sat_solver_);
+			if (sat_solver_ != "lin_api" && sat_solver_ != "min_api"
+					&& sat_solver_ != "pic_api")
+			{
+				cerr << "Unknown SAT solver '" << sat_solver_ << "'." << endl;
+				return true;
+			}
+		}
+		else if (arg == "-s")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr << "Option -s must be followed by a SAT solver name." << endl;
+				return true;
+			}
+			sat_solver_ = string(argv[arg_count]);
+			StringUtils::toLowerCaseIn(sat_solver_);
+			if (sat_solver_ != "lin_api" && sat_solver_ != "min_api"
+					&& sat_solver_ != "pic_api")
+			{
+				cerr << "Unknown SAT solver '" << sat_solver_ << "'." << endl;
+				return true;
+			}
+		}
+
+		initLogger();
+
+	}
 	return false; // false = do not quit the tool
 }
 
 // -------------------------------------------------------------------------------------------
 const string& Options::getAigInFileName() const
 {
-  return aig_in_file_name_;
+	return aig_in_file_name_;
 }
 
 // -------------------------------------------------------------------------------------------
 const string Options::getAigInFileNameOnly() const
 {
-  size_t name_start = aig_in_file_name_.find_last_of("\\/");
-  if(name_start == string::npos)
-    name_start = 0;
-  else
-    name_start++;
-  // the following line also works if '.' is not found:
-  size_t len = aig_in_file_name_.find_last_of(".") - name_start;
-  return aig_in_file_name_.substr(name_start, len);
+	size_t name_start = aig_in_file_name_.find_last_of("\\/");
+	if (name_start == string::npos)
+		name_start = 0;
+	else
+		name_start++;
+	// the following line also works if '.' is not found:
+	size_t len = aig_in_file_name_.find_last_of(".") - name_start;
+	return aig_in_file_name_.substr(name_start, len);
 }
 
 // -------------------------------------------------------------------------------------------
 const string& Options::getBackEndName() const
 {
-  return back_end_;
+	return back_end_;
 }
 
+// -------------------------------------------------------------------------------------------
+BackEnd* Options::getBackEnd() const
+{
+  if(back_end_ == "sim")
+    return new EPRSynthesizer();
+
+  L_ERR("Unknown back-end '" << back_end_ <<"'.");
+  exit(-1);
+}
 
 // -------------------------------------------------------------------------------------------
 int Options::getBackEndMode() const
 {
-  return mode_;
+	return mode_;
 }
-
-
-
 
 // -------------------------------------------------------------------------------------------
 string Options::getTmpDirName() const
 {
-  struct stat st;
-  if(stat(tmp_dir_.c_str(), &st) != 0)
-  {
-    int fail = mkdir(tmp_dir_.c_str(), 0777);
-    MASSERT(fail == 0, "Could not create directory for temporary files.");
-  }
-  return tmp_dir_;
+	struct stat st;
+	if (stat(tmp_dir_.c_str(), &st) != 0)
+	{
+		int fail = mkdir(tmp_dir_.c_str(), 0777);
+		MASSERT(fail == 0, "Could not create directory for temporary files.");
+	}
+	return tmp_dir_;
 }
 
 // -------------------------------------------------------------------------------------------
 string Options::getUniqueTmpFileName(string start) const
 {
-  static int unique_counter = 0;
-  ostringstream res;
-  res << getTmpDirName() << "/" << start << "_" << getAigInFileNameOnly();
-  res << "_" << getpid() << "_" << unique_counter++;
-  return res.str();
+	static int unique_counter = 0;
+	ostringstream res;
+	res << getTmpDirName() << "/" << start << "_" << getAigInFileNameOnly();
+	res << "_" << getpid() << "_" << unique_counter++;
+	return res.str();
 }
 
 // -------------------------------------------------------------------------------------------
 string Options::getTPDirName() const
 {
-  // in the competition, setting environment variables is difficult:
-  //return string("./third_party_install/");
-  const char *tp_env = getenv(Options::TP_VAR.c_str());
-  MASSERT(tp_env != NULL, "You have not set the variable " << Options::TP_VAR);
-  return string(tp_env);
+	// in the competition, setting environment variables is difficult:
+	//return string("./third_party_install/");
+	const char *tp_env = getenv(Options::TP_VAR.c_str());
+	MASSERT(tp_env != NULL, "You have not set the variable " << Options::TP_VAR);
+	return string(tp_env);
 }
 
 // -------------------------------------------------------------------------------------------
 SatSolver* Options::getSATSolver(bool rand_models, bool min_cores) const
 {
-  if(sat_solver_ == "lin_api")
-    return new LingelingApi(rand_models, min_cores);
+	if (sat_solver_ == "lin_api")
+		return new LingelingApi(rand_models, min_cores);
 //  if(sat_solver_ == "min_api")
 //    return new MiniSatApi(rand_models, min_cores);
 //  if(sat_solver_ == "pic_api")
 //    return new PicoSatApi(rand_models, min_cores);
-  MASSERT(false, "Unknown SAT solver name.");
-  return NULL;
+	MASSERT(false, "Unknown SAT solver name.");
+	return NULL;
 }
-
 
 // -------------------------------------------------------------------------------------------
 void Options::printHelp() const
 {
-  cout << "Usage: TODO.................."                                           << endl;
-  cout << "Have fun!"                                                               << endl;
+	cout << "Usage: TODO.................." << endl;
+	cout << "Have fun!" << endl;
 }
 
 // -------------------------------------------------------------------------------------------
 void Options::initLogger() const
 {
-  Logger &logger = Logger::instance();
-  if(print_string_.find("E") != string::npos || print_string_.find("e") != string::npos)
-    logger.enable(Logger::ERR);
-  else
-    logger.disable(Logger::ERR);
-  if(print_string_.find("W") != string::npos || print_string_.find("w") != string::npos)
-    logger.enable(Logger::WRN);
-  else
-    logger.disable(Logger::WRN);
-  if(print_string_.find("R") != string::npos || print_string_.find("r") != string::npos)
-    logger.enable(Logger::RES);
-  else
-    logger.disable(Logger::RES);
-  if(print_string_.find("I") != string::npos || print_string_.find("i") != string::npos)
-    logger.enable(Logger::INF);
-  else
-    logger.disable(Logger::INF);
-  if(print_string_.find("D") != string::npos || print_string_.find("d") != string::npos)
-    logger.enable(Logger::DBG);
-  else
-    logger.disable(Logger::DBG);
-  if(print_string_.find("L") != string::npos || print_string_.find("l") != string::npos)
-    logger.enable(Logger::LOG);
-  else
-    logger.disable(Logger::LOG);
+	Logger &logger = Logger::instance();
+	if (print_string_.find("E") != string::npos
+			|| print_string_.find("e") != string::npos)
+		logger.enable(Logger::ERR);
+	else
+		logger.disable(Logger::ERR);
+	if (print_string_.find("W") != string::npos
+			|| print_string_.find("w") != string::npos)
+		logger.enable(Logger::WRN);
+	else
+		logger.disable(Logger::WRN);
+	if (print_string_.find("R") != string::npos
+			|| print_string_.find("r") != string::npos)
+		logger.enable(Logger::RES);
+	else
+		logger.disable(Logger::RES);
+	if (print_string_.find("I") != string::npos
+			|| print_string_.find("i") != string::npos)
+		logger.enable(Logger::INF);
+	else
+		logger.disable(Logger::INF);
+	if (print_string_.find("D") != string::npos
+			|| print_string_.find("d") != string::npos)
+		logger.enable(Logger::DBG);
+	else
+		logger.disable(Logger::DBG);
+	if (print_string_.find("L") != string::npos
+			|| print_string_.find("l") != string::npos)
+		logger.enable(Logger::LOG);
+	else
+		logger.disable(Logger::LOG);
 }
 
 // -------------------------------------------------------------------------------------------
-Options::Options():
-    aig_in_file_name_(),
-    print_string_("ERWILD"),
-    tmp_dir_("./tmp"),
-    sat_solver_("lin_api"),
-    tool_started_(Stopwatch::start())
+Options::Options() :
+		aig_in_file_name_(), print_string_("ERWILD"), tmp_dir_("./tmp"), back_end_(
+				"sim"), mode_(0), sat_solver_("lin_api"), tool_started_(
+				Stopwatch::start())
 {
-  // nothing to be done
+	// nothing to be done
 }
 
 // -------------------------------------------------------------------------------------------
 Options::~Options()
 {
-  // nothing to be done
+	// nothing to be done
 }

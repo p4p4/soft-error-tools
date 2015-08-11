@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
 	//----------------------------------------------------------------------------
 	Logger::instance().enable(Logger::DBG);
 	// Playground starts here
+	L_LOG("File: " << Options::instance().getAigInFileNameOnly());
 
 
 	// Playground ends here

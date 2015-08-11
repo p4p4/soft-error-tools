@@ -7,4 +7,5 @@ Options.cpp
 SatSolver.cpp
 SimulationBasedAnalysis.cpp
 Stopwatch.cpp
+StringUtils.cpp
 Utils.cpp
