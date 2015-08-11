@@ -48,6 +48,7 @@ class TestSimulationBasedAnalysis : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test1_simulation_analysis_w_1_extra_latch);
   CPPUNIT_TEST(test2_simulation_analysis_w_2_extra_latch);
   CPPUNIT_TEST(test3_simulation_w_random_inputs);
+  CPPUNIT_TEST(test4_simulation_big_w_random_inputs);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -86,7 +87,7 @@ protected:
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Searches for vulnerabilities in a *bigger* circuit using random input vectors
-    void test4_simulation_w_random_inputs();
+  void test4_simulation_big_w_random_inputs();
 
 };
 

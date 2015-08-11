@@ -29,7 +29,7 @@ extern "C"
 #include "aiger.h"
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION(TestSimulationBasedAnalysis);
+CPPUNIT_TEST_SUITE_REGISTRATION (TestSimulationBasedAnalysis);
 
 // -------------------------------------------------------------------------------------------
 void TestSimulationBasedAnalysis::setUp()
@@ -136,8 +136,8 @@ void TestSimulationBasedAnalysis::test2_simulation_analysis_w_2_extra_latch()
 
 	set<unsigned> should_be_vulnerable;
 	should_be_vulnerable.insert(10); // Latch 10 in vulnerable
-	checkVulnerabilities("inputs/toggle2l.aag", tc_files,
-			should_be_vulnerable, 1);
+	checkVulnerabilities("inputs/toggle2l.aag", tc_files, should_be_vulnerable,
+			1);
 }
 
 void TestSimulationBasedAnalysis::test3_simulation_w_random_inputs()
@@ -147,19 +147,39 @@ void TestSimulationBasedAnalysis::test3_simulation_w_random_inputs()
 	srand(0xCAFECAFE);
 
 	aiger* circuit = readAigerFile("inputs/toggle.2vulnerabilities.aag");
-		SimulationBasedAnalysis sba(circuit, 1);
-		sba.findVulnerabilities(1,2);
-		const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
+	SimulationBasedAnalysis sba(circuit, 1);
+	sba.findVulnerabilities(1, 2);
+	const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
 
-		// DEBUG: print the vulnerable latches
+	// DEBUG: print the vulnerable latches
 //		for (set<unsigned>::iterator it = vulnerabilities.begin();
 //				it != vulnerabilities.end(); ++it)
 //		{
 //			cout << "  Latch " << *it << endl;
 //		}
 
-		set<unsigned> should_be_vulnerable; // empty
-		should_be_vulnerable.insert(10);
-		should_be_vulnerable.insert(12);
-		CPPUNIT_ASSERT(vulnerabilities == should_be_vulnerable);
+	set<unsigned> should_be_vulnerable; // empty
+	should_be_vulnerable.insert(10);
+	should_be_vulnerable.insert(12);
+	CPPUNIT_ASSERT(vulnerabilities == should_be_vulnerable);
+}
+
+void TestSimulationBasedAnalysis::test4_simulation_big_w_random_inputs()
+{
+	// use constant seed, so that we don't have any non-determinism in the test-case ;-)
+	srand(0xCAFECAFE);
+
+	// Test 4a:
+	//	Source: IWLS_2002_AIG/LGSynth91/smlexamples/s5378_orig.aig:
+	//	Latches: 164, Protected with AddParityTool: 50% (=82 Latches)
+	//	Vulnerabilities: 82 Latches
+
+	aiger* circuit = readAigerFile("inputs/s5378.50percent.aag");
+	SimulationBasedAnalysis sba(circuit, 2);
+	sba.findVulnerabilities(5, 5); // 1 TC with 2 timesteps would also already work
+	const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
+
+	CPPUNIT_ASSERT(vulnerabilities.size() == 82);
+
+
 }
