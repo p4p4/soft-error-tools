@@ -34,7 +34,16 @@ int main(int argc, char *argv[])
 	L_LOG("File: " << Options::instance().getAigInFileNameOnly());
 
 	BackEnd* sea = Options::instance().getBackEnd();
-	sea->findVulnerabilities(10,10); // TODO
+	sea->findVulnerabilities(1,10); // TODO modes
+
+	const set<unsigned> &vulnerabilities = sea->getVulnerableElements();
+
+	L_LOG("#Vulnerabilities found: " << vulnerabilities.size());
+//	for (set<unsigned>::iterator it = vulnerabilities.begin();
+//			it != vulnerabilities.end(); ++it)
+//	{
+//		L_DBG("  Latch " << *it);
+//	}
 
 
 	// Playground ends here

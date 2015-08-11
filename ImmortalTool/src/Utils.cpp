@@ -303,7 +303,11 @@ aiger* Utils::readAiger(string path)
 		aiger* aig_input = aiger_init();
 		const char *read_err = aiger_open_and_read_from_file(aig_input, path.c_str());
 
-		MASSERT(read_err == NULL, "Error: Could not open AIGER file!");
+		if(read_err != NULL)
+		{
+			L_ERR("Error: Could not open AIGER file: '" << path << "'");
+			exit(-1);
+		}
 
 		return aig_input;
 }

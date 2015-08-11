@@ -38,7 +38,7 @@ extern "C"
 // -------------------------------------------------------------------------------------------
 SimulationBasedAnalysis::SimulationBasedAnalysis(aiger* circuit,
 		int num_err_latches, int mode) :
-		BackEnd(circuit, num_err_latches, mode)
+		BackEnd(circuit, num_err_latches, mode), tc_index_(0)
 {
 	sim_ = new AigSimulator(circuit_);
 }
@@ -55,10 +55,10 @@ bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
 	//for each test case t[][]
-	for (unsigned tc_idx = 0; tc_idx < testcases.size(); tc_idx++)
+	for (tc_index_ = 0; tc_index_ < testcases.size(); tc_index_++)
 	{
-		sim_->setTestcase(testcases[tc_idx]);
-		current_TC_ = testcases[tc_idx];
+		sim_->setTestcase(testcases[tc_index_]);
+		current_TC_ = testcases[tc_index_];
 		findVulnerabilitiesForCurrentTC();
 	}
 
@@ -72,9 +72,9 @@ bool SimulationBasedAnalysis::findVulnerabilities(
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
 	//for each test case t[][]
-	for (unsigned tc_idx = 0; tc_idx < paths_to_TC_files.size(); tc_idx++)
+	for (tc_index_ = 0; tc_index_ < paths_to_TC_files.size(); tc_index_++)
 	{
-		sim_->setTestcase(paths_to_TC_files[tc_idx]);
+		sim_->setTestcase(paths_to_TC_files[tc_index_]);
 		current_TC_ = sim_->getTestcase();
 		findVulnerabilitiesForCurrentTC();
 	}
@@ -89,8 +89,9 @@ bool SimulationBasedAnalysis::findVulnerabilities(unsigned num_of_TCs,
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
 	//for each test case t[][]
-	for (unsigned tc_idx = 0; tc_idx < num_of_TCs; tc_idx++)
+	for (tc_index_ = 0; tc_index_ < num_of_TCs; tc_index_++)
 	{
+		L_LOG("Testcase #"<<tc_index_);
 //		cout << endl << "testcase: " << tc_idx << endl;
 		sim_->setMode(AigSimulator::RANDOM_TC_MODE);
 
@@ -126,9 +127,11 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches - num_err_latches_;
 			++l_cnt)
 	{
+
 		// skip latches where we already know that they are vulnerable
-		if (vulnerable_elements_.find(circuit_->latches[l_cnt].lit)
-				!= vulnerable_elements_.end())
+		if ((tc_index_ != 0)
+				&& (vulnerable_elements_.find(circuit_->latches[l_cnt].lit)
+						!= vulnerable_elements_.end()))
 		{
 			continue;
 		}
@@ -221,6 +224,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForRandomTC(
 	int timesteps = num_of_timesteps;
 	//  states[][], outputs[][] = simulate(t)
 	// simulate whole TestCase without error
+	L_LOG("Simulate TC first...");
 	while (sim_->simulateOneTimeStep() == true && timesteps-- > 0)
 	{
 		// store results
@@ -231,15 +235,19 @@ void SimulationBasedAnalysis::findVulnerabilitiesForRandomTC(
 
 		sim_->switchToNextState();
 	}
+	L_LOG("Simulate done.");
 	current_TC_ = sim_->getTestcase();
 
 	//  for each latch l
 	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches - num_err_latches_;
 			++l_cnt)
 	{
+		if (l_cnt % 100 == 0)
+			L_DBG("Latch " << l_cnt);
 		// skip latches where we already know that they are vulnerable
-		if (vulnerable_elements_.find(circuit_->latches[l_cnt].lit)
-				!= vulnerable_elements_.end())
+		if ((tc_index_ != 0)
+				&& (vulnerable_elements_.find(circuit_->latches[l_cnt].lit)
+						!= vulnerable_elements_.end()))
 		{
 			continue;
 		}

@@ -116,11 +116,26 @@ int main(int argc, char *argv[])
 	unsigned int latches_to_protect = aig_input->num_latches * percentage / 100;
 	unsigned int num_error_signals = (latches_to_protect
 			+ latches_per_error_signal - 1) / latches_per_error_signal; // divide and round up
-	cout << "Number of Latches: " << aig_input->num_latches << endl;
-	cout << "Number of Latches to protect(" << percentage << "%): "
-			<< latches_to_protect << endl;
-	cout << "Number of additional latches and error signals to create: " << num_error_signals << " protect (~"
-			<< latches_per_error_signal << " latches per additional latch)" << endl;
+
+	ostringstream str;
+
+	str << "Number of Latches (total): " << aig_input->num_latches << endl;
+
+	str << "Latches to protect: " << percentage << "% ("
+			<< latches_to_protect << " Latches)" << endl;
+	str << "Number of additional latches: " << num_error_signals << endl;
+	str << "  (~"	<< latches_per_error_signal << " latches per new latch)" << endl;
+
+	cout << str.str() << endl;
+
+	aiger_add_comment(aig_input, "----------------------------------------------------");
+	aiger_add_comment(aig_input, "This file has an been converted with AddParityTool.");
+	istringstream iss(str.str());
+	string line;
+	while (getline(iss,line))
+	{
+		aiger_add_comment(aig_input, line.c_str());
+	}
 
 	// create a random permutation of all the latches.
 	// pick the first *latches_to_protect* indices to pick a random subset of
