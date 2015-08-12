@@ -155,7 +155,7 @@ bool Utils::intersectionEmpty(const vector<int> &x, const set<int> &y)
   return true;
 }
 
-// ------------kabarett -------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
 bool Utils::intersectionEmpty(const set<int> &x, const set<int> &y)
 {
   set<int>::const_iterator i = x.begin();

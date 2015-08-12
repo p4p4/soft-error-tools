@@ -27,6 +27,7 @@ static const int RET_ERR_AIG_WRITE = -3;
 
 unsigned int next_free_aig_lit = 0;
 
+// -------------------------------------------------------------------------------------------
 int aiger_add_xor(aiger* circuit, unsigned int input1, unsigned int input2)
 {
 
@@ -48,11 +49,11 @@ int aiger_add_xor(aiger* circuit, unsigned int input1, unsigned int input2)
 	return xor_out;
 }
 
+// -------------------------------------------------------------------------------------------
 void print_help(int argc, char* argv[])
 {
 	cout << "USAGE: " << argv[0]
-			<< " <aiger-input> <percentage> <avg-latches> <aiger-output>"
-			<< endl;
+			<< " <aiger-input> <percentage> <avg-latches> <aiger-output>" << endl;
 	cout << "  WHERE" << endl;
 	cout
 			<< "\t <aiger-input>.......path to the aiger input file. The mode used is ASCII for a '.aag'"
@@ -68,6 +69,7 @@ void print_help(int argc, char* argv[])
 	cout << "\t                     suffix and binary mode otherwise." << endl;
 }
 
+// -------------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
 	cout << "Welcome to AddParityTool 0.1" << endl;
@@ -121,18 +123,21 @@ int main(int argc, char *argv[])
 
 	str << "Number of Latches (total): " << aig_input->num_latches << endl;
 
-	str << "Latches to protect: " << percentage << "% ("
-			<< latches_to_protect << " Latches)" << endl;
+	str << "Latches to protect: " << percentage << "% (" << latches_to_protect
+			<< " Latches)" << endl;
 	str << "Number of additional latches: " << num_error_signals << endl;
-	str << "  (~"	<< latches_per_error_signal << " latches per new latch)" << endl;
+	str << "  (~" << latches_per_error_signal << " latches per new latch)"
+			<< endl;
 
 	cout << str.str() << endl;
 
-	aiger_add_comment(aig_input, "----------------------------------------------------");
-	aiger_add_comment(aig_input, "This file has an been converted with AddParityTool.");
+	aiger_add_comment(aig_input,
+			"----------------------------------------------------");
+	aiger_add_comment(aig_input,
+			"This file has an been converted with AddParityTool.");
 	istringstream iss(str.str());
 	string line;
-	while (getline(iss,line))
+	while (getline(iss, line))
 	{
 		aiger_add_comment(aig_input, line.c_str());
 	}
@@ -188,22 +193,20 @@ int main(int argc, char *argv[])
 			aiger_add_latch(aig_input, new_latch_lit, latch_next_result,
 					latch_name.c_str());
 
-
 			// new_latch_lit XOR latch_lit_result
-			unsigned int new_err_signal = aiger_add_xor(aig_input,
-					new_latch_lit, latch_lit_result);
+			unsigned int new_err_signal = aiger_add_xor(aig_input, new_latch_lit,
+					latch_lit_result);
 
 			// create intermediate error output
 			if (add_intermediate_err_sigs)
 			{
 				string output_name("Err_out_");
 				output_name += to_string(error_output_counter);
-				aiger_add_output(aig_input, new_err_signal,
-						output_name.c_str());
+				aiger_add_output(aig_input, new_err_signal, output_name.c_str());
 			}
 
 			// disjunct all eror signals with each other:
-			if(final_error_output == 0) // for the first error signal
+			if (final_error_output == 0) // for the first error signal
 			{
 				final_error_output = new_err_signal; // no OR needed
 			}
@@ -211,7 +214,8 @@ int main(int argc, char *argv[])
 			{
 				// err_out = err_out OR new_err_signal
 				// not(notA and notB) <==> A or B
-				aiger_add_and(aig_input, next_free_aig_lit, aiger_not(final_error_output),aiger_not(new_err_signal));
+				aiger_add_and(aig_input, next_free_aig_lit,
+						aiger_not(final_error_output), aiger_not(new_err_signal));
 				final_error_output = aiger_not(next_free_aig_lit);
 				next_free_aig_lit += 2;
 			}
@@ -230,8 +234,7 @@ int main(int argc, char *argv[])
 	int write_err = aiger_open_and_write_to_file(aig_input, argv[4]);
 	if (write_err == 0)
 	{
-		cout << "Error: Could not write AIGER file to`" << argv[4] << "`"
-				<< endl;
+		cout << "Error: Could not write AIGER file to`" << argv[4] << "`" << endl;
 		return RET_ERR_AIG_WRITE;
 	}
 
