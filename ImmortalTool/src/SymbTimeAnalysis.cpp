@@ -31,7 +31,7 @@
 #include "SymbTimeAnalysis.h"
 
 // -------------------------------------------------------------------------------------------
-SymbTimeAnalysis::SymbTimeAnalysis()
+SymbTimeAnalysis::SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode) : BackEnd(circuit, num_err_latches, mode)
 {
   MASSERT(false, "Implement me");
 }

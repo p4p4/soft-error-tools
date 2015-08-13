@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,6 +30,7 @@
 #define SymbTimeLocationAnalysis_H__
 
 #include "defines.h"
+#include "BackEnd.h"
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -39,14 +39,14 @@
 ///
 /// @author TODO
 /// @version 1.2.0
-class SymbTimeLocationAnalysis
+class SymbTimeLocationAnalysis : public BackEnd
 {
 public:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-  SymbTimeLocationAnalysis();
+  SymbTimeLocationAnalysis(aiger* circuit, int num_err_latches, int mode=0);
 
 // -------------------------------------------------------------------------------------------
 ///

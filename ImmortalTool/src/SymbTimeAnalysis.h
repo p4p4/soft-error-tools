@@ -31,6 +31,7 @@
 #define SymbTimeAnalysis_H__
 
 #include "defines.h"
+#include "BackEnd.h"
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -39,14 +40,14 @@
 ///
 /// @author TODO
 /// @version 1.2.0
-class SymbTimeAnalysis
+class SymbTimeAnalysis : public BackEnd
 {
 public:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-  SymbTimeAnalysis();
+  SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode=0);
 
 // -------------------------------------------------------------------------------------------
 ///
