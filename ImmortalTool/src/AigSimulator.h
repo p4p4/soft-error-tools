@@ -57,8 +57,7 @@ class AigSimulator
 
 
 	enum SimMode {
-		GIVEN_TC_MODE = 1,
-		RANDOM_TC_MODE = 2
+		GIVEN_TC_MODE = 1
 	};
 
 // -------------------------------------------------------------------------------------------
@@ -161,16 +160,6 @@ class AigSimulator
 		return testcase_;
 	}
 
-	void setMode(SimMode mode)
-	{
-		mode_ = mode;
-		if(mode_ == AigSimulator::RANDOM_TC_MODE)
-		{
-			testcase_.clear();
-			time_index_=0;
-			init();
-		}
-	}
 
 	protected:
 	aiger* circuit_;
@@ -180,13 +169,6 @@ class AigSimulator
 	void init();
 	SimMode mode_;
 
-	struct gen_rand {
-	public:
-	    gen_rand() {}
-	    int operator()() {
-	        return rand() % 2;
-	    }
-	};
 
 	private:
 

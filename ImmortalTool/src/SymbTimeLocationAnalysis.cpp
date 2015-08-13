@@ -41,3 +41,46 @@ SymbTimeLocationAnalysis::~SymbTimeLocationAnalysis()
   MASSERT(false, "Implement me");
 }
 
+// -------------------------------------------------------------------------------------------
+bool SymbTimeLocationAnalysis::findVulnerabilities(vector<TestCase> &testcases)
+{
+	//	vulnerable_latches = empty_set/list
+	vulnerable_elements_.clear();
+	//for each test case t[][]
+	for (unsigned tc_index_ = 0; tc_index_ < testcases.size(); tc_index_++)
+	{
+		MASSERT(false, "Implement me");
+	}
+
+	return (vulnerable_elements_.size() != 0);
+}
+
+// -------------------------------------------------------------------------------------------
+bool SymbTimeLocationAnalysis::findVulnerabilities(
+		vector<string> paths_to_TC_files)
+{
+	//	vulnerable_latches = empty_set/list
+	vulnerable_elements_.clear();
+	//for each test case t[][]
+	for (unsigned tc_index_ = 0; tc_index_ < paths_to_TC_files.size(); tc_index_++)
+	{
+		MASSERT(false, "Implement me");
+	}
+
+	return (vulnerable_elements_.size() != 0);
+}
+
+// -------------------------------------------------------------------------------------------
+bool SymbTimeLocationAnalysis::findVulnerabilities(unsigned num_of_TCs,
+		unsigned num_of_timesteps)
+{
+	//	vulnerable_latches = empty_set/list
+	vulnerable_elements_.clear();
+	//for each test case t[][]
+	for (unsigned tc_index_ = 0; tc_index_ < num_of_TCs; tc_index_++)
+	{
+		MASSERT(false, "Implement me");
+	}
+
+	return (vulnerable_elements_.size() != 0);
+}

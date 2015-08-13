@@ -26,8 +26,15 @@
 /// @file BackEnd.cpp
 /// @brief Contains the definition of the class BackEnd.
 // -------------------------------------------------------------------------------------------
+#include <algorithm>
 
 #include "BackEnd.h"
+
+
+extern "C"
+{
+#include "aiger.h"
+}
 
 // -------------------------------------------------------------------------------------------
 BackEnd::BackEnd(aiger* circuit, int num_err_latches, int mode) :
@@ -48,3 +55,32 @@ const set<unsigned>& BackEnd::getVulnerableElements() const
 	return vulnerable_elements_;
 }
 
+// -------------------------------------------------------------------------------------------
+bool BackEnd::findVulnerabilities(unsigned num_of_TCs,
+		unsigned num_of_timesteps)
+{
+	//	vulnerable_latches = empty_set/list
+	vulnerable_elements_.clear();
+
+	// 1. generate random testcases
+	vector<TestCase> testcases;
+	testcases.reserve(num_of_TCs);
+	for(unsigned tc_i=0; tc_i < num_of_TCs; tc_i++)
+	{
+		TestCase tc;
+		tc.reserve(num_of_timesteps);
+		for(unsigned timestep=0;timestep< num_of_timesteps;timestep++)
+		{
+			vector<int> inputs;
+			inputs.reserve(circuit_->num_inputs);
+			generate_n(back_inserter(inputs), circuit_->num_inputs, gen_rand());
+			tc.push_back(inputs);
+		}
+		testcases.push_back(tc);
+	}
+
+
+	// 2. run testcases:
+	return findVulnerabilities(testcases);
+
+}

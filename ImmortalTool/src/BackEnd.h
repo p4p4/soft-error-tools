@@ -97,9 +97,20 @@ public:
 /// @param num_of_TCs the number of random testcases to use
 /// @param num_of_timesteps the number random input vectors to test
 /// @return TRUE if vulnerabilities were found.
-	virtual bool findVulnerabilities(unsigned num_of_TCs,
-		unsigned num_of_timesteps) = 0;
+	bool findVulnerabilities(unsigned num_of_TCs,
+		unsigned num_of_timesteps);
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief randomly generates 0 or 1
+///
+	struct gen_rand {
+	public:
+	    gen_rand() {}
+	    int operator()() {
+	        return rand() % 2;
+	    }
+	};
 protected:
 	aiger* circuit_;
 	int mode_;

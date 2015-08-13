@@ -40,23 +40,56 @@
 ///
 /// @author TODO
 /// @version 1.2.0
-class SymbTimeAnalysis : public BackEnd
+class SymbTimeAnalysis: public BackEnd
 {
-public:
+	public:
+
+	using BackEnd::findVulnerabilities;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-  SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode=0);
+	SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode = 0);
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Destructor.
-  virtual ~SymbTimeAnalysis();
+	virtual ~SymbTimeAnalysis();
 
-protected:
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities using the provided TestCases
+///
+/// tries to find vulnerabilities using the provided TestCases
+///
+/// @param testcases a vector of TestCases.
+/// @return TRUE if vulnerabilities were found.
+	bool findVulnerabilities(vector<TestCase> &testcases);
 
-private:
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities using the provided TestCases
+///
+/// tries to find vulnerabilities using the provided TestCases
+///
+/// @param paths_to_TC_files a vector of paths to TestCase files.
+/// @return TRUE if vulnerabilities were found.
+	bool findVulnerabilities(vector<string> paths_to_TC_files);
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities using random input vectors
+///
+/// tries to find vulnerabilities using num_of_timesteps random input vectors
+///
+/// @param num_of_TCs the number of random testcases to use
+/// @param num_of_timesteps the number random input vectors to test
+/// @return TRUE if vulnerabilities were found.
+	bool findVulnerabilities(unsigned num_of_TCs, unsigned num_of_timesteps);
+
+	protected:
+
+	private:
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -65,7 +98,7 @@ private:
 /// The copy constructor is disabled (set private) and not implemented.
 ///
 /// @param other The source for creating the copy.
-  SymbTimeAnalysis(const SymbTimeAnalysis &other);
+	SymbTimeAnalysis(const SymbTimeAnalysis &other);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -75,7 +108,7 @@ private:
 ///
 /// @param other The source for creating the copy.
 /// @return The result of the assignment, i.e, *this.
-  SymbTimeAnalysis& operator=(const SymbTimeAnalysis &other);
+	SymbTimeAnalysis& operator=(const SymbTimeAnalysis &other);
 
 };
 

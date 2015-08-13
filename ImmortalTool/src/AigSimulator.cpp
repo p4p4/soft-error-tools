@@ -118,21 +118,6 @@ bool AigSimulator::simulateOneTimeStep()
 		simulateOneTimeStep(testcase_[time_index_]);
 		return true;
 	}
-	else if(mode_ == RANDOM_TC_MODE)
-	{
-		vector<int> inputs;
-		inputs.reserve(circuit_->num_inputs);
-		generate_n(back_inserter(inputs), circuit_->num_inputs, gen_rand());
-		testcase_.push_back(inputs);
-//		cout << "TC size = " << testcase_.size() << endl;
-//		for (int i=0; i< inputs.size();i++)
-//		{
-//			cout << inputs[i];
-//		}
-//		cout << "]" << endl;
-		simulateOneTimeStep(inputs);
-		return true;
-	}
 
 	MASSERT(false, "Wrong mode!");
 	return false;
