@@ -65,6 +65,16 @@ public:
 
 // -------------------------------------------------------------------------------------------
 ///
+/// @brief reads and parses an aigsim-file and stores it as testcase
+///
+/// The stored testcase contains input vectors for each time-step of the simulation.
+///
+/// @param path_to_aigsim_input the aigsim input file to parse
+/// @param testcase a (potentially empty) TestCase data-structure
+  static void parseAigSimFile(string path_to_aigsim_input, TestCase &testcase, unsigned number_of_inputs);
+
+// -------------------------------------------------------------------------------------------
+///
 /// @brief Checks if a cube (in form of a set of literals) contains the initial state.
 ///
 /// In our synthesis problems, there is exactly one initial state of the system (this is a

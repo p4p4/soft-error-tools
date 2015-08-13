@@ -311,3 +311,33 @@ aiger* Utils::readAiger(string path)
 
 		return aig_input;
 }
+
+void Utils::parseAigSimFile(string path_to_aigsim_input, TestCase& testcase, unsigned number_of_inputs)
+{
+	ifstream infile(path_to_aigsim_input.c_str());
+	string input_vector_line;
+	while (infile >> input_vector_line)
+	{
+		MASSERT(input_vector_line.length() == number_of_inputs,
+				"corrupt aigsim-file (does not match number of inputs)!");
+
+		vector<int> input_vector;
+		input_vector.reserve(number_of_inputs);
+		for (unsigned i = 0; i < input_vector_line.length(); i++)
+		{
+			if (input_vector_line.c_str()[i] == '0')
+			{
+				input_vector.push_back(0);
+			}
+			else if (input_vector_line.c_str()[i] == '1')
+			{
+				input_vector.push_back(1);
+			}
+			else
+			{
+				MASSERT(false, "corrupt aigsim-file (unexpected character)!");
+			}
+		}
+		testcase.push_back(input_vector);
+	}
+}

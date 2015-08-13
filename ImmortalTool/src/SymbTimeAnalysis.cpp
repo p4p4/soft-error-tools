@@ -72,18 +72,3 @@ bool SymbTimeAnalysis::findVulnerabilities(
 	return (vulnerable_elements_.size() != 0);
 }
 
-// -------------------------------------------------------------------------------------------
-bool SymbTimeAnalysis::findVulnerabilities(unsigned num_of_TCs,
-		unsigned num_of_timesteps)
-{
-	//	vulnerable_latches = empty_set/list
-	vulnerable_elements_.clear();
-	//for each test case t[][]
-	for (unsigned tc_index_ = 0; tc_index_ < num_of_TCs; tc_index_++)
-	{
-		MASSERT(false, "Implement me");
-	}
-
-	return (vulnerable_elements_.size() != 0);
-}
-

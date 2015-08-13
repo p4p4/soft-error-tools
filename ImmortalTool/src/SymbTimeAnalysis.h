@@ -76,19 +76,18 @@ class SymbTimeAnalysis: public BackEnd
 /// @return TRUE if vulnerabilities were found.
 	bool findVulnerabilities(vector<string> paths_to_TC_files);
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities using random input vectors
-///
-/// tries to find vulnerabilities using num_of_timesteps random input vectors
-///
-/// @param num_of_TCs the number of random testcases to use
-/// @param num_of_timesteps the number random input vectors to test
-/// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(unsigned num_of_TCs, unsigned num_of_timesteps);
-
 	protected:
 
+
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities using the provided TestCases. Symbolic timesteps algo.
+///
+/// Algorithm ANALYZE1: Only the point in time is symbolic
+///
+/// @param testcase a vector of input vectors
+	void Analyze1(TestCase &testcase);
 	private:
 
 // -------------------------------------------------------------------------------------------

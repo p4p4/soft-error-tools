@@ -56,10 +56,6 @@ class AigSimulator
 	virtual ~AigSimulator();
 
 
-	enum SimMode {
-		GIVEN_TC_MODE = 1
-	};
-
 // -------------------------------------------------------------------------------------------
 //
 /// @brief Parses an AigSim input file and sets the Testcase accordingly.
@@ -155,19 +151,44 @@ class AigSimulator
 
 	vector<int> getLatchValues();
 
-	const vector<vector<int> >& getTestcase() const
+	const TestCase& getTestcase() const
 	{
 		return testcase_;
 	}
 
 
 	protected:
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief The circuit to simulate in AIGER representation
+///
 	aiger* circuit_;
-	vector<vector<int> > testcase_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief The TestCase containing a list of input-vectors
+///
+	TestCase &testcase_;
+	TestCase testcase_empty_; // empty TC
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Array storing the current values [0 or 1] for each variable
+///
 	int* results_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief The current time-step. Only used for getVerboseString() and for debugging
+///
 	size_t time_index_;
-	void init();
-	SimMode mode_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief (re)sets the latch values to Zero
+///
+	void initLatches();
 
 
 	private:
