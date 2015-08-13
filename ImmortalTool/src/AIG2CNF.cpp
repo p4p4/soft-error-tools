@@ -116,10 +116,10 @@ void AIG2CNF::clear()
 // -------------------------------------------------------------------------------------------
 int AIG2CNF::aigLitToCnfLit(unsigned aig_lit)
 {
-	if(aig_lit==0)
-		return 0;
-	if(aig_lit==1)
-		return 1;
+//	if(aig_lit==0)
+//		return 0;
+//	if(aig_lit==1)
+//		return 1;
 
 	int cnf_lit = (aig_lit >> 1) + 1;
 	return (aig_lit & 1) ? -cnf_lit : cnf_lit;

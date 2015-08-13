@@ -244,7 +244,7 @@ void AigSimulator::switchToNextState()
 	{
 		latch_results[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].next)];
 
-		if (circuit_->latches[cnt].next % 2 == 1)
+		if (circuit_->latches[cnt].next & 1)
 		{
 			latch_results[cnt] = aiger_not(latch_results[cnt]);
 		}
@@ -264,7 +264,7 @@ vector<int> AigSimulator::getOutputs()
 	for (size_t cnt = 0; cnt < circuit_->num_outputs; ++cnt)
 	{
 
-		if (circuit_->outputs[cnt].lit % 2 == 1)
+		if (circuit_->outputs[cnt].lit & 1)
 		{
 			outputs[cnt] = aiger_not(
 					results_[aiger_lit2var(circuit_->outputs[cnt].lit)]);
@@ -302,12 +302,11 @@ vector<int> AigSimulator::getLatchValues()
 
 void AigSimulator::initLatches()
 {
-	// initialize latches (if any) with FALSE
+	// initialize latches (if any) with FALSE/ with the reset value
 	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
 	{
 		results_[aiger_lit2var(circuit_->latches[cnt].lit)] =
 				circuit_->latches[cnt].reset;
-		results_[aiger_lit2var(circuit_->latches[cnt].next)] = 0;
 	}
 }
 

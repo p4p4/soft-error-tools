@@ -60,7 +60,7 @@ void TestAigToCNF::test1()
 	CPPUNIT_ASSERT(AIG2CNF::instance().getInputs().size() == 3);
 	CPPUNIT_ASSERT(AIG2CNF::instance().getOutputs().size() == 3);
 	CPPUNIT_ASSERT(AIG2CNF::instance().getPresStateVars().size() == 3);
-	CPPUNIT_ASSERT(AIG2CNF::instance().getAlarmOutput() == 0);
+	CPPUNIT_ASSERT(AIG2CNF::instance().getAlarmOutput() == 1);
 }
 
 

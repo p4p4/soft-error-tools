@@ -99,7 +99,7 @@ class AIG2CNF
 /// @brief Converts an AIGER Literal to a CNF Literal
 ///
 /// AIG<->CNF
-///  0  	 0
+///  0  	-1
 ///  1  	 1
 ///  2  	 2
 ///  3  	-2
