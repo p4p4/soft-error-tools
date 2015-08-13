@@ -56,7 +56,7 @@ void TestAigToCNF::test1()
 	string path = "inputs/toggle.3vulnerabilities.aag";
 	AIG2CNF::instance().initFromAig(Utils::readAiger(path));
 
-	CPPUNIT_ASSERT(AIG2CNF::instance().getTrans().getNrOfClauses() == 9);
+	CPPUNIT_ASSERT(AIG2CNF::instance().getTrans().getNrOfClauses() == 10);
 	CPPUNIT_ASSERT(AIG2CNF::instance().getInputs().size() == 3);
 	CPPUNIT_ASSERT(AIG2CNF::instance().getOutputs().size() == 3);
 	CPPUNIT_ASSERT(AIG2CNF::instance().getPresStateVars().size() == 3);

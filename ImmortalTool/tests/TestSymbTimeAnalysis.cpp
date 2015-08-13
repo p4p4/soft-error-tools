@@ -49,7 +49,6 @@ void TestSymbTimeAnalysis::checkVulnerabilities(
 	aiger* circuit = Utils::readAiger(path_to_aiger_circuit);
 
 	CPPUNIT_ASSERT(circuit != 0);
-	cout << endl << "create object" << endl;
 	SymbTimeAnalysis sta(circuit, num_err_latches);
 	cout << endl << "find" << endl;
 	sta.findVulnerabilities(tc_files);
@@ -73,7 +72,7 @@ void TestSymbTimeAnalysis::test1_simulation_analysis_w_1_extra_latch()
 	// Paths to TestCase files
 	// A TestCase file contains vectors of input values
 	vector<string> tc_files;
-	tc_files.push_back("inputs/3b");
+//	tc_files.push_back("inputs/3b");
 	tc_files.push_back("inputs/3_bit_input_1");
 //	tc_files.push_back("inputs/3_bit_input_2");
 //	tc_files.push_back("inputs/3_bit_input_3");
