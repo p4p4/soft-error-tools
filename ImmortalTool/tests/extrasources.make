@@ -1,2 +1,3 @@
 TestAigSimulator.cpp
+TestAigToCNF.cpp
 TestSimulationBasedAnalysis.cpp

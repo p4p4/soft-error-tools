@@ -31,9 +31,8 @@ void AIG2CNF::initFromAig(aiger *aig)
   // clauses defining the outputs of the AND gates:
   for (unsigned i = 0; i < aig->num_ands; i++)
   {
-    unsigned out_aig_lit = aig->ands[i].lhs;
 
-      int out_cnf_lit = aigLitToCnfLit(out_aig_lit);
+      int out_cnf_lit = aigLitToCnfLit(aig->ands[i].lhs);
       int rhs1_cnf_lit = aigLitToCnfLit(aig->ands[i].rhs1);
       int rhs0_cnf_lit = aigLitToCnfLit(aig->ands[i].rhs0);
 
@@ -121,7 +120,8 @@ int AIG2CNF::aigLitToCnfLit(unsigned aig_lit)
 		return 0;
 	if(aig_lit==1)
 		return 1;
-	int cnf_lit = (aig_lit >> 2);
+
+	int cnf_lit = (aig_lit >> 1) + 1;
 	return (aig_lit & 1) ? -cnf_lit : cnf_lit;
 }
 

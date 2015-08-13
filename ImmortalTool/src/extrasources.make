@@ -9,4 +9,6 @@ SatSolver.cpp
 SimulationBasedAnalysis.cpp
 Stopwatch.cpp
 StringUtils.cpp
+SymbTimeAnalysis.cpp
+SymbTimeLocationAnalysis.cpp
 Utils.cpp
