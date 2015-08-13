@@ -376,7 +376,7 @@ void Options::initInputCircuit()
 // -------------------------------------------------------------------------------------------
 Options::Options() :
 		aig_in_file_name_(), print_string_("ERWILD"), tmp_dir_("./tmp"), back_end_(
-				"sim"), back_end_instance_(0), mode_(0), sat_solver_("lBackEndin_api"), tool_started_(
+				"sim"), back_end_instance_(0), mode_(0), sat_solver_("lin_api"), tool_started_(
 				Stopwatch::start()), circuit_(0), num_err_latches_(0)
 {
 	// nothing to be done

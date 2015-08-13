@@ -1,3 +1,4 @@
 TestAigSimulator.cpp
 TestAigToCNF.cpp
 TestSimulationBasedAnalysis.cpp
+TestSymbTimeAnalysis.cpp

@@ -33,6 +33,7 @@
 #include "defines.h"
 #include "BackEnd.h"
 #include "SatSolver.h"
+#include "AigSimulator.h"
 
 // -------------------------------------------------------------------------------------------
 ///
