@@ -32,6 +32,7 @@
 
 #include "defines.h"
 #include "BackEnd.h"
+#include "SatSolver.h"
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -78,8 +79,6 @@ class SymbTimeAnalysis: public BackEnd
 
 	protected:
 
-
-
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief tries to find vulnerabilities using the provided TestCases. Symbolic timesteps algo.
@@ -88,6 +87,14 @@ class SymbTimeAnalysis: public BackEnd
 ///
 /// @param testcase a vector of input vectors
 	void Analyze1(TestCase &testcase);
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the Aiger Simulator instance
+	AigSimulator* sim_;
+
+	SatSolver* solver_;
+
 	private:
 
 // -------------------------------------------------------------------------------------------

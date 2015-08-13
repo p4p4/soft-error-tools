@@ -61,7 +61,7 @@ void AigSimulator::setTestcase(string path_to_aigsim_input)
 {
 	initLatches();
 
-	Utils::parseAigSimFile(path_to_aigsim_input,testcase_,circuit_->num_inputs);
+	Utils::parseAigSimFile(path_to_aigsim_input, testcase_, circuit_->num_inputs);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -293,13 +293,26 @@ vector<int> AigSimulator::getLatchValues()
 //		}
 //		else
 //		{
-			latches[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].lit)];
+		latches[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].lit)];
 //		}
 	}
 	return latches;
 }
 
+// -------------------------------------------------------------------------------------------
+vector<int> AigSimulator::getNextLatchValues()
+{
+	vector<int> latches(circuit_->num_latches);
 
+	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
+	{
+		// TODO: check if a latch output can really be inverted
+		latches[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].next)];
+	}
+	return latches;
+}
+
+// -------------------------------------------------------------------------------------------
 void AigSimulator::initLatches()
 {
 	// initialize latches (if any) with FALSE/ with the reset value

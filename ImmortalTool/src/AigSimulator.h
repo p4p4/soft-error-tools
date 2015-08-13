@@ -151,6 +151,8 @@ class AigSimulator
 
 	vector<int> getLatchValues();
 
+	vector<int> getNextLatchValues();
+
 	const TestCase& getTestcase() const
 	{
 		return testcase_;

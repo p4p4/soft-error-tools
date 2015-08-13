@@ -36,9 +36,9 @@
 // -------------------------------------------------------------------------------------------
 ///
 /// @class SimulationBasedAnalysis
-/// @brief TODO
+/// @brief Simulates a circuit using provided TestCases, searches fur vulnerable Elements.
 ///
-/// @author TODO
+/// @author Patrick Klampfl
 /// @version 1.2.0
 
 struct aiger;
@@ -85,7 +85,15 @@ public:
 
 
 protected:
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the Aiger Simulator instance
   AigSimulator* sim_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the index of the currnt TestCase
   unsigned tc_index_;
 
 

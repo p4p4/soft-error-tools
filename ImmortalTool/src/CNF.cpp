@@ -29,7 +29,8 @@
 
 #include "CNF.h"
 //#include "VarManager.h"
-//#include "Logger.h"
+#include "Logger.h"
+#include "Utils.h"
 
 //extern "C" {
 // #include "aiger.h"
@@ -145,26 +146,24 @@ void CNF::addNegCubeAsClause(const vector<int> &cube)
 // -------------------------------------------------------------------------------------------
 bool CNF::addClauseAndSimplify(const vector<int> &clause)
 {
-//  // search for clauses which are supersets of the new clause:
-//  size_t init_size = clauses_.size();
-//  ClauseIter it = clauses_.begin();
-//  for(; it != clauses_.end();)
-//  {
-//    if(Utils::isSubset(clause, *it))
-//      it = clauses_.erase(it);
-//    else
-//      ++it;
-//  }
-//  bool simplified = false;
-//  if(init_size != clauses_.size())
-//  {
-//    //L_DBG("CNF size reduction: " << init_size << " --> " << clauses_.size());
-//    simplified = true;
-//  }
-//  clauses_.push_back(clause);
-//  return simplified;
-	MASSERT(false, "TODO: implement me!");
-	return false; // TODO
+  // search for clauses which are supersets of the new clause:
+  size_t init_size = clauses_.size();
+  ClauseIter it = clauses_.begin();
+  for(; it != clauses_.end();)
+  {
+    if(Utils::isSubset(clause, *it))
+      it = clauses_.erase(it);
+    else
+      ++it;
+  }
+  bool simplified = false;
+  if(init_size != clauses_.size())
+  {
+    //L_DBG("CNF size reduction: " << init_size << " --> " << clauses_.size());
+    simplified = true;
+  }
+  clauses_.push_back(clause);
+  return simplified;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -370,34 +369,34 @@ const list<vector<int> >& CNF::getClauses() const
 // -------------------------------------------------------------------------------------------
 void CNF::simplify()
 {
-//  // search for clauses which are supersets of other clauses:
-//  size_t init_size = clauses_.size();
-//  for(ClauseIter it1 = clauses_.begin(); it1 != clauses_.end();)
-//  {
-//    ClauseIter it2 = it1;
-//    ++it2;
-//    bool it1_changed = false;
-//    for(; it2 != clauses_.end();)
-//    {
-//      if(Utils::isSubset(*it1, *it2))
-//        it2 = clauses_.erase(it2);
-//      else
-//        ++it2;
-//      if(Utils::isSubset(*it2, *it1))
-//      {
-//        it1 = clauses_.erase(it1);
-//        it1_changed = true;
-//        break;
-//      }
-//    }
-//    if(!it1_changed)
-//      ++it1;
-//  }
-//  if(init_size != clauses_.size())
-//  {
-//    L_DBG("CNF size reduction: " << init_size << " --> " << clauses_.size());
-//  }
-	MASSERT(false, "TODO: implement me!"); // TODO: implement or remove function
+  // search for clauses which are supersets of other clauses:
+  size_t init_size = clauses_.size();
+  for(ClauseIter it1 = clauses_.begin(); it1 != clauses_.end();)
+  {
+    ClauseIter it2 = it1;
+    ++it2;
+    bool it1_changed = false;
+    for(; it2 != clauses_.end();)
+    {
+      if(Utils::isSubset(*it1, *it2))
+        it2 = clauses_.erase(it2);
+      else
+        ++it2;
+      if(Utils::isSubset(*it2, *it1))
+      {
+        it1 = clauses_.erase(it1);
+        it1_changed = true;
+        break;
+      }
+    }
+    if(!it1_changed)
+      ++it1;
+  }
+  if(init_size != clauses_.size())
+  {
+    L_DBG("CNF size reduction: " << init_size << " --> " << clauses_.size());
+  }
+
 }
 
 // -------------------------------------------------------------------------------------------
