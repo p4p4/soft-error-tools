@@ -31,6 +31,7 @@
 #include "Utils.h"
 #include "AIG2CNF.h"
 #include "Options.h"
+#include "Logger.h"
 
 extern "C"
 {
@@ -90,7 +91,7 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 {
 
-	cout << "trans orig = " << endl << AIG2CNF::instance().getTrans().toString() << endl;
+	L_DBG("trans orig = " << endl << AIG2CNF::instance().getTrans().toString());
 
 // ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
@@ -138,6 +139,8 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 		T_err.add3LitClause(-f_orig, component_cnf, poss_neg_state_cnf_var);
 		T_err.add3LitClause(f_orig, -component_cnf, poss_neg_state_cnf_var);
 		T_err.add3LitClause(f_orig, component_cnf, -poss_neg_state_cnf_var);
+
+		L_DBG("T_err = " << endl << T_err.toString());
 
 
 		int max_cnf_var_in_Terr = next_free_cnf_var;
@@ -254,14 +257,14 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 
 			// call SAT-Solver
 			bool sat = solver_->isSat(F_for_solver);
-			cout << "SAT: "<< sat << endl;
+			L_DBG("SAT: "<< sat);
 			if (sat)
 			{
 				vector<int> sat_assignment;
 				solver_->isSatModelOrCore(F_for_solver, vector<int>(), F_for_solver.getVars() , sat_assignment);
 				Utils::debugPrint(sat_assignment, "Satisfying assignment:");
 
-				cout << F_for_solver.toString() << endl;
+				L_DBG(F_for_solver.toString());
 
 				vulnerable_elements_.insert(component_aig);
 				break;

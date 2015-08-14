@@ -1,0 +1,19 @@
+aag 7 1 2 2 4
+2
+4 6
+8 6
+4
+14
+6 2 5
+10 8 4
+12 9 5
+14 11 13
+l1 Err_latch_0
+o1 Err_out_Final
+c
+----------------------------------------------------
+This file has an been converted with AddParityTool.
+Number of Latches (total): 1
+Latches to protect: 100% (1 Latches)
+Number of additional latches: 1
+  (~1 latches per new latch)
