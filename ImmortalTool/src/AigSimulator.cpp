@@ -183,9 +183,10 @@ string AigSimulator::getStateString()
 	}
 
 	// Latch next state values (.next)
+	const vector<int>& next_values = getNextLatchValues();
 	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
 	{
-		str << results_[aiger_lit2var(circuit_->latches[cnt].next)];
+		str << next_values[cnt];
 	}
 
 	return str.str();
@@ -307,7 +308,15 @@ vector<int> AigSimulator::getNextLatchValues()
 	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
 	{
 		// TODO: check if a latch output can really be inverted
-		latches[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].next)];
+		if (circuit_->latches[cnt].next & 1)
+		{
+			latches[cnt] = aiger_not(
+					results_[aiger_lit2var(circuit_->latches[cnt].next)]);
+		}
+		else
+		{
+			latches[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].next)];
+		}
 	}
 	return latches;
 }
