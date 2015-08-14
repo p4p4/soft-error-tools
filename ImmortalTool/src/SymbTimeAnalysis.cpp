@@ -90,10 +90,12 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 {
 
-	//  for each latch l
+//	cout << "trans orig = " << endl << AIG2CNF::instance().getTrans().toString() << endl;
+
+// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
 			++c_cnt)
-	{ // ---- BEGIN 'for each latch' ------
+	{
 
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = AIG2CNF::instance().aigLitToCnfLit(component_aig);
@@ -109,33 +111,39 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 		vector<int> concrete_state;
 		concrete_state.resize(circuit_->num_latches);
 
-		// symb_state[] = (-1 -1 -1 -1 -1)  // CNF literals // TODO: should be (1 1 1 .. ) ???
+		// symb_state[] = (1 1 1 1 1)  // CNF literals
 		vector<int> symb_state;
 		symb_state.reserve(circuit_->num_latches);
 		for (unsigned i = 0; i < circuit_->num_latches; i++)
 		{
-			symb_state[i] = 1; // TODO: 1 or -1
+			symb_state.push_back(1);
 		}
 
 		vector<int> f;
-		CNF F;
+		CNF F; // = TRUE
+
 		CNF T_err = AIG2CNF::instance().getTrans();
 
 		int f_orig = next_free_cnf_var++;
 		int poss_neg_state_cnf_var = next_free_cnf_var++;
+
+		vector<int> first_rename_map;
+		first_rename_map.reserve(next_free_cnf_var);
+		for(int i = 0; i < next_free_cnf_var; ++i)
+			first_rename_map.push_back(i);
+		first_rename_map[component_cnf] = poss_neg_state_cnf_var;
+		T_err.renameVars(first_rename_map);
 
 		T_err.add3LitClause(-f_orig, -component_cnf, -poss_neg_state_cnf_var);
 		T_err.add3LitClause(-f_orig, component_cnf, poss_neg_state_cnf_var);
 		T_err.add3LitClause(f_orig, -component_cnf, poss_neg_state_cnf_var);
 		T_err.add3LitClause(f_orig, component_cnf, -poss_neg_state_cnf_var);
 
-		vector<int> orig_rename_map; // TODO: move outside of loop
-		orig_rename_map.resize(next_free_cnf_var);
-		orig_rename_map[component_cnf] = poss_neg_state_cnf_var;
 
-		// for all timesteps:
+		int max_cnf_var_in_Terr = next_free_cnf_var;
+
 		for (unsigned i = 0; i < testcase.size(); i++)
-		{
+		{ // -------- BEGIN "for each timestep in testcase" -----------
 
 			// correct simulation
 			sim_->simulateOneTimeStep(testcase[i], concrete_state);
@@ -148,56 +156,65 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 
 			// faulty simulation with flipped bit
 			sim_->simulateOneTimeStep(testcase[i], faulty_state);
-			vector<int> next_state2 = sim_->getNextLatchValues();
+//	  vector<int> next_state2 = sim_->getNextLatchValues();  // unused
 			vector<int> outputs2 = sim_->getOutputs();
 			int alarm = outputs2[outputs2.size() - 1];
 
 			// check if vulnerablitiy already found
-			if (outputs != outputs2 && alarm == 0)
-			{
-				cout << "BREAK" << endl;
-				vulnerable_elements_.insert(component_aig);
-				break;
-			}
+//			if (outputs != outputs2 && alarm == 0)
+//			{
+//				cout << "BREAK Sim Latch " << component_aig << endl;
+//				vulnerable_elements_.insert(component_aig);
+//				break;
+//			}
 
-			// TODO: think of something more efficient. Do we really need a copy?
-			vector<int> real_rename_map = orig_rename_map;
+			vector<int> real_rename_map(max_cnf_var_in_Terr, 0);
+			for(int i = 0; i < real_rename_map.size(); ++i)
+				real_rename_map[i] = i;
+			real_rename_map[1] = 1;
 
 			// rename each AND gate with a fresh variable
 			for (unsigned cnt = 0; cnt < circuit_->num_ands; ++cnt)
 			{
-				unsigned and_cnf = circuit_->ands[cnt].lhs >> 1;
+				unsigned and_cnf = (circuit_->ands[cnt].lhs >> 1) + 1;
 				real_rename_map[and_cnf] = next_free_cnf_var++;
 			}
 
 			// rename: set latch values to our symb_state
+			// (ALTERNATIVE: don't rename, set via T_err_copy.setVarValue(), but BEFORE renaming)
 			for (unsigned cnt = 0; cnt < circuit_->num_latches; ++cnt)
 			{
-				unsigned latch_cnf = circuit_->latches[cnt].lit >> 1;
+				unsigned latch_cnf = (circuit_->latches[cnt].lit >> 1) + 1;
 				real_rename_map[latch_cnf] = symb_state[cnt];
 			}
 
 			// rename: set outputs according to test case inputs
+			// (ALTERNATIVE: don't rename, set via T_err_copy.setVarValue())
 			for (unsigned cnt = 0; cnt < circuit_->num_inputs; ++cnt)
 			{
-				unsigned input_cnf = circuit_->inputs[cnt].lit >> 1;
+				unsigned input_cnf = (circuit_->inputs[cnt].lit >> 1) + 1;
 				int input_bit_value = AIG2CNF::instance().aigLitToCnfLit(
 						testcase[i][cnt]);
 				real_rename_map[input_cnf] = input_bit_value;
 			}
 
+			// indicates if the output of component is flipped (in step i)
 			int fi = next_free_cnf_var++;
 			f.push_back(fi);
 			real_rename_map[f_orig] = fi;
+			real_rename_map[poss_neg_state_cnf_var] = next_free_cnf_var++;
+
+			Utils::debugPrint(real_rename_map, "Rename map:");
+
+			//for()
+
 
 			CNF T_err_copy = T_err;
+			// set alarm to false in T_err_copy
+			int alarm_cnf_lit = AIG2CNF::instance().getAlarmOutput();
+			T_err_copy.setVarValue(alarm_cnf_lit, false);
 			T_err_copy.renameVars(real_rename_map);
 
-
-			// set alarm to false in T_err_copy
-			int alarm_cnf_lit = AIG2CNF::instance().aigLitToCnfLit(
-					AIG2CNF::instance().getAlarmOutput());
-			T_err_copy.setVarValue(alarm_cnf_lit, false);
 
 
 			F.addCNF(T_err_copy);
@@ -206,8 +223,10 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 			for (unsigned cnt = 0; cnt < f.size() - 1; cnt++)
 				F.add2LitClause(-fi, -f[cnt]);
 
+
 			// rename each output except alarm output
 			vector<int> renamed_out_vars;
+			renamed_out_vars.reserve(circuit_->num_outputs - 1);
 			for (unsigned cnt = 0; cnt < circuit_->num_outputs - 1; ++cnt)
 			{
 				int renamed_var = AIG2CNF::instance().aigLitToCnfLit(
@@ -218,9 +237,9 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 				renamed_out_vars.push_back(renamed_var);
 			}
 
-
 			// clause saying that the outputs o and o' are different
 			vector<int> o_is_diff_clause;
+			o_is_diff_clause.reserve(renamed_out_vars.size());
 			for (unsigned cnt = 0; cnt < renamed_out_vars.size(); ++cnt)
 			{
 				if (outputs[cnt] == 1)
@@ -235,8 +254,15 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 
 			// call SAT-Solver
 			bool sat = solver_->isSat(F_for_solver);
+			cout << "SAT: "<< sat << endl;
 			if (sat)
 			{
+				vector<int> sat_assignment;
+				solver_->isSatModelOrCore(F_for_solver, vector<int>(), F_for_solver.getVars() , sat_assignment);
+				Utils::debugPrint(sat_assignment, "Satisfying assignment:");
+
+				cout << F_for_solver.toString() << endl;
+
 				vulnerable_elements_.insert(component_aig);
 				break;
 			}
