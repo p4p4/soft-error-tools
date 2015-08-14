@@ -106,6 +106,8 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 			continue;
 		}
 
+		L_DBG("current component[in cnf] = " << component_cnf);
+
 		int next_free_cnf_var = AIG2CNF::instance().getMaxCnfVar() + 1;
 
 		// concrete_state[] = (0 0 0 0 0 0 0)   // AIG literals

@@ -47,6 +47,7 @@ class TestSymbTimeAnalysis : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE(TestSymbTimeAnalysis);
   CPPUNIT_TEST(test1_one_latch);
   CPPUNIT_TEST(test2_one_latch_one_and);
+  CPPUNIT_TEST(test3_two_latches);
 //  CPPUNIT_TEST(test2_simulation_analysis_w_1_extra_latch);
   CPPUNIT_TEST_SUITE_END();
 
@@ -69,6 +70,7 @@ protected:
 
   void test1_one_latch();
   void test2_one_latch_one_and();
+  void test3_two_latches();
   // -------------------------------------------------------------------------------------------
   ///
   /// @brief Tests the found vulnerabilities of a circuit, which is protected with 1 extra latch

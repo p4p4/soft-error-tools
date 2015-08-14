@@ -144,12 +144,30 @@ void TestSymbTimeAnalysis::test2_one_latch_one_and()
 		aiger_reset(circuit);
 
 //		Logger::instance().disable(Logger::DBG);
-		Logger::instance().enable(Logger::DBG);
+//		Logger::instance().enable(Logger::DBG);
 
 
 		aiger* circuit2 = Utils::readAiger("inputs/1latch_1and.unprotected.aag");
 		SymbTimeAnalysis sta2(circuit2,0);
 		sta2.findVulnerabilities(1, 3);
 		CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
+		aiger_reset(circuit2);
+}
+
+void TestSymbTimeAnalysis::test3_two_latches()
+{
+		Logger::instance().enable(Logger::DBG);
+
+		aiger* circuit = Utils::readAiger("inputs/two_latches.protected.aag");
+		SymbTimeAnalysis sta(circuit, 1);
+		sta.findVulnerabilities(1, 3);
+		L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
+		CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+		aiger_reset(circuit);
+
+		aiger* circuit2 = Utils::readAiger("inputs/two_latches.unprotected.aag");
+		SymbTimeAnalysis sta2(circuit2,0);
+		sta2.findVulnerabilities(1, 3);
+		CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 2);
 		aiger_reset(circuit2);
 }
