@@ -27,7 +27,7 @@ void AIG2CNF::initFromAig(aiger *aig)
 {
   clear();
   trans_.add1LitClause(-1); // = TRUE costant
-  max_cnf_var_ = aig->maxvar;
+  max_cnf_var_ = aig->maxvar + 1;
 
   // clauses defining the outputs of the AND gates:
   for (unsigned i = 0; i < aig->num_ands; i++)
