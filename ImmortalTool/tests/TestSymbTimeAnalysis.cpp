@@ -66,7 +66,7 @@ void TestSymbTimeAnalysis::checkVulnerabilities(
 }
 
 // -------------------------------------------------------------------------------------------
-void TestSymbTimeAnalysis::test1_simulation_analysis_w_1_extra_latch()
+void TestSymbTimeAnalysis::test2_simulation_analysis_w_1_extra_latch()
 {
 
 	// Paths to TestCase files
@@ -107,4 +107,16 @@ void TestSymbTimeAnalysis::test1_simulation_analysis_w_1_extra_latch()
 
 }
 
+void TestSymbTimeAnalysis::test1_one_latch()
+{
+//	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
+//	SymbTimeAnalysis sta(circuit, 1);
+//	sta.findVulnerabilities(1, 3);
+//	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 
+	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
+	SymbTimeAnalysis sta2(circuit2, 0);
+	sta2.findVulnerabilities(1, 3);
+	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
+
+}

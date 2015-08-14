@@ -90,7 +90,7 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 {
 
-//	cout << "trans orig = " << endl << AIG2CNF::instance().getTrans().toString() << endl;
+	cout << "trans orig = " << endl << AIG2CNF::instance().getTrans().toString() << endl;
 
 // ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;

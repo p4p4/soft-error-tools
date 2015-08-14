@@ -45,7 +45,8 @@ struct aiger;
 class TestSymbTimeAnalysis : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestSymbTimeAnalysis);
-  CPPUNIT_TEST(test1_simulation_analysis_w_1_extra_latch);
+  CPPUNIT_TEST(test1_one_latch);
+//  CPPUNIT_TEST(test2_simulation_analysis_w_1_extra_latch);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -64,10 +65,12 @@ public:
 
 protected:
 
+
+  void test1_one_latch();
   // -------------------------------------------------------------------------------------------
   ///
   /// @brief Tests the found vulnerabilities of a circuit, which is protected with 1 extra latch
-    void test1_simulation_analysis_w_1_extra_latch();
+    void test2_simulation_analysis_w_1_extra_latch();
 
 
 };
