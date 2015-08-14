@@ -110,6 +110,9 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 
 		int next_free_cnf_var = AIG2CNF::instance().getMaxCnfVar() + 1;
 
+//		cout << "next free: " << next_free_cnf_var << endl;
+//		Utils::debugPrint(AIG2CNF::instance().getTrans().getVars(), "vars in T: ");
+
 		// concrete_state[] = (0 0 0 0 0 0 0)   // AIG literals
 		vector<int> concrete_state;
 		concrete_state.resize(circuit_->num_latches);
@@ -151,9 +154,12 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 		{ // -------- BEGIN "for each timestep in testcase" -----------
 
 			// correct simulation
+			Utils::debugPrint(concrete_state, "concrete state");
 			sim_->simulateOneTimeStep(testcase[i], concrete_state);
 			vector<int> outputs = sim_->getOutputs();
+			Utils::debugPrint(outputs, "concrete outputs");
 			vector<int> next_state = sim_->getNextLatchValues();
+			Utils::debugPrint(next_state, "next state");
 
 			// flip component bit
 			vector<int> faulty_state = concrete_state;
@@ -241,6 +247,7 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 								real_rename_map[renamed_var] : -real_rename_map[-renamed_var];
 				renamed_out_vars.push_back(renamed_var);
 			}
+			Utils::debugPrint(renamed_out_vars, "symbolic outputs: ");
 
 			// clause saying that the outputs o and o' are different
 			vector<int> o_is_diff_clause;
@@ -253,20 +260,28 @@ void SymbTimeAnalysis::Analyze1(TestCase& testcase)
 					o_is_diff_clause.push_back(renamed_out_vars[cnt]);
 			}
 
+			//___DBG____
+			for (unsigned k =0; k< o_is_diff_clause.size();k++)
+				L_DBG("o is diff[k]=" << o_is_diff_clause[k]);
+			//__DBG____
+
 			// build sat-solver clause. TODO: maybe incremental mode?
 			CNF F_for_solver = F;
 			F_for_solver.addClause(o_is_diff_clause);
 
+
+
+
 			// call SAT-Solver
 			bool sat = solver_->isSat(F_for_solver);
 			L_DBG("SAT: "<< sat);
+			L_DBG("F for solver was" << endl << F_for_solver.toString());
 			if (sat)
 			{
 				vector<int> sat_assignment;
 				solver_->isSatModelOrCore(F_for_solver, vector<int>(), F_for_solver.getVars() , sat_assignment);
 				Utils::debugPrint(sat_assignment, "Satisfying assignment:");
 
-				L_DBG(F_for_solver.toString());
 
 				vulnerable_elements_.insert(component_aig);
 				break;

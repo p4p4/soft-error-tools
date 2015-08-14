@@ -56,63 +56,21 @@ void TestSymbTimeAnalysis::checkVulnerabilities(
 
 	CPPUNIT_ASSERT(circuit != 0);
 	SymbTimeAnalysis sta(circuit, num_err_latches);
-	cout << endl << "find" << endl;
 	sta.findVulnerabilities(tc_files);
-	cout << endl << "found" << endl;
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 	// DEBUG: print the vulnerable latches
-	for (set<unsigned>::iterator it = vulnerabilities.begin();
-			it != vulnerabilities.end(); ++it)
-	{
-		cout << "  Latch " << *it << endl;
-	}
+//	for (set<unsigned>::iterator it = vulnerabilities.begin();
+//			it != vulnerabilities.end(); ++it)
+//	{
+//		cout << "  Latch " << *it << endl;
+//	}
 
 	CPPUNIT_ASSERT(vulnerabilities == should_be_vulnerable);
 }
 
 
-// -------------------------------------------------------------------------------------------
-void TestSymbTimeAnalysis::test2_simulation_analysis_w_1_extra_latch()
-{
 
-	// Paths to TestCase files
-	// A TestCase file contains vectors of input values
-	vector<string> tc_files;
-//	tc_files.push_back("inputs/3b");
-	tc_files.push_back("inputs/3_bit_input_1");
-//	tc_files.push_back("inputs/3_bit_input_2");
-//	tc_files.push_back("inputs/3_bit_input_3");
-//	tc_files.push_back("inputs/3_bit_input_4");
-//	tc_files.push_back("inputs/3_bit_input_5");
-
-	//-------------------------------------------
-	// test 1a: 3 of 3 latches protected
-
-	set<unsigned> should_be_vulnerable; // empty
-	checkVulnerabilities("inputs/toggle.perfect.aag", tc_files,
-			should_be_vulnerable, 1);
-
-	//-------------------------------------------
-	// test 1b: 2 of 3 latches protected
-
-	should_be_vulnerable.insert(10); // 10 is vulnerable
-	checkVulnerabilities("inputs/toggle.1vulnerability.aag", tc_files,
-			should_be_vulnerable, 1);
-//
-//	//-------------------------------------------
-//	// test 1c: 1 of 3 latches protected
-//	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
-//	checkVulnerabilities("inputs/toggle.2vulnerabilities.aag", tc_files,
-//			should_be_vulnerable, 1);
-//
-//	//-------------------------------------------
-//	// test 1d: 0 of 3 latches protected
-//	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
-//	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
-//			should_be_vulnerable, 0);
-
-}
 
 void TestSymbTimeAnalysis::test1_one_latch()
 {
@@ -156,11 +114,11 @@ void TestSymbTimeAnalysis::test2_one_latch_one_and()
 
 void TestSymbTimeAnalysis::test3_two_latches()
 {
-		Logger::instance().enable(Logger::DBG);
+//		Logger::instance().enable(Logger::DBG);
 
 		aiger* circuit = Utils::readAiger("inputs/two_latches.protected.aag");
 		SymbTimeAnalysis sta(circuit, 1);
-		sta.findVulnerabilities(1, 3);
+		sta.findVulnerabilities(1, 2);
 		L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
 		CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 		aiger_reset(circuit);
@@ -170,4 +128,111 @@ void TestSymbTimeAnalysis::test3_two_latches()
 		sta2.findVulnerabilities(1, 3);
 		CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 2);
 		aiger_reset(circuit2);
+}
+
+// -------------------------------------------------------------------------------------------
+void TestSymbTimeAnalysis::test4_analysis_w_1_extra_latch()
+{
+
+	// Paths to TestCase files
+	// A TestCase file contains vectors of input values
+	vector<string> tc_files;
+	tc_files.push_back("inputs/3b");
+	tc_files.push_back("inputs/3_bit_input_1");
+	tc_files.push_back("inputs/3_bit_input_2");
+	tc_files.push_back("inputs/3_bit_input_3");
+	tc_files.push_back("inputs/3_bit_input_4");
+	tc_files.push_back("inputs/3_bit_input_5");
+
+	//-------------------------------------------
+	// test 4a: 3 of 3 latches protected
+
+	set<unsigned> should_be_vulnerable; // empty
+	checkVulnerabilities("inputs/toggle.perfect.aag", tc_files,
+			should_be_vulnerable, 1);
+
+	//-------------------------------------------
+	// test 4b: 2 of 3 latches protected
+
+	should_be_vulnerable.insert(10); // 10 is vulnerable
+	checkVulnerabilities("inputs/toggle.1vulnerability.aag", tc_files,
+			should_be_vulnerable, 1);
+
+	//-------------------------------------------
+	// test 4c: 1 of 3 latches protected
+	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
+	checkVulnerabilities("inputs/toggle.2vulnerabilities.aag", tc_files,
+			should_be_vulnerable, 1);
+
+	//-------------------------------------------
+	// test 4d: 0 of 3 latches protected
+	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
+	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
+			should_be_vulnerable, 0);
+
+}
+
+void TestSymbTimeAnalysis::test5_analysis_w_2_extra_latch()
+{
+	// Paths to TestCase files
+	// A TestCase file contains vectors of input values
+	vector<string> tc_files;
+	tc_files.push_back("inputs/3_bit_input_1");
+	tc_files.push_back("inputs/3_bit_input_2");
+	tc_files.push_back("inputs/3_bit_input_3");
+	tc_files.push_back("inputs/3_bit_input_4");
+	tc_files.push_back("inputs/3_bit_input_5");
+
+	//-------------------------------------------
+	// test 1a: 3 of 3 latches protected
+
+	set<unsigned> should_be_vulnerable;
+	should_be_vulnerable.insert(10); // Latch 10 in vulnerable
+	checkVulnerabilities("inputs/toggle2l.aag", tc_files, should_be_vulnerable,
+			1);
+}
+
+void TestSymbTimeAnalysis::test6_analysis_w_random_inputs()
+{
+	// use constant seed, so that we don't have any non-determinism in the test-case ;-)
+	srand(0xCAFECAFE);
+
+	aiger* circuit = Utils::readAiger("inputs/toggle.2vulnerabilities.aag");
+	SymbTimeAnalysis sta(circuit, 1);
+	sta.findVulnerabilities(1, 5);
+	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
+
+	// DEBUG: print the vulnerable latches
+//	cout << endl;
+//		for (set<unsigned>::iterator it = vulnerabilities.begin();
+//				it != vulnerabilities.end(); ++it)
+//		{
+//			cout << "  Latch " << *it << endl;
+//		}
+
+	set<unsigned> should_be_vulnerable; // empty
+	should_be_vulnerable.insert(10);
+	should_be_vulnerable.insert(12);
+	CPPUNIT_ASSERT(vulnerabilities == should_be_vulnerable);
+}
+
+void TestSymbTimeAnalysis::test7_analysis_big_w_random_inputs()
+{
+	// use constant seed, so that we don't have any non-determinism in the test-case ;-)
+	srand(0xCAFECAFE);
+
+	// Test 4a:
+	//	Source: IWLS_2002_AIG/LGSynth91/smlexamples/s5378_orig.aig:
+	//	Latches: 164, Protected with AddParityTool: 50% (=82 Latches)
+	//	Vulnerabilities: 82 Latches
+
+	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
+	SymbTimeAnalysis sta(circuit, 2);
+	sta.findVulnerabilities(12, 10); // 1 TC with 2 timesteps would also already work
+	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
+
+	cout <<  endl << "vulnerabilities found: " <<  vulnerabilities.size() << endl;
+	CPPUNIT_ASSERT(vulnerabilities.size() == 82);
+
+
 }
