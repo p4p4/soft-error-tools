@@ -144,6 +144,8 @@ public:
 
   virtual void addVarsToKeep(const vector<int> &vars_to_keep);
 
+  virtual void addVarToKeep(int var_to_keep);
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Deletes the solver instance that is used in the incremental session.

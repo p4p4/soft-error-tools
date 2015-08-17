@@ -153,6 +153,11 @@ void LingelingApi::addVarsToKeep(const vector<int> &vars_to_keep)
 	    lglfreeze(incr_stack_.back(), vars_to_keep[cnt]);
 }
 
+void LingelingApi::addVarToKeep(int var_to_keep)
+{
+	lglfreeze(incr_stack_.back(), var_to_keep);
+}
+
 // -------------------------------------------------------------------------------------------
 void LingelingApi::clearIncrementalSession()
 {
@@ -465,3 +470,5 @@ void LingelingApi::randModel(LGL* solver, const vector<int> &assumptions, vector
     }
   }
 }
+
+

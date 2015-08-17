@@ -175,6 +175,7 @@ public:
 
 
   virtual void addVarsToKeep(const vector<int> &vars_to_keep) = 0;
+  virtual void addVarToKeep(int var_to_keep) = 0;
 
 // -------------------------------------------------------------------------------------------
 ///

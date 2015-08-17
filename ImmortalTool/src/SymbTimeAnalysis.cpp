@@ -101,7 +101,6 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
 			++c_cnt)
 	{
-
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = AIG2CNF::instance().aigLitToCnfLit(component_aig);
 
@@ -139,7 +138,8 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 			}
 
 			vector<int> f;
-			CNF F; // = TRUE
+			vector<int> odiff_literals;
+			solver_->startIncrementalSession(AIG2CNF::instance().getTrans().getVars(),1);
 
 			vector<int> cnf_o_terr = AIG2CNF::instance().getOutputs();
 			for (int cnt = 0; cnt < cnf_o_terr.size(); ++cnt)
@@ -179,12 +179,12 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 
 				// check if vulnerablitiy already found
 				bool err_found_with_simulation = (outputs != outputs2 && alarm == 0);
-//			if (err_found_with_simulation)
-//			{
-//				L_DBG("BREAK Sim Latch " << component_aig);
-//				vulnerable_elements_.insert(component_aig);
-//				break;
-//			}
+			if (err_found_with_simulation)
+			{
+				L_DBG("BREAK Sim Latch " << component_aig);
+				vulnerable_elements_.insert(component_aig);
+				break;
+			}
 
 				vector<int> real_rename_map(max_cnf_var_in_Terr, 0);
 				for (int i = 0; i < real_rename_map.size(); ++i)
@@ -196,6 +196,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				{
 					unsigned and_cnf = (circuit_->ands[cnt].lhs >> 1) + 1;
 					real_rename_map[and_cnf] = next_free_cnf_var++;
+					solver_->addVarToKeep(next_free_cnf_var-1);
 				}
 
 				// rename: set latch values to our symb_state
@@ -222,6 +223,9 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				real_rename_map[f_orig] = fi;
 				real_rename_map[poss_neg_state_cnf_var] = next_free_cnf_var++;
 
+				solver_->addVarToKeep(real_rename_map[poss_neg_state_cnf_var]);
+				solver_->addVarToKeep(fi);
+
 				Utils::debugPrint(real_rename_map, "Rename map:");
 
 				CNF T_err_copy = T_err;
@@ -230,11 +234,15 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				T_err_copy.setVarValue(alarm_cnf_lit, false);
 				T_err_copy.renameVars(real_rename_map);
 
-				F.addCNF(T_err_copy);
+
+				solver_->incAddCNF(T_err_copy);
+
 
 				// if fi is true, all oter f must be false
 				for (unsigned cnt = 0; cnt < f.size() - 1; cnt++)
-					F.add2LitClause(-fi, -f[cnt]);
+				{
+					solver_->incAdd2LitClause(-fi, -f[cnt]);
+				}
 
 				// rename each output except alarm output
 				vector<int> renamed_out_vars;
@@ -246,7 +254,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 
 				// clause saying that the outputs o and o' are different
 				vector<int> o_is_diff_clause;
-				o_is_diff_clause.reserve(renamed_out_vars.size());
+				o_is_diff_clause.reserve(renamed_out_vars.size()+1);
 				for (unsigned cnt = 0; cnt < renamed_out_vars.size(); ++cnt)
 				{
 					if (outputs[cnt] == 1) // simulation result of output is true
@@ -254,35 +262,35 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 					else
 						o_is_diff_clause.push_back(renamed_out_vars[cnt]);
 				}
+				int o_is_diff_enable_literal = next_free_cnf_var++;
+				o_is_diff_clause.push_back(o_is_diff_enable_literal);
+				odiff_literals.push_back(-o_is_diff_enable_literal);
+
+				solver_->incAddClause(o_is_diff_clause);
+
 //				Utils::debugPrint(renamed_out_vars, "renamed_out_vars: ");
 //				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
 
-
-				// build sat-solver clause. TODO: maybe incremental mode?
-				CNF F_for_solver = F;
-				F_for_solver.addClause(o_is_diff_clause);
-
 				// call SAT-Solver
-				bool sat = solver_->isSat(F_for_solver);
+				bool sat = solver_->incIsSat(odiff_literals);
+				odiff_literals[odiff_literals.size()-1] = -odiff_literals[odiff_literals.size()-1];
 				if (sat != err_found_with_simulation)
 				{
 					L_LOG("SAT: "<< sat);
 					L_LOG("err_found_with_simulation: " << err_found_with_simulation);
 				}
-				L_DBG("F for solver was" << endl << F_for_solver.toString());
 				if (sat)
 				{
-					vector<int> sat_assignment;
-					solver_->isSatModelOrCore(F_for_solver, vector<int>(),
-							F_for_solver.getVars(), sat_assignment);
-					Utils::debugPrint(sat_assignment, "Satisfying assignment:");
+//					vector<int> sat_assignment;
+//					solver_->isSatModelOrCore(F_for_solver, vector<int>(),
+//							F_for_solver.getVars(), sat_assignment);
+//					Utils::debugPrint(sat_assignment, "Satisfying assignment:");
 
 //				if (sat != err_found_with_simulation)
 //				{
 //					Utils::logPrint(sat_assignment, "Satisfying assignment:");
 //					return;
 //				}
-
 					vulnerable_elements_.insert(component_aig);
 					break;
 				}
