@@ -87,7 +87,7 @@ class SymbTimeAnalysis: public BackEnd
 /// Algorithm ANALYZE1: Only the point in time is symbolic
 ///
 /// @param testcase a vector of input vectors
-	void Analyze1(TestCase &testcase);
+	void Analyze1(vector<TestCase> &testcases);
 
 // -------------------------------------------------------------------------------------------
 ///
