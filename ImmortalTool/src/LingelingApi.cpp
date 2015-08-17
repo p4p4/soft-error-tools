@@ -147,6 +147,12 @@ void LingelingApi::startIncrementalSession(const vector<int> &vars_to_keep,
   //lglsetopt(incr_stack_.back(), "seed", 42);
 }
 
+void LingelingApi::addVarsToKeep(const vector<int> &vars_to_keep)
+{
+	for(size_t cnt = 0; cnt < vars_to_keep.size(); ++cnt)
+	    lglfreeze(incr_stack_.back(), vars_to_keep[cnt]);
+}
+
 // -------------------------------------------------------------------------------------------
 void LingelingApi::clearIncrementalSession()
 {

@@ -142,6 +142,8 @@ public:
   virtual void startIncrementalSession(const vector<int> &vars_to_keep,
                                        bool use_push = true);
 
+  virtual void addVarsToKeep(const vector<int> &vars_to_keep);
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Deletes the solver instance that is used in the incremental session.
