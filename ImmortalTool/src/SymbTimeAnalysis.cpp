@@ -102,33 +102,12 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 			++c_cnt)
 	{
 
-		for (unsigned tci = 0; tci < testcases.size(); tci++)
-		{
+		unsigned component_aig = circuit_->latches[c_cnt].lit;
+		int component_cnf = AIG2CNF::instance().aigLitToCnfLit(component_aig);
 
-			unsigned component_aig = circuit_->latches[c_cnt].lit;
-			int component_cnf = AIG2CNF::instance().aigLitToCnfLit(component_aig);
+		int next_free_cnf_var = AIG2CNF::instance().getMaxCnfVar() + 1;
 
-			int next_free_cnf_var = AIG2CNF::instance().getMaxCnfVar() + 1;
-
-//		cout << "next free: " << next_free_cnf_var << endl;
-//		Utils::debugPrint(AIG2CNF::instance().getTrans().getVars(), "vars in T: ");
-
-// concrete_state[] = (0 0 0 0 0 0 0)   // AIG literals
-			vector<int> concrete_state;
-			concrete_state.resize(circuit_->num_latches);
-
-			// symb_state[] = (1 1 1 1 1)  // CNF literals
-			vector<int> symb_state;
-			symb_state.reserve(circuit_->num_latches);
-			for (unsigned i = 0; i < circuit_->num_latches; i++)
-			{
-				symb_state.push_back(1);
-			}
-
-			vector<int> f;
-			CNF F; // = TRUE
-
-			CNF T_err = AIG2CNF::instance().getTrans();
+		CNF T_err = AIG2CNF::instance().getTrans();
 
 			int f_orig = next_free_cnf_var++;
 			int poss_neg_state_cnf_var = next_free_cnf_var++;
@@ -145,6 +124,23 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 			T_err.add3LitClause(f_orig, -component_cnf, poss_neg_state_cnf_var);
 			T_err.add3LitClause(f_orig, component_cnf, -poss_neg_state_cnf_var);
 
+		for (unsigned tci = 0; tci < testcases.size(); tci++)
+		{
+			// concrete_state[] = (0 0 0 0 0 0 0)   // AIG literals
+			vector<int> concrete_state;
+			concrete_state.resize(circuit_->num_latches);
+
+			// symb_state[] = (1 1 1 1 1)  // CNF literals
+			vector<int> symb_state;
+			symb_state.reserve(circuit_->num_latches);
+			for (unsigned i = 0; i < circuit_->num_latches; i++)
+			{
+				symb_state.push_back(1);
+			}
+
+			vector<int> f;
+			CNF F; // = TRUE
+
 			vector<int> cnf_o_terr = AIG2CNF::instance().getOutputs();
 			for (int cnt = 0; cnt < cnf_o_terr.size(); ++cnt)
 				cnf_o_terr[cnt] = Utils::applyRen(first_rename_map, cnf_o_terr[cnt]);
@@ -153,7 +149,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				cnf_next_terr[cnt] = Utils::applyRen(first_rename_map,
 						cnf_next_terr[cnt]);
 
-			L_DBG("T_err = " << endl << T_err.toString());
+//			L_DBG("T_err = " << endl << T_err.toString());
 
 			int max_cnf_var_in_Terr = next_free_cnf_var;
 			TestCase& testcase = testcases[tci];
@@ -175,7 +171,6 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 
 				// faulty simulation with flipped bit
 				sim_->simulateOneTimeStep(testcase[i], faulty_state);
-//	  vector<int> next_state2 = sim_->getNextLatchValues();  // unused
 				vector<int> outputs2 = sim_->getOutputs();
 				int alarm = outputs2[outputs2.size() - 1];
 
@@ -259,13 +254,9 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 					else
 						o_is_diff_clause.push_back(renamed_out_vars[cnt]);
 				}
-				Utils::debugPrint(renamed_out_vars, "renamed_out_vars: ");
-				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
+//				Utils::debugPrint(renamed_out_vars, "renamed_out_vars: ");
+//				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
 
-				//___DBG____
-//			for (unsigned k =0; k< o_is_diff_clause.size();k++)
-//				L_DBG("o is diff[k]=" << o_is_diff_clause[k]);
-				//__DBG____
 
 				// build sat-solver clause. TODO: maybe incremental mode?
 				CNF F_for_solver = F;
