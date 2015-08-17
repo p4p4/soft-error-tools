@@ -194,12 +194,15 @@ void TestSymbTimeAnalysis::test5_analysis_w_2_extra_latch()
 
 void TestSymbTimeAnalysis::test6_analysis_w_random_inputs()
 {
+//	Logger::instance().enable(Logger::DBG);
+	Logger::instance().enable(Logger::LOG);
+
 	// use constant seed, so that we don't have any non-determinism in the test-case ;-)
 	srand(0xCAFECAFE);
 
 	aiger* circuit = Utils::readAiger("inputs/toggle.2vulnerabilities.aag");
 	SymbTimeAnalysis sta(circuit, 1);
-	sta.findVulnerabilities(1, 5);
+	sta.findVulnerabilities(1, 2);
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 	// DEBUG: print the vulnerable latches
@@ -228,7 +231,7 @@ void TestSymbTimeAnalysis::test7_analysis_big_w_random_inputs()
 
 	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
 	SymbTimeAnalysis sta(circuit, 2);
-	sta.findVulnerabilities(12, 10); // 1 TC with 2 timesteps would also already work
+	sta.findVulnerabilities(5, 5); // 1 TC with 2 timesteps would also already work
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 	cout <<  endl << "vulnerabilities found: " <<  vulnerabilities.size() << endl;

@@ -247,6 +247,21 @@ void Utils::debugPrint(const vector<int> &vec, string prefix)
 }
 
 // -------------------------------------------------------------------------------------------
+void Utils::logPrint(const vector<int> &vec, string prefix)
+{
+  ostringstream oss;
+  oss << "[";
+  for(size_t count = 0; count < vec.size(); ++count)
+  {
+    oss << vec[count];
+    if(count != vec.size() - 1)
+      oss << ", ";
+  }
+  oss << "]";
+  L_LOG(prefix << oss.str());
+}
+
+// -------------------------------------------------------------------------------------------
 void Utils::debugCheckWinReg(const CNF &winning_region)
 {
 #ifndef NDEBUG

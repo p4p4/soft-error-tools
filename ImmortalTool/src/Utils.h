@@ -289,6 +289,8 @@ public:
 /// @param prefix An optional prefix for the debug message.
   static void debugPrint(const vector<int> &vec, string prefix = "");
 
+  static void logPrint(const vector<int> &vec, string prefix = "");
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Checks a winning region for correctness.
@@ -335,6 +337,11 @@ public:
 /// @param neg_winning_region The negation of the winning region to check.
   static void debugCheckWinReg(const CNF &winning_region, const CNF &neg_winning_region);
 
+
+  static inline int applyRen(const vector<int> &rename_map, int lit)
+  {
+  	return lit < 0 ? -rename_map[-lit] : rename_map[lit];
+  }
 
   static aiger* readAiger(string path);
 
