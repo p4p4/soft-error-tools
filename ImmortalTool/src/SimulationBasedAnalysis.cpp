@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -52,9 +51,8 @@ SimulationBasedAnalysis::~SimulationBasedAnalysis()
 // -------------------------------------------------------------------------------------------
 bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 {
-	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
-	//for each test case t[][]
+	//for each test case:
 	for (tc_index_ = 0; tc_index_ < testcases.size(); tc_index_++)
 	{
 		sim_->setTestcase(testcases[tc_index_]);
@@ -69,9 +67,8 @@ bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 bool SimulationBasedAnalysis::findVulnerabilities(
 		vector<string> paths_to_TC_files)
 {
-	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
-	//for each test case t[][]
+	//for each test case
 	for (tc_index_ = 0; tc_index_ < paths_to_TC_files.size(); tc_index_++)
 	{
 		sim_->setTestcase(paths_to_TC_files[tc_index_]);
@@ -85,25 +82,21 @@ bool SimulationBasedAnalysis::findVulnerabilities(
 // -------------------------------------------------------------------------------------------
 void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 {
-//	vulnerable_latches = empty_set/list
-//for each test case t[][]
-
 	vector<vector<int> > outputs;
 	vector<vector<int> > states;
+	outputs.reserve(current_TC_.size());
+	states.reserve(current_TC_.size());
 
-//  states[][], outputs[][] = simulate(t)
-	// simulate whole TestCase without error
+	// simulate whole TestCase without error, store results
 	while (sim_->simulateOneTimeStep() == true)
 	{
-		// store results
-		// TODO: this could be done more efficient if we directly read from sim_->res_[]
 		outputs.push_back(sim_->getOutputs());
 		states.push_back(sim_->getLatchValues());
 
 		sim_->switchToNextState();
 	}
 
-//  for each latch l
+	//  for each latch
 	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches - num_err_latches_;
 			++l_cnt)
 	{
@@ -127,7 +120,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 			vector<int> &state = states[timestep];
 
 			// flip latch
-			state[l_cnt] = aiger_not(state[l_cnt]); // remember to restore state again later
+			state[l_cnt] = aiger_not(state[l_cnt]); // don't forget to restore state again later
 			AigSimulator sim_w_flip(circuit_);
 
 			// for all j >= i:
@@ -137,10 +130,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				sim_w_flip.simulateOneTimeStep(current_TC_[j], state);
 				sim_w_flip.switchToNextState();
 
-				vector<int> outputs_w_flip;
-				vector<int> latches_w_flip;
-				outputs_w_flip = sim_w_flip.getOutputs();
-				latches_w_flip = sim_w_flip.getLatchValues();
+				vector<int> outputs_w_flip = sim_w_flip.getOutputs();
 
 				// if(alarm)
 				if (outputs_w_flip[circuit_->num_outputs - 1] == 1)
@@ -158,8 +148,8 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 					break;
 				}
 
-				// if(next_state[] == states[j+1][])
-				if (latches_w_flip == states[j + 1])
+				// else if (next_state[] == states[j+1][])
+				if (sim_w_flip.getLatchValues() == states[j + 1])
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					break;
