@@ -23,6 +23,7 @@
 // ----------------------------------------------------------------------------
 
 #include "TestSimulationBasedAnalysis.h"
+#include "../src/Logger.h"
 
 extern "C"
 {
@@ -35,6 +36,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION (TestSimulationBasedAnalysis);
 void TestSimulationBasedAnalysis::setUp()
 {
 	//setup for testcases
+	Logger::instance().disable(Logger::LOG);
 }
 
 // -------------------------------------------------------------------------------------------

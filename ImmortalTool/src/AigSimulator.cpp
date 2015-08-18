@@ -60,8 +60,9 @@ AigSimulator::~AigSimulator()
 void AigSimulator::setTestcase(string path_to_aigsim_input)
 {
 	initLatches();
-
+	testcase_.clear();
 	Utils::parseAigSimFile(path_to_aigsim_input, testcase_, circuit_->num_inputs);
+	time_index_=0;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -71,6 +72,7 @@ void AigSimulator::setTestcase(const vector<vector<int> >& testcase)
 			"Wrong test case provided!");
 	initLatches();
 	testcase_ = testcase;
+	time_index_=0;
 }
 
 // -------------------------------------------------------------------------------------------

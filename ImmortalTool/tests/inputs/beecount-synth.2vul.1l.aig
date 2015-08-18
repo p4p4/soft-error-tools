@@ -1,0 +1,24 @@
+aig 48 3 4 5 41
+43
+58
+80
+43
+31
+91
+75
+69
+96
+	(#*	4-
+7*@&B34:-NOl3 Err_latch_0
+o4 Err_out_Final
+c
+beecount.kiss2
+This file was written by ABC on Mon Aug  3 13:06:04 2015
+For information about AIGER format, refer to http://fmv.jku.at/aiger
+----------------------------------------------------
+This file has an been converted with AddParityTool. Input file:
+benchmarks/IWLS_2002_AIG/texas/beecount_synth.aig
+Number of Latches (total): 3
+Latches to protect: 34% (1 Latches)
+Number of additional latches: 1
+  (~1 latches per new latch)

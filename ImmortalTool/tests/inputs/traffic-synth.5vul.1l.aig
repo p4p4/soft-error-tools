@@ -1,0 +1,30 @@
+aig 99 3 10 6 86
+69
+85
+105
+117
+39
+127
+139
+147
+157
+174
+157
+69
+85
+105
+117
+198
+		#!!%"	7;B5JI$P(!3I\6/1+7cThXn`dvjiê{ìÄ)N,N†°ûû¢¢¶¶l9 Err_latch_0
+o5 Err_out_Final
+c
+tlc.sim
+This file was written by ABC on Mon Aug  3 13:06:36 2015
+For information about AIGER format, refer to http://fmv.jku.at/aiger
+----------------------------------------------------
+This file has an been converted with AddParityTool. Input file:
+benchmarks/IWLS_2002_AIG/texas/traffic_synth.aig
+Number of Latches (total): 9
+Latches to protect: 50% (4 Latches)
+Number of additional latches: 1
+  (~4 latches per new latch)

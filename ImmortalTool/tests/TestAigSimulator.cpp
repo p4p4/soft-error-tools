@@ -36,7 +36,7 @@ extern "C"
 
 using namespace std;
 
-CPPUNIT_TEST_SUITE_REGISTRATION(TestAigSimulator);
+CPPUNIT_TEST_SUITE_REGISTRATION (TestAigSimulator);
 
 // -------------------------------------------------------------------------------------------
 void TestAigSimulator::setUp()
@@ -176,7 +176,6 @@ void TestAigSimulator::test1_sim_combinatoric_circuit()
 
 }
 
-
 // -------------------------------------------------------------------------------------------
 void TestAigSimulator::test2_sim_combinatoric_circuit_with_aigsim_inputfile()
 {
@@ -247,8 +246,7 @@ void TestAigSimulator::test3_circuit_with_latches_compare_w_aigersim_outputfile(
 {
 	// read circuit:
 	aiger* circuit = readAigerFile("inputs/minmax2_orig.aig");
-	AigSimDiff(circuit, "inputs/5_bit_input",
-			"inputs/minmax2_orig.aig.diff1");
+	AigSimDiff(circuit, "inputs/5_bit_input", "inputs/minmax2_orig.aig.diff1");
 }
 
 // -------------------------------------------------------------------------------------------
@@ -257,17 +255,16 @@ void TestAigSimulator::test4_reuse_aigsim_object()
 	aiger* circuit = readAigerFile("inputs/minmax2_orig.aig");
 	AigSimulator sim(circuit);
 
-	AigSimDiff(sim, "inputs/5_bit_input",
-				"inputs/minmax2_orig.aig.diff1");
+	AigSimDiff(sim, "inputs/5_bit_input", "inputs/minmax2_orig.aig.diff1");
 
 	AigSimDiff(sim, "inputs/5_bit_input_shuffle1",
-				"inputs/minmax2_orig.out.shuffle1");
+			"inputs/minmax2_orig.out.shuffle1");
 
 	AigSimDiff(sim, "inputs/5_bit_input_shuffle2",
-				"inputs/minmax2_orig.out.shuffle2");
+			"inputs/minmax2_orig.out.shuffle2");
 
 	AigSimDiff(sim, "inputs/5_bit_input_shuffle3",
-				"inputs/minmax2_orig.out.shuffle3");
+			"inputs/minmax2_orig.out.shuffle3");
 }
 
 void TestAigSimulator::test5_simulate_with_provided_state()
@@ -298,4 +295,34 @@ void TestAigSimulator::test5_simulate_with_provided_state()
 	string shouldbe = "10001011 00101 010 11101000";
 	CPPUNIT_ASSERT_EQUAL(shouldbe, sim.getStateString());
 
+}
+
+void TestAigSimulator::test6()
+{
+	aiger* circuit = readAigerFile("inputs/beecount-synth.2vul.1l.aig");
+	AigSimulator sim(circuit);
+
+	vector<int> inputs;
+	inputs.push_back(1);
+	inputs.push_back(0);
+	inputs.push_back(0);
+
+	vector<int> latches;
+	latches.push_back(1);
+	latches.push_back(1);
+	latches.push_back(0);
+	latches.push_back(1);
+
+	sim.simulateOneTimeStep(inputs, latches);
+
+	string shouldbe = "1101 100 01010 1001";
+	CPPUNIT_ASSERT_EQUAL(shouldbe, sim.getStateString());
+
+	// inputs stay the same
+	// flip 3rd bit of latch:
+	latches[2] = 1;
+	sim.simulateOneTimeStep(inputs, latches);
+
+	shouldbe = "1111 100 01110 1001";
+	CPPUNIT_ASSERT_EQUAL(shouldbe, sim.getStateString());
 }

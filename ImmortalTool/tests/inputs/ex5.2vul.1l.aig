@@ -1,0 +1,23 @@
+aig 85 2 5 3 78
+94
+118
+128
+141
+146
+159
+159
+170
+	,(''4-."2
+/887;#)39AGPS,0YZ)5CY_1M[cibu>EKk/-Š‹Šb7”•––l4 Err_latch_0
+o2 Err_out_Final
+c
+ex5.kiss2
+This file was written by ABC on Mon Aug  3 13:06:11 2015
+For information about AIGER format, refer to http://fmv.jku.at/aiger
+----------------------------------------------------
+This file has an been converted with AddParityTool. Input file:
+benchmarks/IWLS_2002_AIG/texas/ex5_orig.aig
+Number of Latches (total): 4
+Latches to protect: 50% (2 Latches)
+Number of additional latches: 1
+  (~2 latches per new latch)

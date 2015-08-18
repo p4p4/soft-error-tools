@@ -48,7 +48,8 @@ class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST (test4_analysis_w_1_extra_latch);
   CPPUNIT_TEST (test5_analysis_w_2_extra_latch);
 	CPPUNIT_TEST (test6_analysis_w_random_inputs);
-	CPPUNIT_TEST (test7_analysis_big_w_random_inputs);
+	CPPUNIT_TEST (test7_compare_with_simulation_1);
+//	CPPUNIT_TEST (test7_analysis_big_w_random_inputs);
 	CPPUNIT_TEST_SUITE_END();
 
 	public:
@@ -66,6 +67,9 @@ class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
 	void checkVulnerabilities(string path_to_aiger_circuit,
 			vector<string> tc_files, set<unsigned> should_be_vulnerable,
 			int num_err_latches);
+
+	void compareWithSimulation(string path_to_aiger_circuit, int num_tc, int num_timesteps, int num_err_latches);
+
 
 	protected:
 
@@ -86,6 +90,9 @@ class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
 	///
 	/// @brief Searches for vulnerabilities in a circuit using random input vectors
 	void test6_analysis_w_random_inputs();
+
+
+	void test7_compare_with_simulation_1();
 
 	// -------------------------------------------------------------------------------------------
 	///

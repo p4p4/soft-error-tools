@@ -65,9 +65,10 @@ public:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief reads and parses an aigsim-file and stores it as testcase
+/// @brief reads and parses an aigsim-file and stores (appends!) it as testcase
 ///
 /// The stored testcase contains input vectors for each time-step of the simulation.
+/// Attention: this function does NOT clear() the given TestCase &testcase.
 ///
 /// @param path_to_aigsim_input the aigsim input file to parse
 /// @param testcase a (potentially empty) TestCase data-structure

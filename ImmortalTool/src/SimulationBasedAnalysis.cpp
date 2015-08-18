@@ -82,7 +82,6 @@ bool SimulationBasedAnalysis::findVulnerabilities(
 	return (vulnerable_elements_.size() != 0);
 }
 
-
 // -------------------------------------------------------------------------------------------
 void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 {
@@ -124,11 +123,11 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 			if (l_is_vulnerable)
 				break;
 
-			// state[] = states[i][]
+			// current state
 			vector<int> &state = states[timestep];
 
-			// state[l] = !state[l]
-			state[l_cnt] = aiger_not(state[l_cnt]); // TODO: restore state again later
+			// flip latch
+			state[l_cnt] = aiger_not(state[l_cnt]); // remember to restore state again later
 			AigSimulator sim_w_flip(circuit_);
 
 			// for all j >= i:
@@ -150,24 +149,9 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 					break;
 				}
 
-				// TODO: maybe this already includes the if(alarm){...}
-				// if(out[] != outputs[j][])
-				//   vulnerable_latches.add(l)
-				//   l_is_vulnerable = true
-				//   break; // continue with next l
+				// else if: no alarm but different output values
 				if (outputs_w_flip != outputs[j])
 				{
-					//DEBUG
-//					L_DBG("vulnerable latch:" << circuit_->latches[l_cnt].lit)
-//					for(unsigned i=0; i < outputs_w_flip.size(); i++)
-//					{
-//						if(circuit_->outputs[i].name)
-//						{
-//							cout << circuit_->outputs[i].name;
-//						}
-//						L_DBG("out["<<i<<"] is:"<<outputs_w_flip[i] << ", shouldbe:"<<outputs[j][i]);
-//
-//					}
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					vulnerable_elements_.insert(circuit_->latches[l_cnt].lit);
 					l_is_vulnerable = true;
