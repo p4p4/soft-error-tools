@@ -164,13 +164,6 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					break;
 				}
-
-				// if last iteration of loop (and no 'break' statement before)
-				if (timestep == states.size() - 1)
-				{
-					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
-				}
-
 			}
 		}
 	}
