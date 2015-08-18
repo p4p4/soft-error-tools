@@ -134,7 +134,8 @@ int main(int argc, char *argv[])
 	aiger_add_comment(aig_input,
 			"----------------------------------------------------");
 	aiger_add_comment(aig_input,
-			"This file has an been converted with AddParityTool.");
+			"This file has been converted with AddParityTool. Input file:");
+	aiger_add_comment(aig_input, argv[1]);
 	istringstream iss(str.str());
 	string line;
 	while (getline(iss, line))
