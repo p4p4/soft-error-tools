@@ -150,7 +150,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				cnf_next_terr[cnt] = Utils::applyRen(first_rename_map,
 						cnf_next_terr[cnt]);
 
-//			L_DBG("T_err = " << endl << T_err.toString());
+			L_DBG("cnf="<<component_cnf<<", aig="<< component_aig << "T_err = " << endl << T_err.toString());
 
 			int max_cnf_var_in_Terr = next_free_cnf_var;
 			TestCase& testcase = testcases[tci];
@@ -162,8 +162,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				sim_->simulateOneTimeStep(testcase[i], concrete_state);
 				vector<int> outputs = sim_->getOutputs();
 				vector<int> next_state = sim_->getNextLatchValues();
-//				Utils::debugPrint(outputs, "concrete outputs");
-//				Utils::debugPrint(next_state, "next state");
+				Utils::debugPrint(next_state, "next state");
 
 				// flip component bit
 				vector<int> faulty_state = concrete_state;
@@ -174,8 +173,9 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				vector<int> outputs2 = sim_->getOutputs();
 				int alarm = outputs2[outputs2.size() - 1];
 
-//				Utils::debugPrint(outputs, "outputs");
-//				Utils::debugPrint(outputs2, "outputs2");
+				Utils::debugPrint(testcase[i], "inputs");
+				Utils::debugPrint(outputs, "outputs");
+				Utils::debugPrint(outputs2, "outputs2");
 
 				// check if vulnerablitiy already found
 				bool err_found_with_simulation = (outputs != outputs2 && alarm == 0);
@@ -196,8 +196,9 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				{
 					unsigned and_cnf = (circuit_->ands[cnt].lhs >> 1) + 1;
 					real_rename_map[and_cnf] = next_free_cnf_var++;
-					solver_->addVarToKeep(next_free_cnf_var - 1);
+					//solver_->addVarToKeep(next_free_cnf_var - 1);
 				}
+
 
 				// rename: set latch values to our symb_state
 				// (ALTERNATIVE: don't rename, set via T_err_copy.setVarValue(), but BEFORE renaming)
@@ -223,7 +224,6 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				real_rename_map[f_orig] = fi;
 				real_rename_map[poss_neg_state_cnf_var] = next_free_cnf_var++;
 
-				solver_->addVarToKeep(real_rename_map[poss_neg_state_cnf_var]);
 				solver_->addVarToKeep(fi);
 
 				Utils::debugPrint(real_rename_map, "Rename map:");
@@ -262,11 +262,21 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 
 				solver_->incAddClause(o_is_diff_clause);
 
-//				Utils::debugPrint(renamed_out_vars, "renamed_out_vars: ");
-//				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
+				Utils::debugPrint(renamed_out_vars, "renamed_out_vars: ");
+				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
+
+				// rename next states
+				vector<int> renamed_next_state_vars;
+				renamed_next_state_vars.reserve(cnf_next_terr.size());
+				for (unsigned cnt = 0; cnt < cnf_next_terr.size(); ++cnt)
+					renamed_next_state_vars.push_back(
+							Utils::applyRen(real_rename_map, cnf_next_terr[cnt]));
+				solver_->addVarsToKeep(renamed_next_state_vars);
 
 				// call SAT-Solver
-				bool sat = solver_->incIsSat(odiff_literals);
+//				bool sat = solver_->incIsSat(odiff_literals);
+				vector<int> model;
+				bool sat = solver_->incIsSatModelOrCore(odiff_literals,f,model);
 				odiff_literals[odiff_literals.size() - 1] =
 						-odiff_literals[odiff_literals.size() - 1];
 				if (sat != err_found_with_simulation)
@@ -277,19 +287,17 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				}
 				if (sat)
 				{
+					L_LOG("found vulnerability: " << component_aig)
+					Utils::logPrint(model, "satisfying assignment: ");
 					vulnerable_elements_.insert(component_aig);
 					break;
 				}
 
 				concrete_state = next_state;
 
-				// rename next states
 
-				vector<int> renamed_next_state_vars;
-				renamed_next_state_vars.reserve(cnf_next_terr.size());
-				for (unsigned cnt = 0; cnt < cnf_next_terr.size(); ++cnt)
-					renamed_next_state_vars.push_back(
-							Utils::applyRen(real_rename_map, cnf_next_terr[cnt]));
+
+
 
 				symb_state = renamed_next_state_vars;
 

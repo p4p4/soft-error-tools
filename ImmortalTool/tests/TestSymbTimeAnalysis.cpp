@@ -256,18 +256,18 @@ void TestSymbTimeAnalysis::test7_compare_with_simulation_1()
 {
 //	Logger::instance().enable(Logger::INF);
 	Logger::instance().disable(Logger::INF);
-//	compareWithSimulation("inputs/toggle.perfect.aag", 1, 2, 1);
-//	compareWithSimulation("inputs/toggle.1vulnerability.aag", 1, 2, 1);
-//	compareWithSimulation("inputs/toggle.2vulnerabilities.aag", 1, 2, 1);
-//	compareWithSimulation("inputs/toggle.3vulnerabilities.aag", 1, 2, 0);
-//	compareWithSimulation("inputs/iwls02texasa.2vul.1l.aag", 5, 5, 1); // TODO: 0 vulnerabilities?
-//	compareWithSimulation("inputs/ex5.2vul.1l.aig", 5, 5, 1);
-//	compareWithSimulation("inputs/ex5.2vul.2l.aig", 5, 5, 2);
+	compareWithSimulation("inputs/toggle.perfect.aag", 1, 2, 1);
+	compareWithSimulation("inputs/toggle.1vulnerability.aag", 1, 2, 1);
+	compareWithSimulation("inputs/toggle.2vulnerabilities.aag", 1, 2, 1);
+	compareWithSimulation("inputs/toggle.3vulnerabilities.aag", 1, 2, 0);
+	compareWithSimulation("inputs/iwls02texasa.2vul.1l.aag", 5, 5, 1); // TODO: 0 vulnerabilities?
+	compareWithSimulation("inputs/ex5.2vul.1l.aig", 5, 5, 1);
+	compareWithSimulation("inputs/ex5.2vul.2l.aig", 5, 5, 2);
+	compareWithSimulation("inputs/beecount-synth.2vul.1l.aig", 2, 5, 1);
 	Logger::instance().enable(Logger::INF);
-//	Logger::instance().enable(Logger::LOG);
-//	Logger::instance().enable(Logger::DBG);
-	compareWithSimulation("inputs/beecount-synth.2vul.1l.aig", 2, 5, 0); // simulation approach does not find all errors!
-//	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig",1,14,1); // symbolic approuch does not find all errors!
+	//	Logger::instance().enable(Logger::LOG);
+	//	Logger::instance().enable(Logger::DBG);
+	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig",1,14,1); // symbolic approuch does not find all errors!
 
 //	compareWithSimulation("inputs/s5378.50percent.aag",5,5,2); // FAILS
 }
