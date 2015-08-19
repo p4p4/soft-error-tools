@@ -171,20 +171,23 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				// faulty simulation with flipped bit
 				sim_->simulateOneTimeStep(testcase[i], faulty_state);
 				vector<int> outputs2 = sim_->getOutputs();
-				int alarm = outputs2[outputs2.size() - 1];
+				bool alarm = (outputs2[outputs2.size() - 1] == 1);
 
 				Utils::debugPrint(testcase[i], "inputs");
 				Utils::debugPrint(outputs, "outputs");
 				Utils::debugPrint(outputs2, "outputs2");
 
 				// check if vulnerablitiy already found
-				bool err_found_with_simulation = (outputs != outputs2 && alarm == 0);
+				bool equal_outputs = (outputs == outputs2);
+				bool err_found_with_simulation = (!equal_outputs && !alarm);
 //			if (err_found_with_simulation)
 //			{
 //				L_DBG("BREAK Sim Latch " << component_aig);
 //				vulnerable_elements_.insert(component_aig);
 //				break;
 //			}
+
+				bool err_is_no_vulnerability = (false); // TODO
 
 				vector<int> real_rename_map(max_cnf_var_in_Terr, 0);
 				for (unsigned cnt = 0; cnt < real_rename_map.size(); ++cnt)
