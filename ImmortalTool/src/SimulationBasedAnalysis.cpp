@@ -92,7 +92,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	{
 		outputs.push_back(sim_->getOutputs());
 		states.push_back(sim_->getLatchValues());
-
+		L_DBG(sim_->getStateString());
 		sim_->switchToNextState();
 	}
 
@@ -117,7 +117,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				break;
 
 			// current state
-			vector<int> &state = states[timestep];
+			vector<int> state = states[timestep];
 
 			// flip latch
 			state[l_cnt] = aiger_not(state[l_cnt]); // don't forget to restore state again later
@@ -128,8 +128,8 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 			{
 				// next_state[], out[], alarm = simulate1step(state[], t[j])
 				sim_w_flip.simulateOneTimeStep(current_TC_[j], state);
-				sim_w_flip.switchToNextState();
 
+				sim_w_flip.switchToNextState();
 				vector<int> outputs_w_flip = sim_w_flip.getOutputs();
 
 				// if(alarm)
@@ -142,6 +142,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				// else if: no alarm but different output values
 				if (outputs_w_flip != outputs[j])
 				{
+					L_DBG("flipped:"<<sim_w_flip.getStateString());
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					vulnerable_elements_.insert(circuit_->latches[l_cnt].lit);
 					l_is_vulnerable = true;
@@ -154,6 +155,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					break;
 				}
+
 			}
 		}
 	}
