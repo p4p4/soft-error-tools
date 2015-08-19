@@ -92,7 +92,6 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	{
 		outputs.push_back(sim_->getOutputs());
 		states.push_back(sim_->getLatchValues());
-
 		sim_->switchToNextState();
 	}
 
@@ -149,7 +148,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				}
 
 				// else if (next_state[] == states[j+1][])
-				if (sim_w_flip.getLatchValues() == states[j + 1])
+				if (sim_w_flip.getNextLatchValues() == states[j + 1])
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					break;
