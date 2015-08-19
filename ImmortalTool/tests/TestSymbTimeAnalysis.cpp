@@ -116,8 +116,12 @@ void TestSymbTimeAnalysis::test1_one_latch()
 	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
 	SymbTimeAnalysis sta(circuit, 1);
 	sta.findVulnerabilities(1, 3);
+//	Logger::instance().disable(Logger::DBG);
 	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 	aiger_reset(circuit);
+
+
+
 
 	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
 	SymbTimeAnalysis sta2(circuit2, 0);
@@ -269,7 +273,7 @@ void TestSymbTimeAnalysis::test7_compare_with_simulation_1()
 //	compareWithSimulation("inputs/s27.1vul.1l",2,1,1); // TODO: check why symb=1, sim=0!
 	compareWithSimulation("inputs/shiftreg.2vul.1l.aig", 1, 2, 1);
 //	compareWithSimulation("inputs/shiftreg.3vul.0l.aig", 1, 1, 0); // TODO: check why symb=3, sim=2
-//	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig",1,14,1); // symbolic approuch does not find all errors!
+//	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig",5,14,1); // symbolic approuch does not find all errors!
 
 //	compareWithSimulation("inputs/s5378.50percent.aag",3,5,2); // FAILS
 }
