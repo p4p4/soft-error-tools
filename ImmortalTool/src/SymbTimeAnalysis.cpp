@@ -143,10 +143,10 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 					0);
 
 			vector<int> cnf_o_terr = AIG2CNF::instance().getOutputs();
-			for (int cnt = 0; cnt < cnf_o_terr.size(); ++cnt)
+			for (unsigned cnt = 0; cnt < cnf_o_terr.size(); ++cnt)
 				cnf_o_terr[cnt] = Utils::applyRen(first_rename_map, cnf_o_terr[cnt]);
 			vector<int> cnf_next_terr = AIG2CNF::instance().getNextStateVars();
-			for (int cnt = 0; cnt < cnf_next_terr.size(); ++cnt)
+			for (unsigned cnt = 0; cnt < cnf_next_terr.size(); ++cnt)
 				cnf_next_terr[cnt] = Utils::applyRen(first_rename_map,
 						cnf_next_terr[cnt]);
 
@@ -187,8 +187,8 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 //			}
 
 				vector<int> real_rename_map(max_cnf_var_in_Terr, 0);
-				for (int i = 0; i < real_rename_map.size(); ++i)
-					real_rename_map[i] = i;
+				for (unsigned cnt = 0; cnt < real_rename_map.size(); ++cnt)
+					real_rename_map[cnt] = cnt;
 				real_rename_map[1] = 1;
 
 				// rename each AND gate with a fresh variable
