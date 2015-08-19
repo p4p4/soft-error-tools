@@ -58,6 +58,11 @@ class SymbTimeAnalysis: public BackEnd
 /// @brief Destructor.
 	virtual ~SymbTimeAnalysis();
 
+  enum AnalysisMode {
+    NAIVE = 0,
+		SYMBOLIC_SIMULATION = 1
+  };
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief tries to find vulnerabilities using the provided TestCases
@@ -87,7 +92,9 @@ class SymbTimeAnalysis: public BackEnd
 /// Algorithm ANALYZE1: Only the point in time is symbolic
 ///
 /// @param testcase a vector of input vectors
-	void Analyze1(vector<TestCase> &testcases);
+	void Analyze1_naive(vector<TestCase> &testcases);
+
+	void Analyze1_symb_sim(vector<TestCase> &testcases);
 
 // -------------------------------------------------------------------------------------------
 ///

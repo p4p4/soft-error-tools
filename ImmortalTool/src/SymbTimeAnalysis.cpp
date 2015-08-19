@@ -61,7 +61,13 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
 
-	Analyze1(testcases);
+
+	if (mode_ == NAIVE)
+		Analyze1_naive(testcases);
+	else if(mode_ == SYMBOLIC_SIMULATION)
+		Analyze1_symb_sim(testcases);
+	else
+		MASSERT(false, "unknown mode!");
 
 	return (vulnerable_elements_.size() != 0);
 }
@@ -69,12 +75,8 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 // -------------------------------------------------------------------------------------------
 bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 {
-	// todo..
-	//	vulnerable_latches = empty_set/list
-	vulnerable_elements_.clear();
 
 	vector<TestCase> testcases;
-
 	//for each test case t[][]
 	for (unsigned tc_index_ = 0; tc_index_ < paths_to_TC_files.size();
 			tc_index_++)
@@ -85,13 +87,11 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 		testcases.push_back(testcase);
 	}
 
-	Analyze1(testcases);
-
-	return (vulnerable_elements_.size() != 0);
+	return findVulnerabilities(testcases);
 }
 
 // -------------------------------------------------------------------------------------------
-void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
+void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 {
 
 //	L_DBG("trans orig = " << endl << AIG2CNF::instance().getTrans().toString());
@@ -121,6 +121,8 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 		T_err.add3LitClause(-f_orig, component_cnf, poss_neg_state_cnf_var);
 		T_err.add3LitClause(f_orig, -component_cnf, poss_neg_state_cnf_var);
 		T_err.add3LitClause(f_orig, component_cnf, -poss_neg_state_cnf_var);
+
+		L_DBG(endl << "--------------------------" << endl << "latch: " << component_aig)
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -152,7 +154,6 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				cnf_next_terr_orig[cnt] = Utils::applyRen(first_rename_map,
 						cnf_next_terr_orig[cnt]);
 
-//			L_DBG( endl << "cnf="<<component_cnf<<", aig="<< component_aig << endl <<"T_err = " << endl << T_err.toString());
 
 			int max_cnf_var_in_Terr = next_free_cnf_var;
 			TestCase& testcase = testcases[tci];
@@ -252,11 +253,11 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 					cnf_next = AIG2CNF::instance().getNextStateVars();
 
 				}
-//				Utils::debugPrint(real_rename_map, "Rename map:");
+				Utils::debugPrint(real_rename_map, "Rename map:");
 				T_copy.setVarValue(AIG2CNF::instance().getAlarmOutput(), false); // alarm = false
 				T_copy.renameVars(real_rename_map);
 				solver_->incAddCNF(T_copy);
-//				L_DBG("T_Copy = " << endl <<T_copy.toString() << endl);
+				L_DBG("T_Copy = " << endl <<T_copy.toString() << endl);
 
 				if (!err_is_no_vulnerability)
 				{
@@ -289,7 +290,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				odiff_literals.push_back(-o_is_diff_enable_literal);
 
 				solver_->incAddClause(o_is_diff_clause);
-//				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
+				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
 
 //				Utils::debugPrint(renamed_out_vars, "renamed_out_vars: ");
 
@@ -307,7 +308,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 						T_copy.getVars(), model);
 				odiff_literals[odiff_literals.size() - 1] =
 						-odiff_literals[odiff_literals.size() - 1];
-				if (sat != err_found_with_simulation)
+				if (true || sat != err_found_with_simulation)
 				{
 					L_DBG("SAT: "<< sat);
 					L_DBG("err_found_with_simulation: " << err_found_with_simulation);
@@ -328,4 +329,9 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
+}
+
+void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
+{
+	cout << endl << "hello Patrick! Please be so kind and implement me" << endl;
 }
