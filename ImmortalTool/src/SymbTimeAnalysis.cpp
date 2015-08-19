@@ -150,7 +150,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				cnf_next_terr[cnt] = Utils::applyRen(first_rename_map,
 						cnf_next_terr[cnt]);
 
-			L_DBG("cnf="<<component_cnf<<", aig="<< component_aig << "T_err = " << endl << T_err.toString());
+			L_DBG(endl << "cnf="<<component_cnf<<", aig="<< component_aig << endl <<"T_err = " << endl << T_err.toString());
 
 			int max_cnf_var_in_Terr = next_free_cnf_var;
 			TestCase& testcase = testcases[tci];
@@ -279,7 +279,7 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				bool sat = solver_->incIsSatModelOrCore(odiff_literals,f,model);
 				odiff_literals[odiff_literals.size() - 1] =
 						-odiff_literals[odiff_literals.size() - 1];
-				if (sat != err_found_with_simulation)
+				if (true || sat != err_found_with_simulation)
 				{
 					L_LOG("SAT: "<< sat);
 					L_LOG("err_found_with_simulation: " << err_found_with_simulation);
@@ -294,9 +294,6 @@ void SymbTimeAnalysis::Analyze1(vector<TestCase> &testcases)
 				}
 
 				concrete_state = next_state;
-
-
-
 
 
 				symb_state = renamed_next_state_vars;
