@@ -344,6 +344,11 @@ public:
   	return lit < 0 ? -rename_map[-lit] : rename_map[lit];
   }
 
+  static inline int readCnfValue(int* results, unsigned aigerlit)
+  {
+  	return aigerlit & 1 ? -results[aigerlit >> 1] : results[aigerlit >> 1];
+  }
+
   static aiger* readAiger(string path);
 
 // -------------------------------------------------------------------------------------------
