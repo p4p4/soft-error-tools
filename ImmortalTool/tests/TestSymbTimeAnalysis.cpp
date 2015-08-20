@@ -61,11 +61,11 @@ void TestSymbTimeAnalysis::checkVulnerabilities(string path_to_aiger_circuit,
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 	// DEBUG: print the vulnerable latches
-//	for (set<unsigned>::iterator it = vulnerabilities.begin();
-//			it != vulnerabilities.end(); ++it)
-//	{
-//		cout << "  Latch " << *it << endl;
-//	}
+	for (set<unsigned>::iterator it = vulnerabilities.begin();
+			it != vulnerabilities.end(); ++it)
+	{
+		cout << "  Latch " << *it << endl;
+	}
 
 	aiger_reset(circuit);
 
@@ -282,6 +282,8 @@ void TestSymbTimeAnalysis::test7_compare_with_simulation_1()
 // -------------------------------------------------------------------------------------------
 void TestSymbTimeAnalysis::test8_symbolic_simulation_basic()
 {
+
+	Logger::instance().enable(Logger::DBG);
 	// Paths to TestCase files
 	// A TestCase file contains vectors of input values
 	vector<string> tc_files;
