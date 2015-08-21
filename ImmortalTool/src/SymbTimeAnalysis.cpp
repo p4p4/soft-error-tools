@@ -336,7 +336,6 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 	vector<int> results;
 	results.resize(circuit_->maxvar + 2);
 	results[0] = 1;
-//	results[1] = 1;
 
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
@@ -345,7 +344,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = component_aig >> 1;
 
-		int next_free_cnf_var = AIG2CNF::instance().getMaxCnfVar() + 1;
+		int next_free_cnf_var = 2;
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
