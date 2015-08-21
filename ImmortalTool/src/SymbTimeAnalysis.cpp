@@ -93,7 +93,6 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 {
 
-//	L_DBG("trans orig = " << endl << AIG2CNF::instance().getTrans().toString());
 
 // ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
@@ -120,9 +119,6 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 		T_err.add3LitClause(-f_orig, component_cnf, poss_neg_state_cnf_var);
 		T_err.add3LitClause(f_orig, -component_cnf, poss_neg_state_cnf_var);
 		T_err.add3LitClause(f_orig, component_cnf, -poss_neg_state_cnf_var);
-
-		L_DBG(
-				endl << "--------------------------" << endl << "latch: " << component_aig)
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -360,13 +356,9 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 			// must be active:The newest enable-lit is always set to FALSE, while all other are TRUE
 			vector<int> odiff_enable_literals;
 
-			// start new increental SAT-solving session
+			// start new incremental SAT-solving session
 			vector<int> vars_to_keep;
 			vars_to_keep.push_back(1); // TRUE and FALSE literals
-			// DBG
-			L_DBG("==== NEW SOLVER SESSION =====")
-			L_DBG("-1    TRUE")
-			// DBG
 			solver_->startIncrementalSession(vars_to_keep, 0);
 			solver_->incAddUnitClause(-1); // -1 = TRUE constant
 
@@ -377,37 +369,35 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 			TestCase& testcase = testcases[tci];
 			for (unsigned i = 0; i < testcase.size(); i++)
-			{ // -------- BEGIN "for each timestep in testcase" -----------
+			{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
 
-
-				//--------------------------------------------------------------------------------------
+				//------------------------------------------------------------------------------------
 				// Concrete simulations:
 				// correct simulation
 				sim_->simulateOneTimeStep(testcase[i], concrete_state);
 				vector<int> outputs = sim_->getOutputs();
 				vector<int> next_state = sim_->getNextLatchValues();
 
-				Utils::debugPrint(outputs, "outputs: ");
+				// faulty simulation: flip component bit
+				vector<int> faulty_state = concrete_state;
+				faulty_state[c_cnt] = (faulty_state[c_cnt] == 1) ? 0 : 1;
 
-//				// faulty simulation: flip component bit
-//				vector<int> faulty_state = concrete_state;
-//				faulty_state[c_cnt] = (faulty_state[c_cnt] == 1) ? 0 : 1;
-//
-//				// faulty simulation with flipped bit
-//				sim_->simulateOneTimeStep(testcase[i], faulty_state);
-//				vector<int> outputs2 = sim_->getOutputs();
-//
-//				bool alarm = (outputs2[outputs2.size() - 1] == 1);
-//				// check if vulnerablitiy already found
-//				bool equal_outputs = (outputs == outputs2);
-//				bool err_found_with_simulation = (!equal_outputs && !alarm);
-//				if (err_found_with_simulation)
-//				{
-//					L_DBG("BREAK Sim Latch " << component_aig);
-//					vulnerable_elements_.insert(component_aig);
-//					break;
-//				}
-//				--------------------------------------------------------------------------------------
+				// faulty simulation with flipped bit
+				sim_->simulateOneTimeStep(testcase[i], faulty_state);
+				vector<int> outputs2 = sim_->getOutputs();
+
+				bool alarm = (outputs2[outputs2.size() - 1] == 1);
+				bool equal_outputs = (outputs == outputs2);
+				bool err_found_with_simulation = (!equal_outputs && !alarm);
+				if (err_found_with_simulation)
+				{
+					vulnerable_elements_.insert(component_aig);
+					break;
+				}
+
+				// switch concrete simulation to next state
+				concrete_state = next_state; // OR: change to sim_->switchToNextState();
+				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
 				// set input values according to Testcase to TRUE or FALSE:
@@ -419,7 +409,6 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 				// fi is a variable that indicates whether the component is flipped in step i or not
 				int fi = next_free_cnf_var++;
-				L_DBG("fi="<<fi)
 				solver_->addVarToKeep(fi);
 				int old_value = results[component_cnf+1];
 				if (old_value == -1) // old value is true
@@ -429,30 +418,19 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				else
 				{
 					int new_value = next_free_cnf_var++;
-					solver_->addVarToKeep(old_value); // really add this? TODO
 					solver_->addVarToKeep(new_value);
 					// new_value == fi ? -old_value : old_value
 					solver_->incAdd3LitClause(fi, old_value, -new_value);
 					solver_->incAdd3LitClause(fi, -old_value, new_value);
 					solver_->incAdd3LitClause(-fi, old_value, new_value);
 					solver_->incAdd3LitClause(-fi, -old_value, -new_value);
-//					//DBG
-//					L_DBG(fi << " " << old_value << " " << -new_value << " fi")
-//					L_DBG(fi << " " << -old_value << " " << new_value << " fi")
-//					L_DBG(-fi << " " << old_value << " " << new_value << " fi")
-//					L_DBG(-fi << " " << -old_value << " " << -new_value << " fi")
-//					//DBG
 					results[component_cnf+1] = new_value;
 				}
 
 				// there might be at most one flip in one time-step:
 				// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
 				for (unsigned cnt = 0; cnt < f.size(); cnt++)
-				{
 					solver_->incAdd2LitClause(-fi, -f[cnt]);
-					L_DBG(-fi << " " << -f[cnt] << " fi -> -f_others")
-					// DBG
-				}
 
 				f.push_back(fi);
 				//------------------------------------------------------------------------------------
@@ -480,7 +458,6 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					else
 					{
 						int res = next_free_cnf_var++;
-						solver_->addVarToKeep(res);
 						// res == rhs1_cnf_value & rhs0_cnf_value:
 						// Step 1: (rhs1_cnf_value == false) -> (res == false)
 						solver_->incAdd2LitClause(rhs1_cnf_value, -res);
@@ -491,16 +468,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 						solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
 						results[(circuit_->ands[b].lhs >> 1)+1] = res;
 
-//						// DBG
-//						L_DBG(rhs1_cnf_value << " " << -res << " AND1")
-//						L_DBG(rhs0_cnf_value << " " << -res << " AND2")
-//						L_DBG(
-//								-rhs0_cnf_value << " " << -rhs1_cnf_value << " " << res << " AND3")
-//						// DBG
 					}
-//					cout << "simulate ands: results["<< (circuit_->ands[b].lhs >> 1)+1 <<"]" << results[(circuit_->ands[b].lhs >> 1)+1] << " = " << rhs0_cnf_value << "AND" << rhs1_cnf_value << endl; // DBG
 				}
-				L_DBG("ANDS done");
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
@@ -508,8 +477,6 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				int alarm_cnf_val = -Utils::readCnfValue(results,
 						circuit_->outputs[circuit_->num_outputs - 1].lit);
 				solver_->incAddUnitClause(alarm_cnf_val);
-				L_DBG(alarm_cnf_val << " Alarm = false")
-				// DBG
 
 				vector<int> out_cnf_values;
 				out_cnf_values.reserve(circuit_->num_outputs - 1);
@@ -523,8 +490,10 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				next_state_cnf_values.reserve(circuit_->num_latches);
 				for (unsigned b = 0; b < circuit_->num_latches; ++b)
 				{
-					next_state_cnf_values.push_back(
-							Utils::readCnfValue(results, circuit_->latches[b].next));
+					int next_state_var = Utils::readCnfValue(results, circuit_->latches[b].next);
+					next_state_cnf_values.push_back(next_state_var);
+					if(abs(next_state_var) > 1)
+						solver_->addVarToKeep(next_state_var);
 				}
 
 				for (unsigned b = 0; b < circuit_->num_latches; ++b)
@@ -549,15 +518,11 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				odiff_enable_literals.push_back(-o_is_diff_enable_literal);
 				solver_->addVarToKeep(o_is_diff_enable_literal);
 				solver_->incAddClause(o_is_diff_clause);
-
-				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause:"); // DBG
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
-				Utils::debugPrint(odiff_enable_literals,
-						"SAT-Assumptions odiff_enable_literals (UCs!):");
-				vector<int> model;
+				vector<int> model; // TODO: maybe make use of the satisfying assignment
 				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
 						vars_to_keep, model);
 
@@ -566,14 +531,9 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				odiff_enable_literals.back() = -odiff_enable_literals.back();
 				if (sat)
 				{
-					L_DBG(
-							"found vulnerability(cnf/aig): " << component_cnf << "/"<< component_aig)
 					vulnerable_elements_.insert(component_aig);
 					break;
 				}
-
-				// switch concrete simulation to next state
-				concrete_state = next_state; // OR: change to sim_->switchToNextState();
 
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
