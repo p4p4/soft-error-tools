@@ -1,7 +1,7 @@
 //============================================================================
 // Name        : AddParityTool.cpp
 // Author      : Patrick Klampfl
-// Version     : 0.1, 08.2015
+// Version     : 0.2, 08.2015
 //============================================================================
 
 #include <iostream>
@@ -19,7 +19,6 @@ extern "C"
 }
 
 using namespace std;
-#define DEBUG(x) do { cout << x; } while (0)
 static const int RET_OK = 0;
 static const int RET_WRONG_PARAMS = -1;
 static const int RET_ERR_AIG_READ = -2;
@@ -74,6 +73,8 @@ int main(int argc, char *argv[])
 {
 	cout << "Welcome to AddParityTool 0.1" << endl;
 
+	//------------------------------------------------------------------------------------------
+	// Parse cmd line arguments
 	bool add_intermediate_err_sigs = false; // TODO: add cmd line argument
 
 	if (argc != 5)
@@ -100,7 +101,8 @@ int main(int argc, char *argv[])
 		return RET_WRONG_PARAMS;
 	}
 
-	// read file:
+	//------------------------------------------------------------------------------------------
+	// Read AIGER input file
 	aiger* aig_input = aiger_init();
 	const char *read_err = aiger_open_and_read_from_file(aig_input, argv[1]);
 
@@ -112,9 +114,8 @@ int main(int argc, char *argv[])
 
 	next_free_aig_lit = aiger_var2lit(aig_input->maxvar) + 2;
 
-	// TODO: sanity checks here
-
-	//-----------------------------------
+	//------------------------------------------------------------------------------------------
+	// Print console output, add information to AIGER commands
 	unsigned int latches_to_protect = aig_input->num_latches * percentage / 100;
 	unsigned int num_error_signals = (latches_to_protect
 			+ latches_per_error_signal - 1) / latches_per_error_signal; // divide and round up
@@ -143,8 +144,10 @@ int main(int argc, char *argv[])
 		aiger_add_comment(aig_input, line.c_str());
 	}
 
+
+	//------------------------------------------------------------------------------------------
 	// create a random permutation of all the latches.
-	// pick the first *latches_to_protect* indices to pick a random subset of
+	// pick the first *latches_to_protect* indices to pick a random subset of them
 	vector<unsigned int> indices(aig_input->num_latches);
 	iota(indices.begin(), indices.end(), 0); // fill with 0 ... num_latches -1
 	random_shuffle(indices.begin(), indices.end());
