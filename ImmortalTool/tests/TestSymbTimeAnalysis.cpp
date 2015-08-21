@@ -260,17 +260,26 @@ void TestSymbTimeAnalysis::test7_compare_with_simulation_1()
 {
 //	Logger::instance().enable(Logger::INF);
 	Logger::instance().disable(Logger::INF);
-	compareWithSimulation("inputs/toggle.perfect.aag", 1, 2, 1);
-	compareWithSimulation("inputs/toggle.1vulnerability.aag", 1, 2, 1);
-	compareWithSimulation("inputs/toggle.2vulnerabilities.aag", 1, 2, 1);
-	compareWithSimulation("inputs/toggle.3vulnerabilities.aag", 1, 2, 0);
-	compareWithSimulation("inputs/iwls02texasa.2vul.1l.aag", 5, 5, 1); // TODO: 0 vulnerabilities?
-	compareWithSimulation("inputs/ex5.2vul.1l.aig", 5, 5, 1);
-	compareWithSimulation("inputs/ex5.2vul.2l.aig", 5, 5, 2);
-	compareWithSimulation("inputs/beecount-synth.2vul.1l.aig", 2, 5, 1);
+	compareWithSimulation("inputs/toggle.perfect.aag", 1, 2, 1,
+			SymbTimeAnalysis::NAIVE);
+	compareWithSimulation("inputs/toggle.1vulnerability.aag", 1, 2, 1,
+			SymbTimeAnalysis::NAIVE);
+	compareWithSimulation("inputs/toggle.2vulnerabilities.aag", 1, 2, 1,
+			SymbTimeAnalysis::NAIVE);
+	compareWithSimulation("inputs/toggle.3vulnerabilities.aag", 1, 2, 0,
+			SymbTimeAnalysis::NAIVE);
+	compareWithSimulation("inputs/iwls02texasa.2vul.1l.aag", 5, 5, 1,
+			SymbTimeAnalysis::NAIVE); // TODO: 0 vulnerabilities?
+	compareWithSimulation("inputs/ex5.2vul.1l.aig", 5, 5, 1,
+			SymbTimeAnalysis::NAIVE);
+	compareWithSimulation("inputs/ex5.2vul.2l.aig", 5, 5, 2,
+			SymbTimeAnalysis::NAIVE);
+	compareWithSimulation("inputs/beecount-synth.2vul.1l.aig", 2, 5, 1,
+			SymbTimeAnalysis::NAIVE);
 
 //	compareWithSimulation("inputs/s27.1vul.1l",2,1,1); // TODO: check why symb=1, sim=0!
-	compareWithSimulation("inputs/shiftreg.2vul.1l.aig", 1, 2, 1);
+	compareWithSimulation("inputs/shiftreg.2vul.1l.aig", 1, 2, 1,
+			SymbTimeAnalysis::NAIVE);
 //	Logger::instance().enable(Logger::INF);
 	//	Logger::instance().enable(Logger::LOG);
 //	Logger::instance().enable(Logger::DBG);
@@ -357,14 +366,19 @@ void TestSymbTimeAnalysis::test9_symbolic_simulation_extended()
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 	cout << endl << "vulnerabilities found: " << vulnerabilities.size() << endl;
-	CPPUNIT_ASSERT(vulnerabilities.size() == 67); // TODO: should be 82, but is always 67...
+	// out of the 82 unprotected latches, only 67 are real vulnerabilities:
+	CPPUNIT_ASSERT(vulnerabilities.size() == 67);
 
 }
 
 void TestSymbTimeAnalysis::test10_symbolic_simulation_compare_w_simulation()
 {
-	Logger::instance().enable(Logger::INF);
+//	Logger::instance().enable(Logger::INF);
+//	Logger::instance().enable(Logger::DBG);
 
-	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 5, 14, 1,
-			SymbTimeAnalysis::SYMBOLIC_SIMULATION); //TODO: symb approuch does not find all errors!
+	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 8, 2, 1,
+			SymbTimeAnalysis::SYMBOLIC_SIMULATION);
+
+	compareWithSimulation("inputs/shiftreg.3vul.0l.aig", 3, 3, 0,
+			SymbTimeAnalysis::SYMBOLIC_SIMULATION); // TODO: check why symb=3, sim=2
 }

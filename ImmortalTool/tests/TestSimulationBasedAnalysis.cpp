@@ -180,7 +180,10 @@ void TestSimulationBasedAnalysis::test4_simulation_big_w_random_inputs()
 	SimulationBasedAnalysis sba(circuit, 2);
 	sba.findVulnerabilities(5, 5); // 1 TC with 2 timesteps would also already work
 	const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
-	CPPUNIT_ASSERT(vulnerabilities.size() == 82);
+	cout << endl << "vulnerabilities = " << vulnerabilities.size() << endl;
+
+	// out of the 82 unprotected latches, only 67 are real vulnerabilities
+	CPPUNIT_ASSERT(vulnerabilities.size() == 67);
 
 
 }

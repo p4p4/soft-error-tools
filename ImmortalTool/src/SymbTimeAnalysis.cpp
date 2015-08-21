@@ -330,8 +330,6 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 {
-	cout << endl << "MODE: Analyze1_symb_sim" << endl;
-
 	// used to store the results of the symbolic simulation
 	vector<int> results;
 	results.resize(circuit_->maxvar + 2);
@@ -509,8 +507,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				// get Outputs and next state values, swich to next state
 				int alarm_cnf_val = -Utils::readCnfValue(results,
 						circuit_->outputs[circuit_->num_outputs - 1].lit);
-				if (alarm_cnf_val != 0) // TODO: workaround...
-					solver_->incAddUnitClause(alarm_cnf_val);
+				solver_->incAddUnitClause(alarm_cnf_val);
 				L_DBG(alarm_cnf_val << " Alarm = false")
 				// DBG
 
@@ -555,9 +552,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause:"); // DBG
 				//------------------------------------------------------------------------------------
-//
-//				Utils::debugPrint(results, "results: ");
-//
+
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
 				Utils::debugPrint(odiff_enable_literals,
