@@ -328,9 +328,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 {
 	// used to store the results of the symbolic simulation
 	vector<int> results;
-	results.resize(circuit_->maxvar + 2);
-	results[0] = 1; // unused... TODO
-	results[1] = 1; // aigerlit 0 = results[1] = false, 1 = -results[1] = true
+	results.resize(circuit_->maxvar + 1);
+	results[0] = 1; // FALSE and TRUE constants
 
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
@@ -364,7 +363,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			for (unsigned l = 0; l < circuit_->num_latches; ++l) // initialize latches to false
-				results[(circuit_->latches[l].lit >> 1)+1] = 1;
+				results[(circuit_->latches[l].lit >> 1)] = 1;
 			//--------------------------------------------------------------------------------------
 
 			TestCase& testcase = testcases[tci];
@@ -402,7 +401,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 				// set input values according to Testcase to TRUE or FALSE:
 				for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
-					results[(circuit_->inputs[cnt_i].lit >> 1)+1] =
+					results[(circuit_->inputs[cnt_i].lit >> 1)] =
 							(testcase[i][cnt_i] == 1) ? -1 : 1;
 				//------------------------------------------------------------------------------------
 
@@ -410,11 +409,11 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				// fi is a variable that indicates whether the component is flipped in step i or not
 				int fi = next_free_cnf_var++;
 				solver_->addVarToKeep(fi);
-				int old_value = results[component_cnf+1];
+				int old_value = results[component_cnf];
 				if (old_value == -1) // old value is true
-					results[component_cnf+1] = -fi;
+					results[component_cnf] = -fi;
 				else if (old_value == 1) // old value is false
-					results[component_cnf+1] = fi;
+					results[component_cnf] = fi;
 				else
 				{
 					int new_value = next_free_cnf_var++;
@@ -424,7 +423,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					solver_->incAdd3LitClause(fi, -old_value, new_value);
 					solver_->incAdd3LitClause(-fi, old_value, new_value);
 					solver_->incAdd3LitClause(-fi, -old_value, -new_value);
-					results[component_cnf+1] = new_value;
+					results[component_cnf] = new_value;
 				}
 
 				// there might be at most one flip in one time-step:
@@ -446,15 +445,15 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 							circuit_->ands[b].rhs0);
 
 					if (rhs1_cnf_value == 1 || rhs0_cnf_value == 1) // FALSE and .. = FALSE
-						results[(circuit_->ands[b].lhs >> 1)+1] = 1;
+						results[(circuit_->ands[b].lhs >> 1)] = 1;
 					else if (rhs1_cnf_value == -1) // TRUE and X = X
-						results[(circuit_->ands[b].lhs >> 1)+1] = rhs0_cnf_value;
+						results[(circuit_->ands[b].lhs >> 1)] = rhs0_cnf_value;
 					else if (rhs0_cnf_value == -1) // X and TRUE = X
-						results[(circuit_->ands[b].lhs >> 1)+1] = rhs1_cnf_value;
+						results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
 					else if (rhs0_cnf_value == rhs1_cnf_value) // X and X = X
-						results[(circuit_->ands[b].lhs >> 1)+1] = rhs1_cnf_value;
+						results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
 					else if (rhs0_cnf_value == -rhs1_cnf_value) // X and -X = FALSE
-						results[(circuit_->ands[b].lhs >> 1)+1] = 1;
+						results[(circuit_->ands[b].lhs >> 1)] = 1;
 					else
 					{
 						int res = next_free_cnf_var++;
@@ -466,7 +465,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 						// Step 3: (rhs0_cnf_value == true && rhs1_cnf_value == true)
 						//   -> (res == true)
 						solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
-						results[(circuit_->ands[b].lhs >> 1)+1] = res;
+						results[(circuit_->ands[b].lhs >> 1)] = res;
 
 					}
 				}
@@ -498,7 +497,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				for (unsigned b = 0; b < circuit_->num_latches; ++b)
 				{
-					results[(circuit_->latches[b].lit >> 1)+1] = next_state_cnf_values[b];
+					results[(circuit_->latches[b].lit >> 1)] = next_state_cnf_values[b];
 				}
 				//------------------------------------------------------------------------------------
 
@@ -522,9 +521,11 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
-				vector<int> model; // TODO: maybe make use of the satisfying assignment
-				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
-						vars_to_keep, model);
+//				vector<int> model; // TODO: maybe make use of the satisfying assignment
+//				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
+//						vars_to_keep, model);
+
+				bool sat = solver_->incIsSat(odiff_enable_literals);
 
 				// negate (=set to positive face) newest odiff_enable_literal to disable
 				// the previous o_is_diff_clausefor the next iterations

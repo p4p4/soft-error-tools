@@ -346,7 +346,7 @@ public:
 
   static inline int readCnfValue(const vector<int> results, unsigned aigerlit)
   {
-  	return aigerlit & 1 ? -results[(aigerlit >> 1)+1] : results[(aigerlit >> 1)+1];
+  	return aigerlit & 1 ? -results[(aigerlit >> 1)] : results[(aigerlit >> 1)];
   }
 
   static aiger* readAiger(string path);

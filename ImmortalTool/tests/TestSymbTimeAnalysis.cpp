@@ -258,7 +258,7 @@ void TestSymbTimeAnalysis::test6_analysis_w_random_inputs()
 // -------------------------------------------------------------------------------------------
 void TestSymbTimeAnalysis::test7_compare_with_simulation_1()
 {
-//	Logger::instance().enable(Logger::INF);
+	Logger::instance().enable(Logger::INF);
 	Logger::instance().disable(Logger::INF);
 	compareWithSimulation("inputs/toggle.perfect.aag", 1, 2, 1,
 			SymbTimeAnalysis::NAIVE);
@@ -276,17 +276,14 @@ void TestSymbTimeAnalysis::test7_compare_with_simulation_1()
 			SymbTimeAnalysis::NAIVE);
 	compareWithSimulation("inputs/beecount-synth.2vul.1l.aig", 2, 5, 1,
 			SymbTimeAnalysis::NAIVE);
-
-//	compareWithSimulation("inputs/s27.1vul.1l",2,1,1); // TODO: check why symb=1, sim=0!
+	compareWithSimulation("inputs/s27.1vul.1l", 2, 1, 1,
+			SymbTimeAnalysis::NAIVE);
 	compareWithSimulation("inputs/shiftreg.2vul.1l.aig", 1, 2, 1,
 			SymbTimeAnalysis::NAIVE);
-//	Logger::instance().enable(Logger::INF);
-	//	Logger::instance().enable(Logger::LOG);
-//	Logger::instance().enable(Logger::DBG);
-//	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 5, 14, 1); //TODO: symbolic approuch does not find all errors!
-//	compareWithSimulation("inputs/shiftreg.3vul.0l.aig", 1, 1, 0); // TODO: check why symb=3, sim=2
-
-//	compareWithSimulation("inputs/s5378.50percent.aag",3,5,2); // FAILS
+	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 5, 14, 1,
+			SymbTimeAnalysis::NAIVE);
+	compareWithSimulation("inputs/s5378.50percent.aag", 3, 5, 2,
+			SymbTimeAnalysis::NAIVE); // 164 Latches!
 }
 
 // -------------------------------------------------------------------------------------------
@@ -347,7 +344,7 @@ void TestSymbTimeAnalysis::test8_symbolic_simulation_basic()
 
 }
 
-// ------------------------------------------------------------------------------------------- // TODO: make it run!
+// -------------------------------------------------------------------------------------------
 void TestSymbTimeAnalysis::test9_symbolic_simulation_extended()
 {
 //	Logger::instance().enable(Logger::DBG);
@@ -365,7 +362,6 @@ void TestSymbTimeAnalysis::test9_symbolic_simulation_extended()
 	sta.findVulnerabilities(5, 5); // 1 TC with 2 timesteps would also already work
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
-	cout << endl << "vulnerabilities found: " << vulnerabilities.size() << endl;
 	// out of the 82 unprotected latches, only 67 are real vulnerabilities:
 	CPPUNIT_ASSERT(vulnerabilities.size() == 67);
 
@@ -379,6 +375,12 @@ void TestSymbTimeAnalysis::test10_symbolic_simulation_compare_w_simulation()
 	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 8, 2, 1,
 			SymbTimeAnalysis::SYMBOLIC_SIMULATION);
 
-	compareWithSimulation("inputs/shiftreg.3vul.0l.aig", 3, 3, 0,
-			SymbTimeAnalysis::SYMBOLIC_SIMULATION); // TODO: check why symb=3, sim=2
+	compareWithSimulation("inputs/shiftreg.3vul.0l.aig", 1, 1, 0,
+			SymbTimeAnalysis::SYMBOLIC_SIMULATION);
+
+	// TODO: check this out. symb[naive] = 3, sim= 1:
+//	compareWithSimulation("inputs/shiftreg.3vul.0l.aig", 1, 1, 0, SymbTimeAnalysis::NAIVE);
+
+	compareWithSimulation("inputs/s27.1vul.1l", 2, 1, 1,
+			SymbTimeAnalysis::SYMBOLIC_SIMULATION);
 }
