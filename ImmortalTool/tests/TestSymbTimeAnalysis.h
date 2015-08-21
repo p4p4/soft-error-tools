@@ -50,6 +50,8 @@ class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST (test6_analysis_w_random_inputs);
 	CPPUNIT_TEST (test7_compare_with_simulation_1);
 	CPPUNIT_TEST (test8_symbolic_simulation_basic);
+	CPPUNIT_TEST (test9_symbolic_simulation_extended);
+	CPPUNIT_TEST (test10_symbolic_simulation_compare_w_simulation);
 //	CPPUNIT_TEST (test7_analysis_big_w_random_inputs);
 	CPPUNIT_TEST_SUITE_END();
 
@@ -101,6 +103,13 @@ class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
 //	void test7_analysis_big_w_random_inputs();
 
 	void test8_symbolic_simulation_basic();
+
+	// -------------------------------------------------------------------------------------------
+	///
+	/// @brief Searches for vulnerabilities in a *bigger* circuit using random input vectors
+	void test9_symbolic_simulation_extended();
+
+	void test10_symbolic_simulation_compare_w_simulation();
 
 };
 

@@ -335,7 +335,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 	// used to store the results of the symbolic simulation
 	vector<int> results;
 	results.resize(circuit_->maxvar + 2);
-	results[0] = 1;
+	results[0] = 1; // unused... TODO
+	results[1] = 1; // aigerlit 0 = results[1] = false, 1 = -results[1] = true
 
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
@@ -430,19 +431,19 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				else
 				{
 					int new_value = next_free_cnf_var++;
-					solver_->addVarToKeep(old_value);
+					solver_->addVarToKeep(old_value); // really add this? TODO
 					solver_->addVarToKeep(new_value);
 					// new_value == fi ? -old_value : old_value
 					solver_->incAdd3LitClause(fi, old_value, -new_value);
 					solver_->incAdd3LitClause(fi, -old_value, new_value);
 					solver_->incAdd3LitClause(-fi, old_value, new_value);
 					solver_->incAdd3LitClause(-fi, -old_value, -new_value);
-					//DBG
-					L_DBG(fi << " " << old_value << " " << -new_value << " fi")
-					L_DBG(fi << " " << -old_value << " " << new_value << " fi")
-					L_DBG(-fi << " " << old_value << " " << new_value << " fi")
-					L_DBG(-fi << " " << -old_value << " " << -new_value << " fi")
-					//DBG
+//					//DBG
+//					L_DBG(fi << " " << old_value << " " << -new_value << " fi")
+//					L_DBG(fi << " " << -old_value << " " << new_value << " fi")
+//					L_DBG(-fi << " " << old_value << " " << new_value << " fi")
+//					L_DBG(-fi << " " << -old_value << " " << -new_value << " fi")
+//					//DBG
 					results[component_cnf+1] = new_value;
 				}
 
@@ -481,6 +482,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					else
 					{
 						int res = next_free_cnf_var++;
+						solver_->addVarToKeep(res);
 						// res == rhs1_cnf_value & rhs0_cnf_value:
 						// Step 1: (rhs1_cnf_value == false) -> (res == false)
 						solver_->incAdd2LitClause(rhs1_cnf_value, -res);
@@ -491,56 +493,17 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 						solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
 						results[(circuit_->ands[b].lhs >> 1)+1] = res;
 
-						// DBG
-						L_DBG(rhs1_cnf_value << " " << -res << " AND1")
-						L_DBG(rhs0_cnf_value << " " << -res << " AND2")
-						L_DBG(
-								-rhs0_cnf_value << " " << -rhs1_cnf_value << " " << res << " AND3")
-						// DBG
+//						// DBG
+//						L_DBG(rhs1_cnf_value << " " << -res << " AND1")
+//						L_DBG(rhs0_cnf_value << " " << -res << " AND2")
+//						L_DBG(
+//								-rhs0_cnf_value << " " << -rhs1_cnf_value << " " << res << " AND3")
+//						// DBG
 					}
 //					cout << "simulate ands: results["<< (circuit_->ands[b].lhs >> 1)+1 <<"]" << results[(circuit_->ands[b].lhs >> 1)+1] << " = " << rhs0_cnf_value << "AND" << rhs1_cnf_value << endl; // DBG
 				}
+				L_DBG("ANDS done");
 				//------------------------------------------------------------------------------------
-
-				// TEST
-//				for (unsigned b = 0; b < circuit_->num_outputs; ++b)
-//				{
-//					int cnfout = Utils::readCnfValue(results, circuit_->outputs[b].lit);
-//
-//					if(cnfout==0)
-//						cnfout=1;
-//					if(cnfout == -1) // TRUE
-//					{
-//						cnfout = next_free_cnf_var++;
-//						solver_->addVarToKeep(next_free_cnf_var-1);
-//						if(circuit_->outputs[b].lit & 1)
-//						{
-//							results[(circuit_->outputs[b].lit >> 1)+1] = -cnfout;
-//						}
-//						else
-//						{
-//							results[(circuit_->outputs[b].lit >> 1)+1] = cnfout;
-//						}
-//					}
-//					else if(cnfout == 1) // FALSE
-//					{
-//						cnfout = -next_free_cnf_var++;
-//						solver_->addVarToKeep(next_free_cnf_var-1);
-//						if(circuit_->outputs[b].lit & 1)
-//						{
-//							results[(circuit_->outputs[b].lit >> 1)+1] = -cnfout;
-//						}
-//						else
-//						{
-//							results[(circuit_->outputs[b].lit >> 1)+1] = cnfout;
-//						}
-//					}
-//					cnfout = Utils::readCnfValue(results, circuit_->outputs[b].lit);
-//
-//					solver_->incAddUnitClause(cnfout);
-//					L_DBG(cnfout << " CNF_out" << circuit_->outputs[b].lit);
-//				}
-				// TEST
 
 				//------------------------------------------------------------------------------------
 				// get Outputs and next state values, swich to next state
@@ -592,9 +555,9 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause:"); // DBG
 				//------------------------------------------------------------------------------------
-
-				Utils::debugPrint(results, "results: ");
-
+//
+//				Utils::debugPrint(results, "results: ");
+//
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
 				Utils::debugPrint(odiff_enable_literals,
@@ -620,7 +583,5 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
-
-//	delete results;
 
 }
