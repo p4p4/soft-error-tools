@@ -332,40 +332,55 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 {
 	cout << endl << "MODE: Analyze1_symb_sim" << endl;
 
+	// used to store the results of the symbolic simulation
+	vector<int> results;
+	results.resize(circuit_->maxvar + 2);
+	results[0] = 1;
+//	results[1] = 1;
+
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
 			++c_cnt)
 	{
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = component_aig >> 1;
+
 		int next_free_cnf_var = AIG2CNF::instance().getMaxCnfVar() + 1;
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
 
-			// concrete_state = (0 0 0 0 0 0 0)  (AIG literals)
+			// initial state for concrete simulation = (0 0 0 0 0 0 0)  (AIG literals)
 			vector<int> concrete_state;
 			concrete_state.resize(circuit_->num_latches);
 
 			// f = a set of variables fi indicating whether the latch is flipped in step i or not
 			vector<int> f;
+
+			// a set of literals to enable or disable the represented output_is_different clauses,
+			// necessary for incremental solving. At each sat-solver call only the newest clause
+			// must be active:The newest enable-lit is always set to FALSE, while all other are TRUE
 			vector<int> odiff_enable_literals;
 
 			// start new increental SAT-solving session
 			vector<int> vars_to_keep;
 			vars_to_keep.push_back(1); // TRUE and FALSE literals
+			// DBG
+			L_DBG("==== NEW SOLVER SESSION =====")
+			L_DBG("-1    TRUE")
+			// DBG
 			solver_->startIncrementalSession(vars_to_keep, 0);
 			solver_->incAddUnitClause(-1); // -1 = TRUE constant
 
 			//--------------------------------------------------------------------------------------
-			int* results = new int[circuit_->maxvar + 1];	// TODO: dont forget to delete me later
 			for (unsigned l = 0; l < circuit_->num_latches; ++l) // initialize latches to false
-				results[circuit_->latches[l].lit >> 1] = 1;
+				results[(circuit_->latches[l].lit >> 1)+1] = 1;
 			//--------------------------------------------------------------------------------------
 
 			TestCase& testcase = testcases[tci];
 			for (unsigned i = 0; i < testcase.size(); i++)
 			{ // -------- BEGIN "for each timestep in testcase" -----------
+
 
 				//--------------------------------------------------------------------------------------
 				// Concrete simulations:
@@ -374,14 +389,16 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				vector<int> outputs = sim_->getOutputs();
 				vector<int> next_state = sim_->getNextLatchValues();
 
-				// flip component bit
-				vector<int> faulty_state = concrete_state;
-				faulty_state[c_cnt] = (faulty_state[c_cnt] == 1) ? 0 : 1;
+				Utils::debugPrint(outputs, "outputs: ");
 
-				// faulty simulation with flipped bit
-				sim_->simulateOneTimeStep(testcase[i], faulty_state);
-				vector<int> outputs2 = sim_->getOutputs();
-
+//				// faulty simulation: flip component bit
+//				vector<int> faulty_state = concrete_state;
+//				faulty_state[c_cnt] = (faulty_state[c_cnt] == 1) ? 0 : 1;
+//
+//				// faulty simulation with flipped bit
+//				sim_->simulateOneTimeStep(testcase[i], faulty_state);
+//				vector<int> outputs2 = sim_->getOutputs();
+//
 //				bool alarm = (outputs2[outputs2.size() - 1] == 1);
 //				// check if vulnerablitiy already found
 //				bool equal_outputs = (outputs == outputs2);
@@ -397,56 +414,71 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 				// set input values according to Testcase to TRUE or FALSE:
 				for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
-					results[circuit_->inputs[cnt_i].lit >> 1] =
+					results[(circuit_->inputs[cnt_i].lit >> 1)+1] =
 							(testcase[i][cnt_i] == 1) ? -1 : 1;
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
 				// fi is a variable that indicates whether the component is flipped in step i or not
 				int fi = next_free_cnf_var++;
+				L_DBG("fi="<<fi)
 				solver_->addVarToKeep(fi);
-				int old_value = results[component_cnf];
+				int old_value = results[component_cnf+1];
 				if (old_value == -1) // old value is true
-					results[component_cnf] = -fi;
+					results[component_cnf+1] = -fi;
 				else if (old_value == 1) // old value is false
-					results[component_cnf] = fi;
+					results[component_cnf+1] = fi;
 				else
 				{
 					int new_value = next_free_cnf_var++;
+					solver_->addVarToKeep(old_value);
+					solver_->addVarToKeep(new_value);
 					// new_value == fi ? -old_value : old_value
 					solver_->incAdd3LitClause(fi, old_value, -new_value);
 					solver_->incAdd3LitClause(fi, -old_value, new_value);
 					solver_->incAdd3LitClause(-fi, old_value, new_value);
 					solver_->incAdd3LitClause(-fi, -old_value, -new_value);
-					results[component_cnf] = new_value;
+					//DBG
+					L_DBG(fi << " " << old_value << " " << -new_value << " fi")
+					L_DBG(fi << " " << -old_value << " " << new_value << " fi")
+					L_DBG(-fi << " " << old_value << " " << new_value << " fi")
+					L_DBG(-fi << " " << -old_value << " " << -new_value << " fi")
+					//DBG
+					results[component_cnf+1] = new_value;
 				}
 
 				// there might be at most one flip in one time-step:
 				// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
 				for (unsigned cnt = 0; cnt < f.size(); cnt++)
+				{
 					solver_->incAdd2LitClause(-fi, -f[cnt]);
+					L_DBG(-fi << " " << -f[cnt] << " fi -> -f_others")
+					// DBG
+				}
 
 				f.push_back(fi);
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
+				// Symbolic simulation of AND gates
 				for (unsigned b = 0; b < circuit_->num_ands; ++b)
 				{
+
 					int rhs1_cnf_value = Utils::readCnfValue(results,
 							circuit_->ands[b].rhs1);
 					int rhs0_cnf_value = Utils::readCnfValue(results,
 							circuit_->ands[b].rhs0);
 
 					if (rhs1_cnf_value == 1 || rhs0_cnf_value == 1) // FALSE and .. = FALSE
-						results[circuit_->ands[b].lhs >> 1] = 1;
+						results[(circuit_->ands[b].lhs >> 1)+1] = 1;
 					else if (rhs1_cnf_value == -1) // TRUE and X = X
-						results[circuit_->ands[b].lhs >> 1] = rhs0_cnf_value;
+						results[(circuit_->ands[b].lhs >> 1)+1] = rhs0_cnf_value;
 					else if (rhs0_cnf_value == -1) // X and TRUE = X
-						results[circuit_->ands[b].lhs >> 1] = rhs1_cnf_value;
+						results[(circuit_->ands[b].lhs >> 1)+1] = rhs1_cnf_value;
 					else if (rhs0_cnf_value == rhs1_cnf_value) // X and X = X
-						results[circuit_->ands[b].lhs >> 1] = rhs1_cnf_value;
+						results[(circuit_->ands[b].lhs >> 1)+1] = rhs1_cnf_value;
 					else if (rhs0_cnf_value == -rhs1_cnf_value) // X and -X = FALSE
-						results[circuit_->ands[b].lhs >> 1] = 1;
+						results[(circuit_->ands[b].lhs >> 1)+1] = 1;
 					else
 					{
 						int res = next_free_cnf_var++;
@@ -458,14 +490,67 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 						// Step 3: (rhs0_cnf_value == true && rhs1_cnf_value == true)
 						//   -> (res == true)
 						solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
-						results[circuit_->ands[b].lhs >> 1] = res;
+						results[(circuit_->ands[b].lhs >> 1)+1] = res;
+
+						// DBG
+						L_DBG(rhs1_cnf_value << " " << -res << " AND1")
+						L_DBG(rhs0_cnf_value << " " << -res << " AND2")
+						L_DBG(
+								-rhs0_cnf_value << " " << -rhs1_cnf_value << " " << res << " AND3")
+						// DBG
 					}
+//					cout << "simulate ands: results["<< (circuit_->ands[b].lhs >> 1)+1 <<"]" << results[(circuit_->ands[b].lhs >> 1)+1] << " = " << rhs0_cnf_value << "AND" << rhs1_cnf_value << endl; // DBG
 				}
 				//------------------------------------------------------------------------------------
 
-				int alarm_cnf_val = Utils::readCnfValue(results,
+				// TEST
+//				for (unsigned b = 0; b < circuit_->num_outputs; ++b)
+//				{
+//					int cnfout = Utils::readCnfValue(results, circuit_->outputs[b].lit);
+//
+//					if(cnfout==0)
+//						cnfout=1;
+//					if(cnfout == -1) // TRUE
+//					{
+//						cnfout = next_free_cnf_var++;
+//						solver_->addVarToKeep(next_free_cnf_var-1);
+//						if(circuit_->outputs[b].lit & 1)
+//						{
+//							results[(circuit_->outputs[b].lit >> 1)+1] = -cnfout;
+//						}
+//						else
+//						{
+//							results[(circuit_->outputs[b].lit >> 1)+1] = cnfout;
+//						}
+//					}
+//					else if(cnfout == 1) // FALSE
+//					{
+//						cnfout = -next_free_cnf_var++;
+//						solver_->addVarToKeep(next_free_cnf_var-1);
+//						if(circuit_->outputs[b].lit & 1)
+//						{
+//							results[(circuit_->outputs[b].lit >> 1)+1] = -cnfout;
+//						}
+//						else
+//						{
+//							results[(circuit_->outputs[b].lit >> 1)+1] = cnfout;
+//						}
+//					}
+//					cnfout = Utils::readCnfValue(results, circuit_->outputs[b].lit);
+//
+//					solver_->incAddUnitClause(cnfout);
+//					L_DBG(cnfout << " CNF_out" << circuit_->outputs[b].lit);
+//				}
+				// TEST
+
+				//------------------------------------------------------------------------------------
+				// get Outputs and next state values, swich to next state
+				int alarm_cnf_val = -Utils::readCnfValue(results,
 						circuit_->outputs[circuit_->num_outputs - 1].lit);
-				solver_->incAddUnitClause(alarm_cnf_val);
+				if (alarm_cnf_val != 0) // TODO: workaround...
+					solver_->incAddUnitClause(alarm_cnf_val);
+				L_DBG(alarm_cnf_val << " Alarm = false")
+				// DBG
 
 				vector<int> out_cnf_values;
 				out_cnf_values.reserve(circuit_->num_outputs - 1);
@@ -485,10 +570,11 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				for (unsigned b = 0; b < circuit_->num_latches; ++b)
 				{
-					results[circuit_->latches[b].lit >> 1] = next_state_cnf_values[b];
+					results[(circuit_->latches[b].lit >> 1)+1] = next_state_cnf_values[b];
 				}
 				//------------------------------------------------------------------------------------
 
+				//------------------------------------------------------------------------------------
 				// clause saying that the outputs o and o' are different
 				vector<int> o_is_diff_clause;
 				o_is_diff_clause.reserve(out_cnf_values.size() + 1);
@@ -501,17 +587,24 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				}
 				int o_is_diff_enable_literal = next_free_cnf_var++;
 				o_is_diff_clause.push_back(o_is_diff_enable_literal);
-				//------------------------------------------------------------------------------------
-
 				odiff_enable_literals.push_back(-o_is_diff_enable_literal);
 				solver_->addVarToKeep(o_is_diff_enable_literal);
 				solver_->incAddClause(o_is_diff_clause);
 
+				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause:"); // DBG
+				//------------------------------------------------------------------------------------
+
+				Utils::debugPrint(results, "results: ");
+
+				//------------------------------------------------------------------------------------
+				// call SAT-solver
+				Utils::debugPrint(odiff_enable_literals,
+						"SAT-Assumptions odiff_enable_literals (UCs!):");
 				vector<int> model;
 				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
 						vars_to_keep, model);
 
-				// negate (=set to true) newest odiff_enable_literal to disable
+				// negate (=set to positive face) newest odiff_enable_literal to disable
 				// the previous o_is_diff_clausefor the next iterations
 				odiff_enable_literals.back() = -odiff_enable_literals.back();
 				if (sat)
@@ -521,10 +614,14 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					vulnerable_elements_.insert(component_aig);
 					break;
 				}
+
+				// switch concrete simulation to next state
 				concrete_state = next_state; // OR: change to sim_->switchToNextState();
-				//symb_state = renamed_next_state_vars;
+
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
+
+//	delete results;
 
 }

@@ -61,11 +61,11 @@ void TestSymbTimeAnalysis::checkVulnerabilities(string path_to_aiger_circuit,
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 	// DEBUG: print the vulnerable latches
-	for (set<unsigned>::iterator it = vulnerabilities.begin();
-			it != vulnerabilities.end(); ++it)
-	{
-		cout << "  Latch " << *it << endl;
-	}
+//	for (set<unsigned>::iterator it = vulnerabilities.begin();
+//			it != vulnerabilities.end(); ++it)
+//	{
+//		cout << "  Latch " << *it << endl;
+//	}
 
 	aiger_reset(circuit);
 
@@ -174,19 +174,19 @@ void TestSymbTimeAnalysis::test4_analysis_w_1_extra_latch()
 	// A TestCase file contains vectors of input values
 	vector<string> tc_files;
 	tc_files.push_back("inputs/3b");
-	tc_files.push_back("inputs/3_bit_input_1");
-	tc_files.push_back("inputs/3_bit_input_2");
-	tc_files.push_back("inputs/3_bit_input_3");
-	tc_files.push_back("inputs/3_bit_input_4");
-	tc_files.push_back("inputs/3_bit_input_5");
+//	tc_files.push_back("inputs/3_bit_input_1");
+//	tc_files.push_back("inputs/3_bit_input_2");
+//	tc_files.push_back("inputs/3_bit_input_3");
+//	tc_files.push_back("inputs/3_bit_input_4");
+//	tc_files.push_back("inputs/3_bit_input_5");
 
 	//-------------------------------------------
 	// test 4a: 3 of 3 latches protected
-
+//	Logger::instance().enable(Logger::DBG);
 	set<unsigned> should_be_vulnerable; // empty
 	checkVulnerabilities("inputs/toggle.perfect.aag", tc_files,
 			should_be_vulnerable, 1);
-
+//	Logger::instance().disable(Logger::DBG);
 	//-------------------------------------------
 	// test 4b: 2 of 3 latches protected
 
@@ -284,6 +284,24 @@ void TestSymbTimeAnalysis::test8_symbolic_simulation_basic()
 {
 
 	Logger::instance().enable(Logger::DBG);
+
+
+
+	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
+	SymbTimeAnalysis sta2(circuit2, 0, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
+	sta2.findVulnerabilities(1, 2);
+	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
+	aiger_reset(circuit2);
+
+	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
+	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
+	sta.findVulnerabilities(1, 2);
+//	Logger::instance().disable(Logger::DBG);
+	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+	aiger_reset(circuit);
+
+
+
 	// Paths to TestCase files
 	// A TestCase file contains vectors of input values
 	vector<string> tc_files;
@@ -308,17 +326,17 @@ void TestSymbTimeAnalysis::test8_symbolic_simulation_basic()
 	checkVulnerabilities("inputs/toggle.1vulnerability.aag", tc_files,
 			should_be_vulnerable, 1, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
 
-//	//-------------------------------------------
-//	// test 4c: 1 of 3 latches protected
-//	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
-//	checkVulnerabilities("inputs/toggle.2vulnerabilities.aag", tc_files,
-//			should_be_vulnerable, 1);
-//
-//	//-------------------------------------------
-//	// test 4d: 0 of 3 latches protected
-//	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
-//	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
-//			should_be_vulnerable, 0);
+	//-------------------------------------------
+	// test 4c: 1 of 3 latches protected
+	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
+	checkVulnerabilities("inputs/toggle.2vulnerabilities.aag", tc_files,
+			should_be_vulnerable, 1, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
+
+	//-------------------------------------------
+	// test 4d: 0 of 3 latches protected
+	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
+	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
+			should_be_vulnerable, 0, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
 }
 
 // TODO: make it run!
