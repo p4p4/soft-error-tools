@@ -73,6 +73,42 @@ void TestSymbTimeLocationAnalysis::checkVulnerabilities(string path_to_aiger_cir
 			vulnerabilities == should_be_vulnerable);
 }
 
+void TestSymbTimeLocationAnalysis::compareWithSimulation(string path_to_aiger_circuit,
+		int num_tc, int num_timesteps, int num_err_latches, int mode)
+{
+	aiger* circuit = Utils::readAiger(path_to_aiger_circuit);
+	CPPUNIT_ASSERT_MESSAGE("can not open " + path_to_aiger_circuit, circuit != 0);
+
+	srand(0xCAFECAFE);
+	SymbTimeLocationAnalysis sta(circuit, num_err_latches, mode);
+	sta.findVulnerabilities(num_tc, num_timesteps);
+	const set<unsigned> &symb_vulnerabilities = sta.getVulnerableElements();
+
+	srand(0xCAFECAFE); // SymbTimeAnalysis and SimulationBasedAnalysis must have same "random" inputs
+	SimulationBasedAnalysis sba(circuit, num_err_latches);
+	sba.findVulnerabilities(num_tc, num_timesteps);
+	const set<unsigned> &sim_vulnerabilities = sba.getVulnerableElements();
+	L_INF("test: " << path_to_aiger_circuit);
+	L_INF(
+			"vulnerabilities found with SIMULATION="<<sim_vulnerabilities.size() <<", with SYMBTIME="<<symb_vulnerabilities.size());
+
+	for (set<unsigned>::iterator it = symb_vulnerabilities.begin();
+			it != symb_vulnerabilities.end(); ++it)
+	{
+		L_INF("[symb]Latch " << *it);
+	}
+	for (set<unsigned>::iterator it = sim_vulnerabilities.begin();
+			it != sim_vulnerabilities.end(); ++it)
+	{
+		L_INF("[sim]Latch " << *it);
+	}
+
+	aiger_reset(circuit);
+
+	CPPUNIT_ASSERT_MESSAGE(path_to_aiger_circuit,
+			sim_vulnerabilities == symb_vulnerabilities);
+}
+
 // -------------------------------------------------------------------------------------------
 void TestSymbTimeLocationAnalysis::test1()
 {
@@ -149,6 +185,38 @@ void TestSymbTimeLocationAnalysis::test4_analysis_w_1_extra_latch()
 	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
 			should_be_vulnerable, 0, SymbTimeLocationAnalysis::STANDARD);
 
+}
+
+// -------------------------------------------------------------------------------------------
+void TestSymbTimeLocationAnalysis::test7_compare_with_simulation_1()
+{
+
+	compareWithSimulation("inputs/toggle.perfect.aag", 1, 2, 1,
+			SymbTimeLocationAnalysis::STANDARD);
+	compareWithSimulation("inputs/toggle.1vulnerability.aag", 1, 2, 1,
+			SymbTimeLocationAnalysis::STANDARD);
+	compareWithSimulation("inputs/toggle.2vulnerabilities.aag", 1, 2, 1,
+			SymbTimeLocationAnalysis::STANDARD);
+	Logger::instance().enable(Logger::INF);
+//	Logger::instance().disable(Logger::INF);
+	compareWithSimulation("inputs/toggle.3vulnerabilities.aag", 1, 2, 0,
+			SymbTimeLocationAnalysis::STANDARD);
+//	compareWithSimulation("inputs/iwls02texasa.2vul.1l.aag", 5, 5, 1,
+//			SymbTimeLocationAnalysis::STANDARD); // TODO: 0 vulnerabilities?
+//	compareWithSimulation("inputs/ex5.2vul.1l.aig", 5, 5, 1,
+//			SymbTimeLocationAnalysis::STANDARD);
+//	compareWithSimulation("inputs/ex5.2vul.2l.aig", 5, 5, 2,
+//			SymbTimeLocationAnalysis::STANDARD);
+//	compareWithSimulation("inputs/beecount-synth.2vul.1l.aig", 2, 5, 1,
+//			SymbTimeLocationAnalysis::STANDARD);
+//	compareWithSimulation("inputs/s27.1vul.1l", 2, 1, 1,
+//			SymbTimeLocationAnalysis::STANDARD);
+//	compareWithSimulation("inputs/shiftreg.2vul.1l.aig", 1, 2, 1,
+//			SymbTimeLocationAnalysis::STANDARD);
+//	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 5, 14, 1,
+//			SymbTimeLocationAnalysis::STANDARD);
+//	compareWithSimulation("inputs/s5378.50percent.aag", 3, 5, 2,
+//			SymbTimeLocationAnalysis::STANDARD); // 164 Latches!
 }
 
 

@@ -89,7 +89,6 @@ bool SymbTimeLocationAnalysis::findVulnerabilities(
 // -------------------------------------------------------------------------------------------
 void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 {
-	cout << endl << "Analyze2!" << endl;
 	// used to store the results of the symbolic simulation
 	vector<int> results;
 	results.resize(circuit_->maxvar + 1);
@@ -97,22 +96,27 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 	int next_free_cnf_var = 2;
 
 	// TODO: move outside of this function ----
-	vector<int> latches_to_check_;
-	latches_to_check_.reserve(circuit_->num_latches - num_err_latches_);
-	map<int, int> ci; // latch_to_ci
-	map<int, int> ci_to_latch;
+	set<int> latches_to_check_;
+
+	//------------------------------------------------------------------------------------------
+	// set up ci signals
+	// maps for latch-literals <=> ci-literals: each latch has a corresponding ci literal,
+	// which indicates whether the latch is flipped or not.
+	map<int, int> latch_to_ci; // maps latch-literals(cnf) to corresponding ci-literals(cnf)
+	map<int, int> ci_to_latch; // maps ci-literals(cnf) to corresponding latch-literals(aig)
+
+
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
 			++c_cnt)
 	{
-		latches_to_check_.push_back(circuit_->latches[c_cnt].lit);
+		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
 		int ci_lit = next_free_cnf_var++;
-		ci[circuit_->latches[c_cnt].lit >> 1] = ci_lit;
+		latch_to_ci[circuit_->latches[c_cnt].lit >> 1] = ci_lit;
 		ci_to_latch[ci_lit] = circuit_->latches[c_cnt].lit;
 	}
-	// ------
+	//------------------------------------------------------------------------------------------
 
-
-
+	// for each testcase-step
 	for (unsigned tci = 0; tci < testcases.size(); tci++)
 	{
 
@@ -136,33 +140,36 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 		//add ci variables
 		map<int,int>::iterator map_iter;
-		for(map_iter = ci.begin(); map_iter != ci.end(); map_iter++)
+		for(map_iter = latch_to_ci.begin(); map_iter != latch_to_ci.end(); map_iter++)
 		{
 			vars_to_keep.push_back(map_iter->second);
 			solver_->addVarToKeep(map_iter->first);
 			solver_->addVarToKeep(map_iter->second);
 		}
 
+
+		//----------------------------------------------------------------------------------------
+		// single fault assumption: there may be at most one flipped component
 		map<int,int>::iterator map_iter2;
-		for(map_iter = ci.begin(); map_iter != ci.end(); map_iter++)
+		for(map_iter = latch_to_ci.begin(); map_iter != latch_to_ci.end(); map_iter++)
 		{
-			for(map_iter2 = ci.begin(); map_iter2 != ci.end(); map_iter2++)
+			for(map_iter2 = latch_to_ci.begin(); map_iter2 != latch_to_ci.end(); map_iter2++)
 			{
-				if(map_iter != map_iter2)
+				if(map_iter != map_iter2) // for all i,j: i -> not j
 					solver_->incAdd2LitClause(-map_iter->second, -map_iter2->second);
 			}
 		}
 
-		//--------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------
 		for (unsigned l = 0; l < circuit_->num_latches; ++l) // initialize latches to false
 			results[(circuit_->latches[l].lit >> 1)] = CNF_FALSE;
-		//--------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------
 
 		TestCase& testcase = testcases[tci];
 		for (unsigned i = 0; i < testcase.size(); i++)
-		{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
+		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 			// Concrete simulations:
 			sim_->simulateOneTimeStep(testcase[i], concrete_state);
 			vector<int> outputs = sim_->getOutputs();
@@ -170,27 +177,27 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 			// switch concrete simulation to next state
 			concrete_state = next_state; // OR: change to sim_->switchToNextState();
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 			// set input values according to TestCase to TRUE or FALSE:
 			for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
 				results[(circuit_->inputs[cnt_i].lit >> 1)] =
 						(testcase[i][cnt_i] == AIG_TRUE) ? CNF_TRUE : CNF_FALSE;
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 			// fi is a variable that indicates whether the component is flipped in step i or not
 
 			int fi = next_free_cnf_var++;
 			solver_->addVarToKeep(fi);
-			vector<int>::iterator it;
+			set<int>::iterator it;
 			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it)
 			{
 				int latch_output = *it >> 1;
 				int old_value = results[latch_output];
 				int new_value = next_free_cnf_var++;
-				int ci_lit = ci[latch_output];
+				int ci_lit = latch_to_ci[latch_output];
 
 				solver_->addVarToKeep(new_value);
 
@@ -205,32 +212,15 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				results[latch_output] = new_value;
 			}
 
-//			int old_value = results[component_cnf];
-//			if (old_value == -1) // old value is true
-//				results[component_cnf] = -fi;
-//			else if (old_value == 1) // old value is false
-//				results[component_cnf] = fi;
-//			else
-//			{
-//				int new_value = next_free_cnf_var++;
-//				solver_->addVarToKeep(new_value);
-//				// new_value == fi ? -old_value : old_value
-//				solver_->incAdd3LitClause(fi, old_value, -new_value);
-//				solver_->incAdd3LitClause(fi, -old_value, new_value);
-//				solver_->incAdd3LitClause(-fi, old_value, new_value);
-//				solver_->incAdd3LitClause(-fi, -old_value, -new_value);
-//				results[component_cnf] = new_value;
-//			}
-
-			// there might be at most one flip in one time-step:
+			// single fault assumption: there might be at most one flip in one time-step
 			// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
 			for (unsigned cnt = 0; cnt < f.size(); cnt++)
 				solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 			f.push_back(fi);
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 			// Symbolic simulation of AND gates
 			for (unsigned b = 0; b < circuit_->num_ands; ++b)
 			{
@@ -265,9 +255,9 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 				}
 			}
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 			// get Outputs and next state values, switch to next state
 			int alarm_cnf_val = -Utils::readCnfValue(results,
 					circuit_->outputs[circuit_->num_outputs - 1].lit);
@@ -296,9 +286,9 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			{
 				results[(circuit_->latches[b].lit >> 1)] = next_state_cnf_values[b];
 			}
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 			// clause saying that the outputs o and o' are different
 			vector<int> o_is_diff_clause;
 			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
@@ -314,9 +304,9 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			odiff_enable_literals.push_back(-o_is_diff_enable_literal);
 			solver_->addVarToKeep(o_is_diff_enable_literal);
 			solver_->incAddClause(o_is_diff_clause);
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 			// call SAT-solver
 				vector<int> model; // TODO: maybe make use of the satisfying assignment
 				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
@@ -325,9 +315,9 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			// negate (=set to positive face) newest odiff_enable_literal to disable
 			// the previous o_is_diff_clausefor the next iterations
 			odiff_enable_literals.back() = -odiff_enable_literals.back();
-			cout << "sat = " << sat << endl;
 			if (sat)
 			{
+				i=0; // start test from beginning
 				Utils::debugPrint(model, "sat assignment: ");
 
 				for(unsigned m_cnt = 0; m_cnt, model.size(); m_cnt++)
@@ -337,6 +327,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 					{
 
 						vulnerable_elements_.insert(ci_to_latch[ci_lit]);
+						latches_to_check_.erase(ci_to_latch[ci_lit]);
 						cout << "latch number " << ci_to_latch[ci_lit] << endl;
 						// add blocking clause
 						solver_->incAddUnitClause(-ci_lit);
@@ -345,7 +336,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				}
 			}
 
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 			// Optimization: next state does not change,no matter if we flip or not -> remove fi's
 //			int next_state_is_diff = next_free_cnf_var++;
 //			vector<int> next_state_is_diff_clause;
@@ -385,7 +376,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 //						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff);
 //				}
 //			}
-			//------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------
 
 		} // -- END "for each timestep in testcase" --
 	} // ------ END 'for each latch' ---------------
