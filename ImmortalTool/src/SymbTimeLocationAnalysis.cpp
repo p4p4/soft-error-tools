@@ -89,261 +89,305 @@ bool SymbTimeLocationAnalysis::findVulnerabilities(
 // -------------------------------------------------------------------------------------------
 void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 {
+	cout << endl << "Analyze2!" << endl;
 	// used to store the results of the symbolic simulation
 	vector<int> results;
 	results.resize(circuit_->maxvar + 1);
 	results[0] = 1; // FALSE and TRUE constants
+	int next_free_cnf_var = 2;
 
-	// ---------------- BEGIN 'for each latch' -------------------------
+	// TODO: move outside of this function ----
+	vector<int> latches_to_check_;
+	latches_to_check_.reserve(circuit_->num_latches - num_err_latches_);
+	map<int, int> ci; // latch_to_ci
+	map<int, int> ci_to_latch;
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
 			++c_cnt)
 	{
-		unsigned component_aig = circuit_->latches[c_cnt].lit;
-		int component_cnf = component_aig >> 1;
+		latches_to_check_.push_back(circuit_->latches[c_cnt].lit);
+		int ci_lit = next_free_cnf_var++;
+		ci[circuit_->latches[c_cnt].lit >> 1] = ci_lit;
+		ci_to_latch[ci_lit] = circuit_->latches[c_cnt].lit;
+	}
+	// ------
 
-		int next_free_cnf_var = 2;
 
-		for (unsigned tci = 0; tci < testcases.size(); tci++)
+
+	for (unsigned tci = 0; tci < testcases.size(); tci++)
+	{
+
+		// initial state for concrete simulation = (0 0 0 0 0 0 0)  (AIG literals)
+		vector<int> concrete_state;
+		concrete_state.resize(circuit_->num_latches);
+
+		// f = a set of variables fi indicating whether the latch is flipped in step i or not
+		vector<int> f;
+
+		// a set of literals to enable or disable the represented output_is_different clauses,
+		// necessary for incremental solving. At each sat-solver call only the newest clause
+		// must be active:The newest enable-lit is always set to FALSE, while all other are TRUE
+		vector<int> odiff_enable_literals;
+
+		// start new incremental SAT-solving session
+		vector<int> vars_to_keep; // unused
+		solver_->startIncrementalSession(vars_to_keep, 0);
+		solver_->addVarToKeep(1); // TRUE and FALSE literals
+		solver_->incAddUnitClause(-1); // -1 = TRUE constant
+
+		//add ci variables
+		map<int,int>::iterator map_iter;
+		for(map_iter = ci.begin(); map_iter != ci.end(); map_iter++)
 		{
+			vars_to_keep.push_back(map_iter->second);
+			solver_->addVarToKeep(map_iter->first);
+			solver_->addVarToKeep(map_iter->second);
+		}
 
-			// initial state for concrete simulation = (0 0 0 0 0 0 0)  (AIG literals)
-			vector<int> concrete_state;
-			concrete_state.resize(circuit_->num_latches);
+		map<int,int>::iterator map_iter2;
+		for(map_iter = ci.begin(); map_iter != ci.end(); map_iter++)
+		{
+			for(map_iter2 = ci.begin(); map_iter2 != ci.end(); map_iter2++)
+			{
+				if(map_iter != map_iter2)
+					solver_->incAdd2LitClause(-map_iter->second, -map_iter2->second);
+			}
+		}
 
-			// f = a set of variables fi indicating whether the latch is flipped in step i or not
-			vector<int> f;
+		//--------------------------------------------------------------------------------------
+		for (unsigned l = 0; l < circuit_->num_latches; ++l) // initialize latches to false
+			results[(circuit_->latches[l].lit >> 1)] = CNF_FALSE;
+		//--------------------------------------------------------------------------------------
 
-			// a set of literals to enable or disable the represented output_is_different clauses,
-			// necessary for incremental solving. At each sat-solver call only the newest clause
-			// must be active:The newest enable-lit is always set to FALSE, while all other are TRUE
-			vector<int> odiff_enable_literals;
+		TestCase& testcase = testcases[tci];
+		for (unsigned i = 0; i < testcase.size(); i++)
+		{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
 
-			// start new incremental SAT-solving session
-			vector<int> vars_to_keep;
-			vars_to_keep.push_back(1); // TRUE and FALSE literals
-			solver_->startIncrementalSession(vars_to_keep, 0);
-			solver_->incAddUnitClause(-1); // -1 = TRUE constant
+			//------------------------------------------------------------------------------------
+			// Concrete simulations:
+			sim_->simulateOneTimeStep(testcase[i], concrete_state);
+			vector<int> outputs = sim_->getOutputs();
+			vector<int> next_state = sim_->getNextLatchValues();
 
-			//--------------------------------------------------------------------------------------
-			for (unsigned l = 0; l < circuit_->num_latches; ++l) // initialize latches to false
-				results[(circuit_->latches[l].lit >> 1)] = 1;
-			//--------------------------------------------------------------------------------------
+			// switch concrete simulation to next state
+			concrete_state = next_state; // OR: change to sim_->switchToNextState();
+			//------------------------------------------------------------------------------------
 
-			TestCase& testcase = testcases[tci];
-			for (unsigned i = 0; i < testcase.size(); i++)
-			{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
+			//------------------------------------------------------------------------------------
+			// set input values according to TestCase to TRUE or FALSE:
+			for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
+				results[(circuit_->inputs[cnt_i].lit >> 1)] =
+						(testcase[i][cnt_i] == AIG_TRUE) ? CNF_TRUE : CNF_FALSE;
+			//------------------------------------------------------------------------------------
 
-				//------------------------------------------------------------------------------------
-				// Concrete simulations:
-				// correct simulation
-				sim_->simulateOneTimeStep(testcase[i], concrete_state);
-				vector<int> outputs = sim_->getOutputs();
-				vector<int> next_state = sim_->getNextLatchValues();
+			//------------------------------------------------------------------------------------
+			// fi is a variable that indicates whether the component is flipped in step i or not
 
-				// faulty simulation: flip component bit
-				vector<int> faulty_state = concrete_state;
-				faulty_state[c_cnt] = (faulty_state[c_cnt] == 1) ? 0 : 1;
+			int fi = next_free_cnf_var++;
+			solver_->addVarToKeep(fi);
+			vector<int>::iterator it;
+			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it)
+			{
+				int latch_output = *it >> 1;
+				int old_value = results[latch_output];
+				int new_value = next_free_cnf_var++;
+				int ci_lit = ci[latch_output];
 
-				// faulty simulation with flipped bit
-				sim_->simulateOneTimeStep(testcase[i], faulty_state);
-				vector<int> outputs2 = sim_->getOutputs();
+				solver_->addVarToKeep(new_value);
 
-				bool alarm = (outputs2[outputs2.size() - 1] == 1);
-				bool equal_outputs = (outputs == outputs2);
-				bool err_found_with_simulation = (!equal_outputs && !alarm);
-				if (err_found_with_simulation)
-				{
-					vulnerable_elements_.insert(component_aig);
-					break;
-				}
+				solver_->incAdd3LitClause(old_value, ci_lit, -new_value);
+				solver_->incAdd3LitClause(old_value, fi, -new_value);
+				solver_->incAdd4LitClause(-old_value, -ci_lit, -fi, -new_value);
+				solver_->incAdd3LitClause(-old_value, ci_lit, new_value);
+				solver_->incAdd3LitClause(-old_value, fi, new_value);
+				solver_->incAdd4LitClause(old_value, -ci_lit, -fi, new_value);
 
-				// switch concrete simulation to next state
-				concrete_state = next_state; // OR: change to sim_->switchToNextState();
-				//------------------------------------------------------------------------------------
 
-				//------------------------------------------------------------------------------------
-				// set input values according to TestCase to TRUE or FALSE:
-				for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
-					results[(circuit_->inputs[cnt_i].lit >> 1)] =
-							(testcase[i][cnt_i] == 1) ? -1 : 1;
-				//------------------------------------------------------------------------------------
+				results[latch_output] = new_value;
+			}
 
-				//------------------------------------------------------------------------------------
-				// fi is a variable that indicates whether the component is flipped in step i or not
-				int fi = next_free_cnf_var++;
-				solver_->addVarToKeep(fi);
-				int old_value = results[component_cnf];
-				if (old_value == -1) // old value is true
-					results[component_cnf] = -fi;
-				else if (old_value == 1) // old value is false
-					results[component_cnf] = fi;
+//			int old_value = results[component_cnf];
+//			if (old_value == -1) // old value is true
+//				results[component_cnf] = -fi;
+//			else if (old_value == 1) // old value is false
+//				results[component_cnf] = fi;
+//			else
+//			{
+//				int new_value = next_free_cnf_var++;
+//				solver_->addVarToKeep(new_value);
+//				// new_value == fi ? -old_value : old_value
+//				solver_->incAdd3LitClause(fi, old_value, -new_value);
+//				solver_->incAdd3LitClause(fi, -old_value, new_value);
+//				solver_->incAdd3LitClause(-fi, old_value, new_value);
+//				solver_->incAdd3LitClause(-fi, -old_value, -new_value);
+//				results[component_cnf] = new_value;
+//			}
+
+			// there might be at most one flip in one time-step:
+			// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
+			for (unsigned cnt = 0; cnt < f.size(); cnt++)
+				solver_->incAdd2LitClause(-fi, -f[cnt]);
+
+			f.push_back(fi);
+			//------------------------------------------------------------------------------------
+
+			//------------------------------------------------------------------------------------
+			// Symbolic simulation of AND gates
+			for (unsigned b = 0; b < circuit_->num_ands; ++b)
+			{
+
+				int rhs1_cnf_value = Utils::readCnfValue(results,
+						circuit_->ands[b].rhs1);
+				int rhs0_cnf_value = Utils::readCnfValue(results,
+						circuit_->ands[b].rhs0);
+
+				if (rhs1_cnf_value == 1 || rhs0_cnf_value == 1) // FALSE and .. = FALSE
+					results[(circuit_->ands[b].lhs >> 1)] = 1;
+				else if (rhs1_cnf_value == -1) // TRUE and X = X
+					results[(circuit_->ands[b].lhs >> 1)] = rhs0_cnf_value;
+				else if (rhs0_cnf_value == -1) // X and TRUE = X
+					results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
+				else if (rhs0_cnf_value == rhs1_cnf_value) // X and X = X
+					results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
+				else if (rhs0_cnf_value == -rhs1_cnf_value) // X and -X = FALSE
+					results[(circuit_->ands[b].lhs >> 1)] = 1;
 				else
 				{
-					int new_value = next_free_cnf_var++;
-					solver_->addVarToKeep(new_value);
-					// new_value == fi ? -old_value : old_value
-					solver_->incAdd3LitClause(fi, old_value, -new_value);
-					solver_->incAdd3LitClause(fi, -old_value, new_value);
-					solver_->incAdd3LitClause(-fi, old_value, new_value);
-					solver_->incAdd3LitClause(-fi, -old_value, -new_value);
-					results[component_cnf] = new_value;
+					int res = next_free_cnf_var++;
+					// res == rhs1_cnf_value & rhs0_cnf_value:
+					// Step 1: (rhs1_cnf_value == false) -> (res == false)
+					solver_->incAdd2LitClause(rhs1_cnf_value, -res);
+					// Step 2: (rhs0_cnf_value == false) -> (res == false)
+					solver_->incAdd2LitClause(rhs0_cnf_value, -res);
+					// Step 3: (rhs0_cnf_value == true && rhs1_cnf_value == true)
+					//   -> (res == true)
+					solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
+					results[(circuit_->ands[b].lhs >> 1)] = res;
+
 				}
+			}
+			//------------------------------------------------------------------------------------
 
-				// there might be at most one flip in one time-step:
-				// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
-				for (unsigned cnt = 0; cnt < f.size(); cnt++)
-					solver_->incAdd2LitClause(-fi, -f[cnt]);
+			//------------------------------------------------------------------------------------
+			// get Outputs and next state values, switch to next state
+			int alarm_cnf_val = -Utils::readCnfValue(results,
+					circuit_->outputs[circuit_->num_outputs - 1].lit);
+			solver_->incAddUnitClause(alarm_cnf_val);
 
-				f.push_back(fi);
-				//------------------------------------------------------------------------------------
+			vector<int> out_cnf_values;
+			out_cnf_values.reserve(circuit_->num_outputs - 1);
+			for (unsigned b = 0; b < circuit_->num_outputs - 1; ++b)
+			{
+				out_cnf_values.push_back(
+						Utils::readCnfValue(results, circuit_->outputs[b].lit));
+			}
 
-				//------------------------------------------------------------------------------------
-				// Symbolic simulation of AND gates
-				for (unsigned b = 0; b < circuit_->num_ands; ++b)
-				{
+			vector<int> next_state_cnf_values;
+			next_state_cnf_values.reserve(circuit_->num_latches);
+			for (unsigned b = 0; b < circuit_->num_latches; ++b)
+			{
+				int next_state_var = Utils::readCnfValue(results,
+						circuit_->latches[b].next);
+				next_state_cnf_values.push_back(next_state_var);
+				if (abs(next_state_var) > 1)
+					solver_->addVarToKeep(next_state_var);
+			}
 
-					int rhs1_cnf_value = Utils::readCnfValue(results,
-							circuit_->ands[b].rhs1);
-					int rhs0_cnf_value = Utils::readCnfValue(results,
-							circuit_->ands[b].rhs0);
+			for (unsigned b = 0; b < circuit_->num_latches; ++b)
+			{
+				results[(circuit_->latches[b].lit >> 1)] = next_state_cnf_values[b];
+			}
+			//------------------------------------------------------------------------------------
 
-					if (rhs1_cnf_value == 1 || rhs0_cnf_value == 1) // FALSE and .. = FALSE
-						results[(circuit_->ands[b].lhs >> 1)] = 1;
-					else if (rhs1_cnf_value == -1) // TRUE and X = X
-						results[(circuit_->ands[b].lhs >> 1)] = rhs0_cnf_value;
-					else if (rhs0_cnf_value == -1) // X and TRUE = X
-						results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
-					else if (rhs0_cnf_value == rhs1_cnf_value) // X and X = X
-						results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
-					else if (rhs0_cnf_value == -rhs1_cnf_value) // X and -X = FALSE
-						results[(circuit_->ands[b].lhs >> 1)] = 1;
-					else
-					{
-						int res = next_free_cnf_var++;
-						// res == rhs1_cnf_value & rhs0_cnf_value:
-						// Step 1: (rhs1_cnf_value == false) -> (res == false)
-						solver_->incAdd2LitClause(rhs1_cnf_value, -res);
-						// Step 2: (rhs0_cnf_value == false) -> (res == false)
-						solver_->incAdd2LitClause(rhs0_cnf_value, -res);
-						// Step 3: (rhs0_cnf_value == true && rhs1_cnf_value == true)
-						//   -> (res == true)
-						solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
-						results[(circuit_->ands[b].lhs >> 1)] = res;
-
-					}
-				}
-				//------------------------------------------------------------------------------------
-
-				//------------------------------------------------------------------------------------
-				// get Outputs and next state values, swich to next state
-				int alarm_cnf_val = -Utils::readCnfValue(results,
-						circuit_->outputs[circuit_->num_outputs - 1].lit);
-				solver_->incAddUnitClause(alarm_cnf_val);
-
-				vector<int> out_cnf_values;
-				out_cnf_values.reserve(circuit_->num_outputs - 1);
-				for (unsigned b = 0; b < circuit_->num_outputs - 1; ++b)
-				{
-					out_cnf_values.push_back(
-							Utils::readCnfValue(results, circuit_->outputs[b].lit));
-				}
-
-				vector<int> next_state_cnf_values;
-				next_state_cnf_values.reserve(circuit_->num_latches);
-				for (unsigned b = 0; b < circuit_->num_latches; ++b)
-				{
-					int next_state_var = Utils::readCnfValue(results,
-							circuit_->latches[b].next);
-					next_state_cnf_values.push_back(next_state_var);
-					if (abs(next_state_var) > 1)
-						solver_->addVarToKeep(next_state_var);
-				}
-
-				for (unsigned b = 0; b < circuit_->num_latches; ++b)
-				{
-					results[(circuit_->latches[b].lit >> 1)] = next_state_cnf_values[b];
-				}
-				//------------------------------------------------------------------------------------
-
-				//------------------------------------------------------------------------------------
-				// clause saying that the outputs o and o' are different
-				vector<int> o_is_diff_clause;
-				o_is_diff_clause.reserve(out_cnf_values.size() + 1);
-				for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
-				{
-					if (outputs[cnt] == 1) // simulation result of output is true
-						o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
-					else
-						o_is_diff_clause.push_back(out_cnf_values[cnt]);
-				}
-				int o_is_diff_enable_literal = next_free_cnf_var++;
-				o_is_diff_clause.push_back(o_is_diff_enable_literal);
-				odiff_enable_literals.push_back(-o_is_diff_enable_literal);
-				solver_->addVarToKeep(o_is_diff_enable_literal);
-				solver_->incAddClause(o_is_diff_clause);
-				//------------------------------------------------------------------------------------
-
-				//------------------------------------------------------------------------------------
-				// call SAT-solver
-//				vector<int> model; // TODO: maybe make use of the satisfying assignment
-//				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
-//						vars_to_keep, model);
-
-				bool sat = solver_->incIsSat(odiff_enable_literals);
-
-				// negate (=set to positive face) newest odiff_enable_literal to disable
-				// the previous o_is_diff_clausefor the next iterations
-				odiff_enable_literals.back() = -odiff_enable_literals.back();
-				if (sat)
-				{
-					vulnerable_elements_.insert(component_aig);
-					break;
-				}
-
-				//------------------------------------------------------------------------------------
-				// Optimization: next state does not change,no matter if we flip or not -> remove fi's
-				int next_state_is_diff = next_free_cnf_var++;
-				vector<int> next_state_is_diff_clause;
-				next_state_is_diff_clause.reserve(next_state_cnf_values.size() + 1);
-				for (size_t cnt = 0; cnt < next_state_cnf_values.size(); ++cnt)
-				{
-					int lit_to_add = 0;
-					if (next_state[cnt] == 1) // simulation result of output is true
-						lit_to_add = -next_state_cnf_values[cnt]; // add negated output
-					else
-						lit_to_add = next_state_cnf_values[cnt];
-					if (lit_to_add != 1)
-						next_state_is_diff_clause.push_back(lit_to_add);
-				}
-				if (next_state_is_diff_clause.empty())
-				{
-					vars_to_keep.clear();
-					vars_to_keep.push_back(1); // TRUE and FALSE literals
-					solver_->startIncrementalSession(vars_to_keep, 0);
-					solver_->incAddUnitClause(-1); // -1 = TRUE constant
-					next_free_cnf_var = 2;
-					f.clear();
-					odiff_enable_literals.clear();
-				}
+			//------------------------------------------------------------------------------------
+			// clause saying that the outputs o and o' are different
+			vector<int> o_is_diff_clause;
+			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
+			for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
+			{
+				if (outputs[cnt] == 1) // simulation result of output is true
+					o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
 				else
+					o_is_diff_clause.push_back(out_cnf_values[cnt]);
+			}
+			int o_is_diff_enable_literal = next_free_cnf_var++;
+			o_is_diff_clause.push_back(o_is_diff_enable_literal);
+			odiff_enable_literals.push_back(-o_is_diff_enable_literal);
+			solver_->addVarToKeep(o_is_diff_enable_literal);
+			solver_->incAddClause(o_is_diff_clause);
+			//------------------------------------------------------------------------------------
+
+			//------------------------------------------------------------------------------------
+			// call SAT-solver
+				vector<int> model; // TODO: maybe make use of the satisfying assignment
+				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
+						vars_to_keep, model);
+
+			// negate (=set to positive face) newest odiff_enable_literal to disable
+			// the previous o_is_diff_clausefor the next iterations
+			odiff_enable_literals.back() = -odiff_enable_literals.back();
+			cout << "sat = " << sat << endl;
+			if (sat)
+			{
+				Utils::debugPrint(model, "sat assignment: ");
+
+				for(unsigned m_cnt = 0; m_cnt, model.size(); m_cnt++)
 				{
-					if (next_state_is_diff_clause.size() == 1)
+					int ci_lit = model[m_cnt];
+					if(ci_lit > 0) // if not negated
 					{
-						for (unsigned cnt = 0; cnt < f.size(); cnt++)
-							solver_->incAdd2LitClause(-f[cnt], next_state_is_diff_clause[0]);
-					}
-					else
-					{
-						next_state_is_diff_clause.push_back(-next_state_is_diff);
-						solver_->incAddClause(next_state_is_diff_clause);
-						for (unsigned cnt = 0; cnt < f.size(); cnt++)
-							solver_->incAdd2LitClause(-f[cnt], next_state_is_diff);
+
+						vulnerable_elements_.insert(ci_to_latch[ci_lit]);
+						cout << "latch number " << ci_to_latch[ci_lit] << endl;
+						// add blocking clause
+						solver_->incAddUnitClause(-ci_lit);
+						break;
 					}
 				}
-				//------------------------------------------------------------------------------------
+			}
 
-			} // -- END "for each timestep in testcase" --
-		} // end "for each testcase"
+			//------------------------------------------------------------------------------------
+			// Optimization: next state does not change,no matter if we flip or not -> remove fi's
+//			int next_state_is_diff = next_free_cnf_var++;
+//			vector<int> next_state_is_diff_clause;
+//			next_state_is_diff_clause.reserve(next_state_cnf_values.size() + 1);
+//			for (size_t cnt = 0; cnt < next_state_cnf_values.size(); ++cnt)
+//			{
+//				int lit_to_add = 0;
+//				if (next_state[cnt] == 1) // simulation result of output is true
+//					lit_to_add = -next_state_cnf_values[cnt]; // add negated output
+//				else
+//					lit_to_add = next_state_cnf_values[cnt];
+//				if (lit_to_add != 1)
+//					next_state_is_diff_clause.push_back(lit_to_add);
+//			}
+//			if (next_state_is_diff_clause.empty())
+//			{
+//				vars_to_keep.clear();
+//				vars_to_keep.push_back(1); // TRUE and FALSE literals
+//				solver_->startIncrementalSession(vars_to_keep, 0);
+//				solver_->incAddUnitClause(-1); // -1 = TRUE constant
+//				next_free_cnf_var = 2;
+//				f.clear();
+//				odiff_enable_literals.clear();
+//			}
+//			else
+//			{
+//				if (next_state_is_diff_clause.size() == 1)
+//				{
+//					for (unsigned cnt = 0; cnt < f.size(); cnt++)
+//						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff_clause[0]);
+//				}
+//				else
+//				{
+//					next_state_is_diff_clause.push_back(-next_state_is_diff);
+//					solver_->incAddClause(next_state_is_diff_clause);
+//					for (unsigned cnt = 0; cnt < f.size(); cnt++)
+//						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff);
+//				}
+//			}
+			//------------------------------------------------------------------------------------
+
+		} // -- END "for each timestep in testcase" --
 	} // ------ END 'for each latch' ---------------
 
 }

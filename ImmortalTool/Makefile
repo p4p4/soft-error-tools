@@ -44,11 +44,9 @@ class:
 test :
 	(cd $(SRC_DIR)/templates; ant createtestclass)
 
-gcheck: GUI=--gui
-gcheck: check
 check: $(PROJECT_DONE)
 	@ cd $(SRC_DIR)/tests && \
-	  $(RUN) $(PROJECT_BUILD)/tests/immortal-tester $(GUI) $(TEST)
+	  $(RUN) $(PROJECT_BUILD)/tests/immortal-tester $(TEST)
 
 .PHONY: doc
 doc:

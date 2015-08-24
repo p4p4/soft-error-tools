@@ -25,9 +25,11 @@
 #ifndef CPP_UNIT_TestSymbTimeLocationAnalysis_H__
 #define CPP_UNIT_TestSymbTimeLocationAnalysis_H__
 
-
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
+
+#include "../src/SymbTimeLocationAnalysis.h"
+
 
 struct aiger;
 
@@ -38,31 +40,39 @@ struct aiger;
 ///
 /// @author TODO
 /// @version 1.2.0
-class TestSymbTimeLocationAnalysis : public CPPUNIT_NS::TestFixture
+class TestSymbTimeLocationAnalysis: public CPPUNIT_NS::TestFixture
 {
-  CPPUNIT_TEST_SUITE(TestSymbTimeLocationAnalysis);
-  CPPUNIT_TEST(test1);
-  CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST_SUITE (TestSymbTimeLocationAnalysis);
+	CPPUNIT_TEST (test1);
+	CPPUNIT_TEST (test3_two_latches);
+	CPPUNIT_TEST (test4_analysis_w_1_extra_latch);
+	CPPUNIT_TEST_SUITE_END();
 
-public:
+	public:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Initializes the object under test.
-  void setUp();
+	void setUp();
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Shuts down the object under test.
-  void tearDown();
+	void tearDown();
 
-protected:
+	void checkVulnerabilities(string path_to_aiger_circuit,
+				vector<string> tc_files, set<unsigned> should_be_vulnerable,
+				int num_err_latches, int mode = SymbTimeLocationAnalysis::STANDARD);
+
+	protected:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Give brief description of test here.
-  void test1();
+	void test1();
 
+	void test3_two_latches();
+	void test4_analysis_w_1_extra_latch();
 };
 
 #endif // CPP_UNIT_TestSymbTimeLocationAnalysis_H__

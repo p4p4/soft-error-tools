@@ -48,6 +48,11 @@ using namespace std;
 
 typedef vector<vector<int> > TestCase;
 
+#define AIG_FALSE			 0
+#define AIG_TRUE 			 1
+#define CNF_FALSE 		 1
+#define CNF_TRUE			-1
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @def MASSERT(condition, message)

@@ -360,7 +360,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			for (unsigned l = 0; l < circuit_->num_latches; ++l) // initialize latches to false
-				results[(circuit_->latches[l].lit >> 1)] = 1;
+				results[(circuit_->latches[l].lit >> 1)] = CNF_FALSE;
 			//--------------------------------------------------------------------------------------
 
 			TestCase& testcase = testcases[tci];
