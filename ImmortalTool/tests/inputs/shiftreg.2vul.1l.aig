@@ -1,0 +1,20 @@
+aig 14 1 4 2 9
+17
+23
+2
+17
+4
+28
+	l3 Err_latch_0
+o1 Err_out_Final
+c
+shiftreg.kiss2
+This file was written by ABC on Mon Aug  3 13:06:34 2015
+For information about AIGER format, refer to http://fmv.jku.at/aiger
+----------------------------------------------------
+This file has been converted with AddParityTool. Input file:
+benchmarks/IWLS_2002_AIG/texas/shiftreg_sweep.aig
+Number of Latches (total): 3
+Latches to protect: 34% (1 Latches)
+Number of additional latches: 1
+  (~1 latches per new latch)

@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2015 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -43,7 +42,6 @@ SymbTimeAnalysis::SymbTimeAnalysis(aiger* circuit, int num_err_latches,
 		int mode) :
 		BackEnd(circuit, num_err_latches, mode), sim_(0)
 {
-	AIG2CNF::instance().initFromAig(circuit);
 	sim_ = new AigSimulator(circuit_);
 	solver_ = Options::instance().getSATSolver();
 }
@@ -92,8 +90,7 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 // -------------------------------------------------------------------------------------------
 void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 {
-
-
+	AIG2CNF::instance().initFromAig(circuit_);
 // ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
 			++c_cnt)
@@ -489,9 +486,10 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				next_state_cnf_values.reserve(circuit_->num_latches);
 				for (unsigned b = 0; b < circuit_->num_latches; ++b)
 				{
-					int next_state_var = Utils::readCnfValue(results, circuit_->latches[b].next);
+					int next_state_var = Utils::readCnfValue(results,
+							circuit_->latches[b].next);
 					next_state_cnf_values.push_back(next_state_var);
-					if(abs(next_state_var) > 1)
+					if (abs(next_state_var) > 1)
 						solver_->addVarToKeep(next_state_var);
 				}
 
@@ -536,23 +534,22 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					break;
 				}
 
-
 				//------------------------------------------------------------------------------------
-				// Optimization:
+				// Optimization: next state does not change,no matter if we flip or not -> remove fi's
 				int next_state_is_diff = next_free_cnf_var++;
 				vector<int> next_state_is_diff_clause;
 				next_state_is_diff_clause.reserve(next_state_cnf_values.size() + 1);
-				for(size_t cnt = 0; cnt < next_state_cnf_values.size(); ++cnt)
+				for (size_t cnt = 0; cnt < next_state_cnf_values.size(); ++cnt)
 				{
 					int lit_to_add = 0;
 					if (next_state[cnt] == 1) // simulation result of output is true
 						lit_to_add = -next_state_cnf_values[cnt]; // add negated output
 					else
 						lit_to_add = next_state_cnf_values[cnt];
-          if(lit_to_add != 1)
-          	next_state_is_diff_clause.push_back(lit_to_add);
+					if (lit_to_add != 1)
+						next_state_is_diff_clause.push_back(lit_to_add);
 				}
-				if(next_state_is_diff_clause.empty())
+				if (next_state_is_diff_clause.empty())
 				{
 					vars_to_keep.clear();
 					vars_to_keep.push_back(1); // TRUE and FALSE literals
@@ -564,7 +561,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				}
 				else
 				{
-					if(next_state_is_diff_clause.size() == 1)
+					if (next_state_is_diff_clause.size() == 1)
 					{
 						for (unsigned cnt = 0; cnt < f.size(); cnt++)
 							solver_->incAdd2LitClause(-f[cnt], next_state_is_diff_clause[0]);
@@ -577,11 +574,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 							solver_->incAdd2LitClause(-f[cnt], next_state_is_diff);
 					}
 				}
-
-
-
 				//------------------------------------------------------------------------------------
-
 
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"

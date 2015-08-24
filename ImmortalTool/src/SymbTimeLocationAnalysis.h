@@ -31,6 +31,8 @@
 
 #include "defines.h"
 #include "BackEnd.h"
+#include "SatSolver.h"
+#include "AigSimulator.h"
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -55,6 +57,10 @@ class SymbTimeLocationAnalysis: public BackEnd
 /// @brief Destructor.
 	virtual ~SymbTimeLocationAnalysis();
 
+enum AnalysisMode {
+	STANDARD = 0
+};
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief tries to find vulnerabilities using the provided TestCases
@@ -77,6 +83,27 @@ class SymbTimeLocationAnalysis: public BackEnd
 
 	protected:
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities using the provided TestCases.
+///	Point in time as well as location is symbolic
+///
+/// STANDARD mode.
+///
+/// Algorithm ANALYZE2: point in time and location is symbolic
+///
+/// @param testcase a vector of input vectors
+	void Analyze2(vector<TestCase> &testcases);
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the Aiger Simulator instance
+	AigSimulator* sim_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the Sat-Solver instance
+	SatSolver* solver_;
 	private:
 
 // -------------------------------------------------------------------------------------------

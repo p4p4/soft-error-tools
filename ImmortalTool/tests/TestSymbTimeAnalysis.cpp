@@ -115,14 +115,14 @@ void TestSymbTimeAnalysis::test1_one_latch()
 //	Logger::instance().enable(Logger::DBG);
 
 	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
-	SymbTimeAnalysis sta(circuit, 1);
+	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
 	sta.findVulnerabilities(1, 3);
 //	Logger::instance().disable(Logger::DBG);
 	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 	aiger_reset(circuit);
 
 	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
-	SymbTimeAnalysis sta2(circuit2, 0);
+	SymbTimeAnalysis sta2(circuit2, 0, SymbTimeAnalysis::NAIVE);
 	sta2.findVulnerabilities(1, 3);
 	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
 	aiger_reset(circuit2);
@@ -134,7 +134,7 @@ void TestSymbTimeAnalysis::test2_one_latch_one_and()
 //		Logger::instance().enable(Logger::DBG);
 
 	aiger* circuit = Utils::readAiger("inputs/1latch_1and.protected.aag");
-	SymbTimeAnalysis sta(circuit, 1);
+	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
 	sta.findVulnerabilities(1, 3);
 	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 	aiger_reset(circuit);
@@ -143,7 +143,7 @@ void TestSymbTimeAnalysis::test2_one_latch_one_and()
 //		Logger::instance().enable(Logger::DBG);
 
 	aiger* circuit2 = Utils::readAiger("inputs/1latch_1and.unprotected.aag");
-	SymbTimeAnalysis sta2(circuit2, 0);
+	SymbTimeAnalysis sta2(circuit2, 0, SymbTimeAnalysis::NAIVE);
 	sta2.findVulnerabilities(1, 3);
 	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
 	aiger_reset(circuit2);
@@ -154,14 +154,14 @@ void TestSymbTimeAnalysis::test3_two_latches()
 //		Logger::instance().enable(Logger::DBG);
 
 	aiger* circuit = Utils::readAiger("inputs/two_latches.protected.aag");
-	SymbTimeAnalysis sta(circuit, 1);
+	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
 	sta.findVulnerabilities(1, 2);
 	L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
 	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 	aiger_reset(circuit);
 
 	aiger* circuit2 = Utils::readAiger("inputs/two_latches.unprotected.aag");
-	SymbTimeAnalysis sta2(circuit2, 0);
+	SymbTimeAnalysis sta2(circuit2, 0, SymbTimeAnalysis::NAIVE);
 	sta2.findVulnerabilities(1, 3);
 	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 2);
 	aiger_reset(circuit2);
@@ -186,26 +186,26 @@ void TestSymbTimeAnalysis::test4_analysis_w_1_extra_latch()
 //	Logger::instance().enable(Logger::DBG);
 	set<unsigned> should_be_vulnerable; // empty
 	checkVulnerabilities("inputs/toggle.perfect.aag", tc_files,
-			should_be_vulnerable, 1);
+			should_be_vulnerable, 1, SymbTimeAnalysis::NAIVE);
 //	Logger::instance().disable(Logger::DBG);
 	//-------------------------------------------
 	// test 4b: 2 of 3 latches protected
 
 	should_be_vulnerable.insert(10); // 10 is vulnerable
 	checkVulnerabilities("inputs/toggle.1vulnerability.aag", tc_files,
-			should_be_vulnerable, 1);
+			should_be_vulnerable, 1, SymbTimeAnalysis::NAIVE);
 
 	//-------------------------------------------
 	// test 4c: 1 of 3 latches protected
 	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
 	checkVulnerabilities("inputs/toggle.2vulnerabilities.aag", tc_files,
-			should_be_vulnerable, 1);
+			should_be_vulnerable, 1, SymbTimeAnalysis::NAIVE);
 
 	//-------------------------------------------
 	// test 4d: 0 of 3 latches protected
 	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
 	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
-			should_be_vulnerable, 0);
+			should_be_vulnerable, 0, SymbTimeAnalysis::NAIVE);
 
 }
 
@@ -224,7 +224,7 @@ void TestSymbTimeAnalysis::test5_analysis_w_2_extra_latch()
 	set<unsigned> should_be_vulnerable;
 	should_be_vulnerable.insert(10); // Latch 10 in vulnerable
 	checkVulnerabilities("inputs/toggle2l.aag", tc_files, should_be_vulnerable,
-			2);
+			2, SymbTimeAnalysis::NAIVE);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -237,7 +237,7 @@ void TestSymbTimeAnalysis::test6_analysis_w_random_inputs()
 	srand(0xCAFECAFE);
 
 	aiger* circuit = Utils::readAiger("inputs/toggle.2vulnerabilities.aag");
-	SymbTimeAnalysis sta(circuit, 1);
+	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
 	sta.findVulnerabilities(1, 2);
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 

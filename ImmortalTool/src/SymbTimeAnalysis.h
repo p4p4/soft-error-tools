@@ -51,7 +51,7 @@ class SymbTimeAnalysis: public BackEnd
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-	SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode = 0);
+	SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode = 1);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -118,6 +118,9 @@ class SymbTimeAnalysis: public BackEnd
 /// @brief the Aiger Simulator instance
 	AigSimulator* sim_;
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the Sat-Solver instance
 	SatSolver* solver_;
 
 	private:
