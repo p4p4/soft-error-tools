@@ -399,7 +399,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
-				// set input values according to Testcase to TRUE or FALSE:
+				// set input values according to TestCase to TRUE or FALSE:
 				for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
 					results[(circuit_->inputs[cnt_i].lit >> 1)] =
 							(testcase[i][cnt_i] == 1) ? -1 : 1;

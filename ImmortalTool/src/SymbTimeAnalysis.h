@@ -87,13 +87,30 @@ class SymbTimeAnalysis: public BackEnd
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief tries to find vulnerabilities using the provided TestCases. Symbolic timesteps algo.
+/// @brief tries to find vulnerabilities using the provided TestCases.
+///	Uses the Symbolic time-steps algorithm.
+///
+/// This NAIVE mode creates and conjuncts a fresh copy of the T_err transition relation to F
+/// at each time-step.
 ///
 /// Algorithm ANALYZE1: Only the point in time is symbolic
 ///
 /// @param testcase a vector of input vectors
 	void Analyze1_naive(vector<TestCase> &testcases);
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities using the provided TestCases.
+///	Uses the Symbolic time-steps algorithm.
+///
+/// SYMBOLIC_SIMULATION mode: instead of conjuncting a fresh copy of the T_err
+/// transition relation to F, a symbolic simulation of the circuit is performed in order to
+/// build the Error-transition-relation on the fly, which should have much fewer clauses
+/// due to the fixed input-values.
+///
+/// Algorithm ANALYZE1: Only the point in time is symbolic
+///
+/// @param testcase a vector of input vectors
 	void Analyze1_symb_sim(vector<TestCase> &testcases);
 
 // -------------------------------------------------------------------------------------------
