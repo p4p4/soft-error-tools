@@ -536,6 +536,53 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					break;
 				}
 
+
+				//------------------------------------------------------------------------------------
+				// Optimization:
+				int next_state_is_diff = next_free_cnf_var++;
+				vector<int> next_state_is_diff_clause;
+				next_state_is_diff_clause.reserve(next_state_cnf_values.size() + 1);
+				for(size_t cnt = 0; cnt < next_state_cnf_values.size(); ++cnt)
+				{
+					int lit_to_add = 0;
+					if (next_state[cnt] == 1) // simulation result of output is true
+						lit_to_add = -next_state_cnf_values[cnt]; // add negated output
+					else
+						lit_to_add = next_state_cnf_values[cnt];
+          if(lit_to_add != 1)
+          	next_state_is_diff_clause.push_back(lit_to_add);
+				}
+				if(next_state_is_diff_clause.empty())
+				{
+					vars_to_keep.clear();
+					vars_to_keep.push_back(1); // TRUE and FALSE literals
+					solver_->startIncrementalSession(vars_to_keep, 0);
+					solver_->incAddUnitClause(-1); // -1 = TRUE constant
+					next_free_cnf_var = 2;
+					f.clear();
+					odiff_enable_literals.clear();
+				}
+				else
+				{
+					if(next_state_is_diff_clause.size() == 1)
+					{
+						for (unsigned cnt = 0; cnt < f.size(); cnt++)
+							solver_->incAdd2LitClause(-f[cnt], next_state_is_diff_clause[0]);
+					}
+					else
+					{
+						next_state_is_diff_clause.push_back(-next_state_is_diff);
+						solver_->incAddClause(next_state_is_diff_clause);
+						for (unsigned cnt = 0; cnt < f.size(); cnt++)
+							solver_->incAdd2LitClause(-f[cnt], next_state_is_diff);
+					}
+				}
+
+
+
+				//------------------------------------------------------------------------------------
+
+
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
