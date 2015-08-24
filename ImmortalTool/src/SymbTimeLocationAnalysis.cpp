@@ -317,7 +317,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			odiff_enable_literals.back() = -odiff_enable_literals.back();
 			if (sat)
 			{
-				i=0; // start test from beginning
+				i=0; // start test testcase from beginning
+				// TODO: clear solver session?
 				Utils::debugPrint(model, "sat assignment: ");
 
 				for(unsigned m_cnt = 0; m_cnt, model.size(); m_cnt++)
