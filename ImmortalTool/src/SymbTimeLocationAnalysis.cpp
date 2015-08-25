@@ -113,6 +113,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 		latch_to_ci[circuit_->latches[c_cnt].lit >> 1] = ci_lit;
 		ci_to_latch[ci_lit] = circuit_->latches[c_cnt].lit;
 	}
+	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
 
 	// for each testcase-step
@@ -143,7 +144,6 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				map_iter++)
 		{
 			vars_to_keep.push_back(map_iter->second);
-			solver_->addVarToKeep(map_iter->first);
 			solver_->addVarToKeep(map_iter->second);
 		}
 
@@ -153,7 +153,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 		for (map_iter = latch_to_ci.begin(); map_iter != latch_to_ci.end();
 				map_iter++)
 		{
-			for (map_iter2 = latch_to_ci.begin(); map_iter2 != latch_to_ci.end();
+			for (map_iter2 = map_iter; map_iter2 != latch_to_ci.end();
 					map_iter2++)
 			{
 				if (map_iter != map_iter2) // for all i,j: i -> not j
@@ -200,7 +200,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				int new_value = next_free_cnf_var++;
 				int ci_lit = latch_to_ci[latch_output];
 
-				solver_->addVarToKeep(new_value);
+				//solver_->addVarToKeep(new_value);
 
 				solver_->incAdd3LitClause(old_value, ci_lit, -new_value);
 				solver_->incAdd3LitClause(old_value, fi, -new_value);
@@ -315,9 +315,10 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			{
 //				Utils::debugPrint(model, "sat assignment: ");
 				found_vulnerability = true;
-				for (unsigned m_cnt = 0; m_cnt, model.size(); m_cnt++)
+				vector<int>::iterator model_iter;
+				for (model_iter = model.begin(); model_iter != model.end(); ++model_iter)
 				{
-					int ci_lit = model[m_cnt];
+					int ci_lit = *model_iter;
 					if (ci_lit > 0) // if not negated
 					{
 
@@ -357,11 +358,31 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 //			}
 //			if (next_state_is_diff_clause.empty())
 //			{
-//				vars_to_keep.clear();
-//				vars_to_keep.push_back(1); // TRUE and FALSE literals
+//				//vars_to_keep.clear();
+//				//vars_to_keep.push_back(1); // TRUE and FALSE literals
 //				solver_->startIncrementalSession(vars_to_keep, 0);
+//				solver_->addVarToKeep(1);
 //				solver_->incAddUnitClause(-1); // -1 = TRUE constant
-//				next_free_cnf_var = 2;
+//
+//
+//				next_free_cnf_var = next_cnf_var_after_ci_vars;
+//
+//				// --
+//				set<int>::iterator l1_it;
+//				set<int>::iterator l2_it;
+//				for (l1_it = latches_to_check_.begin(); l1_it != latches_to_check_.end();
+//						l1_it++)
+//				{
+//					for (l2_it = l1_it; l2_it != latches_to_check_.end();
+//							l2_it++)
+//					{
+//						if (l1_it != l2_it) // for all i,j: i -> not j
+//							solver_->incAdd2LitClause(-latch_to_ci[*l1_it], -latch_to_ci[*l2_it]);
+//					}
+//				}
+//				// ----
+//
+//
 //				f.clear();
 //				odiff_enable_literals.clear();
 //			}
@@ -374,6 +395,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 //				}
 //				else
 //				{
+//					solver_->addVarToKeep(next_state_is_diff);
 //					next_state_is_diff_clause.push_back(-next_state_is_diff);
 //					solver_->incAddClause(next_state_is_diff_clause);
 //					for (unsigned cnt = 0; cnt < f.size(); cnt++)
