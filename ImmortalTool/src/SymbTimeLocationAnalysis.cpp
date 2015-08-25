@@ -105,7 +105,6 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 	map<int, int> latch_to_ci; // maps latch-literals(cnf) to corresponding ci-literals(cnf)
 	map<int, int> ci_to_latch; // maps ci-literals(cnf) to corresponding latch-literals(aig)
 
-
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
 			++c_cnt)
 	{
@@ -139,23 +138,25 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 		solver_->incAddUnitClause(-1); // -1 = TRUE constant
 
 		//add ci variables
-		map<int,int>::iterator map_iter;
-		for(map_iter = latch_to_ci.begin(); map_iter != latch_to_ci.end(); map_iter++)
+		map<int, int>::iterator map_iter;
+		for (map_iter = latch_to_ci.begin(); map_iter != latch_to_ci.end();
+				map_iter++)
 		{
 			vars_to_keep.push_back(map_iter->second);
 			solver_->addVarToKeep(map_iter->first);
 			solver_->addVarToKeep(map_iter->second);
 		}
 
-
 		//----------------------------------------------------------------------------------------
 		// single fault assumption: there may be at most one flipped component
-		map<int,int>::iterator map_iter2;
-		for(map_iter = latch_to_ci.begin(); map_iter != latch_to_ci.end(); map_iter++)
+		map<int, int>::iterator map_iter2;
+		for (map_iter = latch_to_ci.begin(); map_iter != latch_to_ci.end();
+				map_iter++)
 		{
-			for(map_iter2 = latch_to_ci.begin(); map_iter2 != latch_to_ci.end(); map_iter2++)
+			for (map_iter2 = latch_to_ci.begin(); map_iter2 != latch_to_ci.end();
+					map_iter2++)
 			{
-				if(map_iter != map_iter2) // for all i,j: i -> not j
+				if (map_iter != map_iter2) // for all i,j: i -> not j
 					solver_->incAdd2LitClause(-map_iter->second, -map_iter2->second);
 			}
 		}
@@ -207,7 +208,6 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				solver_->incAdd3LitClause(-old_value, ci_lit, new_value);
 				solver_->incAdd3LitClause(-old_value, fi, new_value);
 				solver_->incAdd4LitClause(old_value, -ci_lit, -fi, new_value);
-
 
 				results[latch_output] = new_value;
 			}
@@ -308,27 +308,22 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
-				vector<int> model;
-//				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
-//						vars_to_keep, model);
-
-
-			while (solver_->incIsSatModelOrCore(odiff_enable_literals,
-					vars_to_keep, model))
+			bool found_vulnerability = false;
+			vector<int> model;
+			while (solver_->incIsSatModelOrCore(odiff_enable_literals, vars_to_keep,
+					model))
 			{
-				//i=0; // start test testcase from beginning
-				// TODO: clear solver session?
-				Utils::debugPrint(model, "sat assignment: ");
-
-				for(unsigned m_cnt = 0; m_cnt, model.size(); m_cnt++)
+//				Utils::debugPrint(model, "sat assignment: ");
+				found_vulnerability = true;
+				for (unsigned m_cnt = 0; m_cnt, model.size(); m_cnt++)
 				{
 					int ci_lit = model[m_cnt];
-					if(ci_lit > 0) // if not negated
+					if (ci_lit > 0) // if not negated
 					{
 
 						vulnerable_elements_.insert(ci_to_latch[ci_lit]);
 						latches_to_check_.erase(ci_to_latch[ci_lit]);
-						cout << "latch number " << ci_to_latch[ci_lit] << endl;
+//						cout << "latch number " << ci_to_latch[ci_lit] << endl;
 						// add blocking clause
 						solver_->incAddUnitClause(-ci_lit);
 						break;
@@ -339,6 +334,11 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			// negate (=set to positive face) newest odiff_enable_literal to disable
 			// the previous o_is_diff_clausefor the next iterations
 			odiff_enable_literals.back() = -odiff_enable_literals.back();
+
+			if(found_vulnerability) // skip subsequent optimization if vulnerability was found
+			{
+				continue;
+			}
 
 			//--------------------------------------------------------------------------------------
 			// Optimization: next state does not change,no matter if we flip or not -> remove fi's

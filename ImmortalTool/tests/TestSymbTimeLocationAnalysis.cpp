@@ -129,7 +129,7 @@ void TestSymbTimeLocationAnalysis::test1()
 
 void TestSymbTimeLocationAnalysis::test3_two_latches()
 {
-		Logger::instance().enable(Logger::DBG);
+//		Logger::instance().enable(Logger::DBG);
 
 	aiger* circuit = Utils::readAiger("inputs/two_latches.protected.aag");
 	SymbTimeLocationAnalysis sta(circuit, 1, SymbTimeLocationAnalysis::STANDARD);
@@ -197,26 +197,26 @@ void TestSymbTimeLocationAnalysis::test7_compare_with_simulation_1()
 			SymbTimeLocationAnalysis::STANDARD);
 	compareWithSimulation("inputs/toggle.2vulnerabilities.aag", 1, 2, 1,
 			SymbTimeLocationAnalysis::STANDARD);
-	Logger::instance().enable(Logger::INF);
+//	Logger::instance().enable(Logger::INF);
 //	Logger::instance().disable(Logger::INF);
 	compareWithSimulation("inputs/toggle.3vulnerabilities.aag", 1, 2, 0,
 			SymbTimeLocationAnalysis::STANDARD);
-//	compareWithSimulation("inputs/iwls02texasa.2vul.1l.aag", 5, 5, 1,
-//			SymbTimeLocationAnalysis::STANDARD); // TODO: 0 vulnerabilities?
-//	compareWithSimulation("inputs/ex5.2vul.1l.aig", 5, 5, 1,
-//			SymbTimeLocationAnalysis::STANDARD);
-//	compareWithSimulation("inputs/ex5.2vul.2l.aig", 5, 5, 2,
-//			SymbTimeLocationAnalysis::STANDARD);
-//	compareWithSimulation("inputs/beecount-synth.2vul.1l.aig", 2, 5, 1,
-//			SymbTimeLocationAnalysis::STANDARD);
-//	compareWithSimulation("inputs/s27.1vul.1l", 2, 1, 1,
-//			SymbTimeLocationAnalysis::STANDARD);
-//	compareWithSimulation("inputs/shiftreg.2vul.1l.aig", 1, 2, 1,
-//			SymbTimeLocationAnalysis::STANDARD);
-//	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 5, 14, 1,
-//			SymbTimeLocationAnalysis::STANDARD);
-//	compareWithSimulation("inputs/s5378.50percent.aag", 3, 5, 2,
-//			SymbTimeLocationAnalysis::STANDARD); // 164 Latches!
+	compareWithSimulation("inputs/iwls02texasa.2vul.1l.aag", 5, 5, 1,
+			SymbTimeLocationAnalysis::STANDARD); // TODO: 0 vulnerabilities?
+	compareWithSimulation("inputs/ex5.2vul.1l.aig", 5, 5, 1,
+			SymbTimeLocationAnalysis::STANDARD);
+	compareWithSimulation("inputs/ex5.2vul.2l.aig", 5, 5, 2,
+			SymbTimeLocationAnalysis::STANDARD);
+	compareWithSimulation("inputs/beecount-synth.2vul.1l.aig", 2, 5, 1,
+			SymbTimeLocationAnalysis::STANDARD);
+	compareWithSimulation("inputs/s27.1vul.1l", 2, 1, 1,
+			SymbTimeLocationAnalysis::STANDARD);
+	compareWithSimulation("inputs/shiftreg.2vul.1l.aig", 1, 2, 1,
+			SymbTimeLocationAnalysis::STANDARD);
+	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 5, 14, 1,
+			SymbTimeLocationAnalysis::STANDARD);
+	compareWithSimulation("inputs/s5378.50percent.aag", 3, 5, 2,
+			SymbTimeLocationAnalysis::STANDARD); // 164 Latches!
 }
 
 
