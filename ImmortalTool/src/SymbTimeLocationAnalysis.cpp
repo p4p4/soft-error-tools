@@ -308,16 +308,15 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
-				vector<int> model; // TODO: maybe make use of the satisfying assignment
-				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
-						vars_to_keep, model);
+				vector<int> model;
+//				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
+//						vars_to_keep, model);
 
-			// negate (=set to positive face) newest odiff_enable_literal to disable
-			// the previous o_is_diff_clausefor the next iterations
-			odiff_enable_literals.back() = -odiff_enable_literals.back();
-			if (sat)
+
+			while (solver_->incIsSatModelOrCore(odiff_enable_literals,
+					vars_to_keep, model))
 			{
-				i=0; // start test testcase from beginning
+				//i=0; // start test testcase from beginning
 				// TODO: clear solver session?
 				Utils::debugPrint(model, "sat assignment: ");
 
@@ -336,6 +335,10 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 					}
 				}
 			}
+
+			// negate (=set to positive face) newest odiff_enable_literal to disable
+			// the previous o_is_diff_clausefor the next iterations
+			odiff_enable_literals.back() = -odiff_enable_literals.back();
 
 			//--------------------------------------------------------------------------------------
 			// Optimization: next state does not change,no matter if we flip or not -> remove fi's
