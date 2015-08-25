@@ -7,6 +7,7 @@
 #include "Stopwatch.h"
 #include "Options.h"
 #include "defines.h"
+#include "Utils.h"
 #include "Logger.h"
 #include "LingelingApi.h"
 #include "SimulationBasedAnalysis.h"
@@ -27,16 +28,30 @@ int main(int argc, char *argv[])
 	if (quit)
 		return 0;
 
-	srand(time(0));
+	srand(time(0)); // seed with current time (used for random TestCases)
 	//----------------------------------------------------------------------------
-	Logger::instance().enable(Logger::DBG);
-	// Playground starts here
 	L_LOG("File: " << Options::instance().getAigInFileNameOnly());
 
-	BackEnd* sea = Options::instance().getBackEnd();
-	sea->findVulnerabilities(1,10); // TODO modes
+	BackEnd* error_analysis = Options::instance().getBackEnd();
+	int tc_mode = Options::instance().getTestcaseMode();
+	switch (tc_mode)
+	{
+		case Options::TC_RANDOM:
+		{
+			error_analysis->findVulnerabilities(Options::instance().getNumTestcases(),
+					Options::instance().getLenRandTestcases());
+			break;
+		}
+		case Options::TC_FILES:
+		{
+			error_analysis->findVulnerabilities(Options::instance().getPathsToTestcases());
+			break;
+		}
+		default: MASSERT(false, "wrong/no testcase-mode provided");
+	}
+	error_analysis->findVulnerabilities(1, 10); // TODO modes
 
-	const set<unsigned> &vulnerabilities = sea->getVulnerableElements();
+	const set<unsigned> &vulnerabilities = error_analysis->getVulnerableElements();
 
 	L_LOG("#Vulnerabilities found: " << vulnerabilities.size());
 //	for (set<unsigned>::iterator it = vulnerabilities.begin();
@@ -45,14 +60,11 @@ int main(int argc, char *argv[])
 //		L_DBG("  Latch " << *it);
 //	}
 
-
-	// Playground ends here
 	//----------------------------------------------------------------------------
-
 	double cpu_time = Stopwatch::getCPUTimeSec(start_time);
 	size_t real_time = Stopwatch::getRealTimeSec(start_time);
-	L_LOG("Overall execution time: " << cpu_time << " sec CPU time.");
-	L_LOG("Overall execution time: " << real_time << " sec real time.");
+	L_LOG(
+			"Overall execution time: " << cpu_time << " sec CPU time, "<< real_time << " sec real time.");
 	return 0;
 }
 

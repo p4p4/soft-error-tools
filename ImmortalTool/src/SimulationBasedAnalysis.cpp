@@ -36,8 +36,7 @@ extern "C"
 }
 
 // -------------------------------------------------------------------------------------------
-SimulationBasedAnalysis::SimulationBasedAnalysis(aiger* circuit,
-		int num_err_latches, int mode) :
+SimulationBasedAnalysis::SimulationBasedAnalysis(aiger* circuit, int num_err_latches, int mode) :
 		BackEnd(circuit, num_err_latches, mode), tc_index_(0)
 {
 	sim_ = new AigSimulator(circuit_);
@@ -65,8 +64,7 @@ bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 }
 
 // -------------------------------------------------------------------------------------------
-bool SimulationBasedAnalysis::findVulnerabilities(
-		vector<string> paths_to_TC_files)
+bool SimulationBasedAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 {
 	vulnerable_elements_.clear();
 	//for each test case
@@ -91,16 +89,13 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	// simulate whole TestCase without error, store results
 	while (sim_->simulateOneTimeStep() == true)
 	{
-		if(tc_index_==6)
-			L_DBG("TC6: " << sim_->getStateString())
 		outputs.push_back(sim_->getOutputs());
 		states.push_back(sim_->getLatchValues());
 		sim_->switchToNextState();
 	}
 
 	//  for each latch
-	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches - num_err_latches_;
-			++l_cnt)
+	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches - num_err_latches_; ++l_cnt)
 	{
 
 		// skip latches where we already know that they are vulnerable
@@ -133,11 +128,11 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				sim_w_flip.simulateOneTimeStep(current_TC_[j], state);
 
 //				debugstring += sim_w_flip.getStateString() + "\n";
-				state  = sim_w_flip.getNextLatchValues(); // state = next state
+				state = sim_w_flip.getNextLatchValues(); // state = next state
 				vector<int> outputs_w_flip = sim_w_flip.getOutputs();
 
 				// if(alarm)
-				if (outputs_w_flip[circuit_->num_outputs - 1] == 1)
+				if (outputs_w_flip[circuit_->num_outputs - 1] == AIG_TRUE)
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					break;

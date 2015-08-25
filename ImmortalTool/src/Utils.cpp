@@ -261,6 +261,7 @@ void Utils::logPrint(const vector<int> &vec, string prefix)
   L_LOG(prefix << oss.str());
 }
 
+
 // -------------------------------------------------------------------------------------------
 void Utils::debugCheckWinReg(const CNF &winning_region)
 {
@@ -356,3 +357,5 @@ void Utils::parseAigSimFile(string path_to_aigsim_input, TestCase& testcase, uns
 		testcase.push_back(input_vector);
 	}
 }
+
+

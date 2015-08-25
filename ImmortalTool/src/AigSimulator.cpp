@@ -44,8 +44,8 @@ AigSimulator::AigSimulator(aiger* circuit) :
 {
 	circuit_ = circuit;
 	results_ = new int[circuit_->maxvar + 1];
-	results_[0] = 0;
-	results_[1] = 1;
+	results_[0] = AIG_FALSE;
+	results_[1] = AIG_TRUE;
 
 	initLatches();
 }

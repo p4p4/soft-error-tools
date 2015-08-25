@@ -138,8 +138,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 		// start new incremental SAT-solving session
 		solver_->startIncrementalSession(cj_literals, 0);
-		solver_->addVarToKeep(1);
-		solver_->incAddUnitClause(-1); // -1 = TRUE constant
+		solver_->addVarToKeep(abs(CNF_TRUE));
+		solver_->incAddUnitClause(CNF_TRUE); // CNF_TRUE= unit-clause representing TRUE constant
 
 		//----------------------------------------------------------------------------------------
 		// single fault assumption: there might be at most one flipped component
@@ -222,16 +222,16 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				int rhs1_cnf_value = Utils::readCnfValue(results, circuit_->ands[b].rhs1);
 				int rhs0_cnf_value = Utils::readCnfValue(results, circuit_->ands[b].rhs0);
 
-				if (rhs1_cnf_value == 1 || rhs0_cnf_value == 1) // FALSE and .. = FALSE
-					results[(circuit_->ands[b].lhs >> 1)] = 1;
-				else if (rhs1_cnf_value == -1) // TRUE and X = X
+				if (rhs1_cnf_value == CNF_FALSE || rhs0_cnf_value == CNF_FALSE) // FALSE and .. = FALSE
+					results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
+				else if (rhs1_cnf_value == CNF_TRUE) // TRUE and X = X
 					results[(circuit_->ands[b].lhs >> 1)] = rhs0_cnf_value;
-				else if (rhs0_cnf_value == -1) // X and TRUE = X
+				else if (rhs0_cnf_value == CNF_TRUE) // X and TRUE = X
 					results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
 				else if (rhs0_cnf_value == rhs1_cnf_value) // X and X = X
 					results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
 				else if (rhs0_cnf_value == -rhs1_cnf_value) // X and -X = FALSE
-					results[(circuit_->ands[b].lhs >> 1)] = 1;
+					results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
 				else
 				{
 					int res = next_free_cnf_var++;
@@ -284,7 +284,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
 			for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
 			{
-				if (outputs[cnt] == 1) // simulation result of output is true
+				if (outputs[cnt] == AIG_TRUE) // simulation result of output is true
 					o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
 				else
 					o_is_diff_clause.push_back(out_cnf_values[cnt]);
@@ -298,12 +298,10 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
-			bool found_vulnerability = false;
 			vector<int> model;
 			while (solver_->incIsSatModelOrCore(odiff_enable_literals, cj_literals, model))
 			{
 //				Utils::debugPrint(model, "sat assignment: ");
-				found_vulnerability = true;
 				vector<int>::iterator model_iter;
 				for (model_iter = model.begin(); model_iter != model.end(); ++model_iter)
 				{
@@ -349,7 +347,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			{
 				solver_->startIncrementalSession(cj_literals, 0);
 				solver_->addVarToKeep(1);
-				solver_->incAddUnitClause(-1); // -1 = TRUE constant
+				solver_->incAddUnitClause(CNF_TRUE); // -1 = TRUE constant
 
 				next_free_cnf_var = next_cnf_var_after_ci_vars;
 

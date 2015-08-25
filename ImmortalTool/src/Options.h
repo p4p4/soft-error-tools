@@ -61,6 +61,12 @@ class Options
 {
 public:
 
+	enum TestCaseMode {
+	TC_UNDEFINED = 0,
+	TC_RANDOM = 1,
+	TC_FILES = 2
+	};
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The version of the tool as string.
@@ -194,7 +200,25 @@ public:
 /// @return A fresh instance of the SAT-solver selected by the user.
   SatSolver* getSATSolver(bool rand_models = false, bool min_cores = true) const;
 
+	int getLenRandTestcases() const
+	{
+		return len_rand_testcases_;
+	}
 
+	int getNumTestcases() const
+	{
+		return num_testcases_;
+	}
+
+	const vector<string>& getPathsToTestcases() const
+	{
+		return paths_to_testcases_;
+	}
+
+	int getTestcaseMode() const
+	{
+		return testcase_mode_;
+	}
 
 protected:
 
@@ -209,6 +233,13 @@ protected:
   void initLogger() const;
 
   void initInputCircuit();
+
+  int testcase_mode_;
+
+  int num_testcases_; // only used for random testcases
+  int len_rand_testcases_; // only used for random testcases
+
+  vector<string> paths_to_testcases_;
 
 // -------------------------------------------------------------------------------------------
 ///

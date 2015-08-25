@@ -33,6 +33,8 @@
 #include "Stopwatch.h"
 #include "StringUtils.h"
 #include "SimulationBasedAnalysis.h"
+#include "SymbTimeAnalysis.h"
+#include "SymbTimeLocationAnalysis.h"
 #include "Utils.h"
 
 #include <sys/stat.h>
@@ -100,9 +102,7 @@ bool Options::parse(int argc, char **argv)
 			++arg_count;
 			if (arg_count >= argc)
 			{
-				cerr
-						<< "Option -p must be followed by a string indicating what to print."
-						<< endl;
+				cerr << "Option -p must be followed by a string indicating what to print." << endl;
 				return true;
 			}
 			print_string_ = string(argv[arg_count]);
@@ -157,8 +157,7 @@ bool Options::parse(int argc, char **argv)
 		{
 			sat_solver_ = arg.substr(9, string::npos);
 			StringUtils::toLowerCaseIn(sat_solver_);
-			if (sat_solver_ != "lin_api" && sat_solver_ != "min_api"
-					&& sat_solver_ != "pic_api")
+			if (sat_solver_ != "lin_api" && sat_solver_ != "min_api" && sat_solver_ != "pic_api")
 			{
 				cerr << "Unknown SAT solver '" << sat_solver_ << "'." << endl;
 				return true;
@@ -174,8 +173,7 @@ bool Options::parse(int argc, char **argv)
 			}
 			sat_solver_ = string(argv[arg_count]);
 			StringUtils::toLowerCaseIn(sat_solver_);
-			if (sat_solver_ != "lin_api" && sat_solver_ != "min_api"
-					&& sat_solver_ != "pic_api")
+			if (sat_solver_ != "lin_api" && sat_solver_ != "min_api" && sat_solver_ != "pic_api")
 			{
 				cerr << "Unknown SAT solver '" << sat_solver_ << "'." << endl;
 				return true;
@@ -197,11 +195,65 @@ bool Options::parse(int argc, char **argv)
 			istringstream iss(argv[arg_count]);
 			iss >> num_err_latches_;
 		}
+		else if (arg == "-tc")
+		{
+			if(testcase_mode_ != TC_UNDEFINED)
+			{
+				cerr << "Error: More than one TestCase-Mode given. Which to use?" << endl;
+				return true;
+			}
+			// get path(s) to TestCase-file(s)
+			while (++arg_count < argc && argv[arg_count][0] != '-')
+			{
+				string path_to_testcase(argv[arg_count]);
+				paths_to_testcases_.push_back(path_to_testcase);
+			}
+
+			if (paths_to_testcases_.size() == 0)
+			{
+				cerr << "Option -tc must be followed by a path(s) to testcase-file(s)" << endl;
+				return true;
+			}
+			testcase_mode_ = TC_FILES;
+		}
+		else if (arg == "-tcr")
+		{
+			if(testcase_mode_ != TC_UNDEFINED)
+			{
+				cerr << "Error: More than one TestCase-Mode given. Which to use?" << endl;
+				return true;
+			}
+
+			if (arg_count + 2 >= argc)
+			{
+				cerr << "Option -tcr must be followed by two positive integer numbers." << endl;
+				return true;
+			}
+
+			istringstream iss(argv[++arg_count]);
+			iss >> num_testcases_;
+
+			istringstream iss2(argv[++arg_count]);
+			iss2 >> len_rand_testcases_;
+
+			if(num_testcases_<= 0 || len_rand_testcases_<= 0)
+			{
+				cerr << "Option -tcr must be followed by two positive integer numbers." << endl;
+				return true;
+			}
+			testcase_mode_ = TC_RANDOM;
+		}
 	}
 
 	if (aig_in_file_name_ == "")
 	{
 		cerr << "No input file given." << endl;
+		return true;
+	}
+
+	if (testcase_mode_ == TC_UNDEFINED)
+	{
+		cerr << "No testcase(s) provided." << endl;
 		return true;
 	}
 	initInputCircuit();
@@ -245,8 +297,17 @@ BackEnd* Options::getBackEnd()
 
 	if (back_end_ == "sim")
 	{
-		back_end_instance_ = new SimulationBasedAnalysis(circuit_, num_err_latches_,
-				mode_);
+		back_end_instance_ = new SimulationBasedAnalysis(circuit_, num_err_latches_, mode_);
+		return back_end_instance_;
+	}
+	else if (back_end_ == "sta")
+	{
+		back_end_instance_ = new SymbTimeAnalysis(circuit_, num_err_latches_, mode_);
+		return back_end_instance_;
+	}
+	else if (back_end_ == "stla")
+	{
+		back_end_instance_ = new SymbTimeLocationAnalysis(circuit_, num_err_latches_, mode_);
 		return back_end_instance_;
 	}
 
@@ -316,33 +377,27 @@ void Options::printHelp() const
 void Options::initLogger() const
 {
 	Logger &logger = Logger::instance();
-	if (print_string_.find("E") != string::npos
-			|| print_string_.find("e") != string::npos)
+	if (print_string_.find("E") != string::npos || print_string_.find("e") != string::npos)
 		logger.enable(Logger::ERR);
 	else
 		logger.disable(Logger::ERR);
-	if (print_string_.find("W") != string::npos
-			|| print_string_.find("w") != string::npos)
+	if (print_string_.find("W") != string::npos || print_string_.find("w") != string::npos)
 		logger.enable(Logger::WRN);
 	else
 		logger.disable(Logger::WRN);
-	if (print_string_.find("R") != string::npos
-			|| print_string_.find("r") != string::npos)
+	if (print_string_.find("R") != string::npos || print_string_.find("r") != string::npos)
 		logger.enable(Logger::RES);
 	else
 		logger.disable(Logger::RES);
-	if (print_string_.find("I") != string::npos
-			|| print_string_.find("i") != string::npos)
+	if (print_string_.find("I") != string::npos || print_string_.find("i") != string::npos)
 		logger.enable(Logger::INF);
 	else
 		logger.disable(Logger::INF);
-	if (print_string_.find("D") != string::npos
-			|| print_string_.find("d") != string::npos)
+	if (print_string_.find("D") != string::npos || print_string_.find("d") != string::npos)
 		logger.enable(Logger::DBG);
 	else
 		logger.disable(Logger::DBG);
-	if (print_string_.find("L") != string::npos
-			|| print_string_.find("l") != string::npos)
+	if (print_string_.find("L") != string::npos || print_string_.find("l") != string::npos)
 		logger.enable(Logger::LOG);
 	else
 		logger.disable(Logger::LOG);
@@ -375,9 +430,10 @@ void Options::initInputCircuit()
 
 // -------------------------------------------------------------------------------------------
 Options::Options() :
-		aig_in_file_name_(), print_string_("ERWILD"), tmp_dir_("./tmp"), back_end_(
-				"sim"), back_end_instance_(0), mode_(0), sat_solver_("lin_api"), tool_started_(
-				Stopwatch::start()), circuit_(0), num_err_latches_(0)
+		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0),
+		aig_in_file_name_(), print_string_("ERWILD"), tmp_dir_("./tmp"), back_end_("sim"),
+		back_end_instance_(0), mode_(0), sat_solver_("lin_api"),
+		tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0)
 {
 	// nothing to be done
 }

@@ -376,13 +376,13 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				// faulty simulation: flip component bit
 				vector<int> faulty_state = concrete_state;
-				faulty_state[c_cnt] = (faulty_state[c_cnt] == 1) ? 0 : 1;
+				faulty_state[c_cnt] = (faulty_state[c_cnt] == AIG_TRUE) ? AIG_FALSE : AIG_TRUE;
 
 				// faulty simulation with flipped bit
 				sim_->simulateOneTimeStep(testcase[i], faulty_state);
 				vector<int> outputs2 = sim_->getOutputs();
 
-				bool alarm = (outputs2[outputs2.size() - 1] == 1);
+				bool alarm = (outputs2[outputs2.size() - 1] == AIG_TRUE);
 				bool equal_outputs = (outputs == outputs2);
 				bool err_found_with_simulation = (!equal_outputs && !alarm);
 				if (err_found_with_simulation)
@@ -441,16 +441,16 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					int rhs0_cnf_value = Utils::readCnfValue(results,
 							circuit_->ands[b].rhs0);
 
-					if (rhs1_cnf_value == 1 || rhs0_cnf_value == 1) // FALSE and .. = FALSE
-						results[(circuit_->ands[b].lhs >> 1)] = 1;
-					else if (rhs1_cnf_value == -1) // TRUE and X = X
+					if (rhs1_cnf_value == CNF_FALSE || rhs0_cnf_value == CNF_FALSE) // FALSE and .. = FALSE
+						results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
+					else if (rhs1_cnf_value == CNF_TRUE) // TRUE and X = X
 						results[(circuit_->ands[b].lhs >> 1)] = rhs0_cnf_value;
-					else if (rhs0_cnf_value == -1) // X and TRUE = X
+					else if (rhs0_cnf_value == CNF_TRUE) // X and TRUE = X
 						results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
 					else if (rhs0_cnf_value == rhs1_cnf_value) // X and X = X
 						results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
 					else if (rhs0_cnf_value == -rhs1_cnf_value) // X and -X = FALSE
-						results[(circuit_->ands[b].lhs >> 1)] = 1;
+						results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
 					else
 					{
 						int res = next_free_cnf_var++;
@@ -505,7 +505,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				o_is_diff_clause.reserve(out_cnf_values.size() + 1);
 				for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
 				{
-					if (outputs[cnt] == 1) // simulation result of output is true
+					if (outputs[cnt] == AIG_TRUE) // simulation result of output is true
 						o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
 					else
 						o_is_diff_clause.push_back(out_cnf_values[cnt]);
@@ -542,7 +542,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				for (size_t cnt = 0; cnt < next_state_cnf_values.size(); ++cnt)
 				{
 					int lit_to_add = 0;
-					if (next_state[cnt] == 1) // simulation result of output is true
+					if (next_state[cnt] == AIG_TRUE) // simulation result of output is true
 						lit_to_add = -next_state_cnf_values[cnt]; // add negated output
 					else
 						lit_to_add = next_state_cnf_values[cnt];
@@ -554,7 +554,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					vars_to_keep.clear();
 					vars_to_keep.push_back(1); // TRUE and FALSE literals
 					solver_->startIncrementalSession(vars_to_keep, 0);
-					solver_->incAddUnitClause(-1); // -1 = TRUE constant
+					solver_->incAddUnitClause(CNF_TRUE); // -1 = TRUE constant
 					next_free_cnf_var = 2;
 					f.clear();
 					odiff_enable_literals.clear();

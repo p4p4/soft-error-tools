@@ -89,32 +89,6 @@ public:
 ///         the cube, i.e., the cube contains only negated literals). False otherwise.
   static bool containsInit(const set<int> &cube);
 
-;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Extracts present-state literals and input literals from a cube or clause.
-///
-/// This method takes as argument a cube or a clause (a set of literals). It returns the
-/// all literals from this set which are either present-state literals or (uncontrollable)
-/// input literals.
-///
-/// @param cube_or_clause The cube or clause from which only current-state and input literals
-///        should be extracted.
-/// @return The literals of cube_or_clause that are either current-state literals or inputs.
-  static vector<int> extractPresIn(const vector<int> &cube_or_clause);
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Extracts next-state literals and returns the present-state copy.
-///
-/// This method takes as argument a cube or a clause (a set of literals). It returns the
-/// present-state copy of all the next-state literals in the cube or clause.
-///
-/// @param cube_or_clause The cube or clause from which the current-state copy of the
-///        next-state literals should be extracted.
-/// @return current-state copy of the next-state literals in cube_or_clause.
-  static vector<int> extractNextAsPresent(const vector<int> &cube_or_clause);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -291,6 +265,8 @@ public:
   static void debugPrint(const vector<int> &vec, string prefix = "");
 
   static void logPrint(const vector<int> &vec, string prefix = "");
+
+//  static void logPrint(const set<int> &set, string prefix = "");
 
 // -------------------------------------------------------------------------------------------
 ///
