@@ -125,14 +125,14 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 			state[l_cnt] = aiger_not(state[l_cnt]); // don't forget to restore state again later
 			AigSimulator sim_w_flip(circuit_);
 
-			string debugstring = "\n";
+//			string debugstring = "\n";
 			// for all j >= i:
 			for (unsigned j = timestep; j < states.size(); ++j)
 			{
 				// next_state[], out[], alarm = simulate1step(state[], t[j])
 				sim_w_flip.simulateOneTimeStep(current_TC_[j], state);
 
-				debugstring += sim_w_flip.getStateString() + "\n";
+//				debugstring += sim_w_flip.getStateString() + "\n";
 				state  = sim_w_flip.getNextLatchValues(); // state = next state
 				vector<int> outputs_w_flip = sim_w_flip.getOutputs();
 
@@ -148,10 +148,10 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					vulnerable_elements_.insert(circuit_->latches[l_cnt].lit);
-					L_DBG("[sim] found vulnerability " << circuit_->latches[l_cnt].lit <<"(latch.lit) at i,j=" << timestep <<","<<j<<" in testcase number " << tc_index_);
-					L_DBG("flipped "<<debugstring)
-					Utils::debugPrint(outputs[j], "outputs");
-					Utils::debugPrint(outputs_w_flip, "outputs_f");
+//					L_DBG("[sim] found vulnerability " << circuit_->latches[l_cnt].lit <<"(latch.lit) at i,j=" << timestep <<","<<j<<" in testcase number " << tc_index_);
+//					L_DBG("flipped "<<debugstring)
+//					Utils::debugPrint(outputs[j], "outputs");
+//					Utils::debugPrint(outputs_w_flip, "outputs_f");
 
 					l_is_vulnerable = true;
 					break;
