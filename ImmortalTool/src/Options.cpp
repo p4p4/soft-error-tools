@@ -197,7 +197,7 @@ bool Options::parse(int argc, char **argv)
 		}
 		else if (arg == "-tc")
 		{
-			if(testcase_mode_ != TC_UNDEFINED)
+			if (testcase_mode_ != TC_UNDEFINED)
 			{
 				cerr << "Error: More than one TestCase-Mode given. Which to use?" << endl;
 				return true;
@@ -219,7 +219,7 @@ bool Options::parse(int argc, char **argv)
 		}
 		else if (arg == "-tcr")
 		{
-			if(testcase_mode_ != TC_UNDEFINED)
+			if (testcase_mode_ != TC_UNDEFINED)
 			{
 				cerr << "Error: More than one TestCase-Mode given. Which to use?" << endl;
 				return true;
@@ -237,7 +237,7 @@ bool Options::parse(int argc, char **argv)
 			istringstream iss2(argv[++arg_count]);
 			iss2 >> len_rand_testcases_;
 
-			if(num_testcases_<= 0 || len_rand_testcases_<= 0)
+			if (num_testcases_ <= 0 || len_rand_testcases_ <= 0)
 			{
 				cerr << "Option -tcr must be followed by two positive integer numbers." << endl;
 				return true;
@@ -426,15 +426,19 @@ void Options::initInputCircuit()
 
 		}
 	}
+	L_LOG("Input-File: " << getAigInFileNameOnly())
+	L_LOG("Inputs: " << circuit_->num_inputs
+			<< ", Latches: " << circuit_->num_latches - num_err_latches_
+			<< ", Error Latches: " << num_err_latches_
+			<< ", Outputs: " << circuit_->num_outputs-1)
 
 }
 
 // -------------------------------------------------------------------------------------------
 Options::Options() :
-		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0),
-		aig_in_file_name_(), print_string_("ERWILD"), tmp_dir_("./tmp"), back_end_("sim"),
-		back_end_instance_(0), mode_(0), sat_solver_("lin_api"),
-		tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0)
+		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), print_string_(
+				"ERWILD"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
+				"lin_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0)
 {
 	// nothing to be done
 }

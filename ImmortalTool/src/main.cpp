@@ -30,8 +30,6 @@ int main(int argc, char *argv[])
 
 	srand(time(0)); // seed with current time (used for random TestCases)
 	//----------------------------------------------------------------------------
-	L_LOG("Input-File: " << Options::instance().getAigInFileNameOnly()
-			<< ", Num. of Error-Latches: " << Options::instance().getNumErrLatches());
 	BackEnd* error_analysis = Options::instance().getBackEnd();
 	L_LOG("Back-End: " << Options::instance().getBackEndName() << ", mode = "
 			<< Options::instance().getBackEndMode());
