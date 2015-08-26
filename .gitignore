@@ -1,6 +1,24 @@
 *~
 *.o
 
-#eclipse project files
+# eclipse project files
 */.cproject
 */.project
+
+# do not add binary to repository
+AddParityTool/addParityTool
+
+# do not upload the benchmarks to the repository (huge!)
+# there are scripts in the repository, which can download them.
+# check the benchmark_files/ folder
+benchmark_files/IWLS_2002_AIG/
+benchmark_files/IWLS_2005_AIG/
+benchmark_files/IWLS_2005_benchmarks_V_1.0.tgz
+benchmark_files/IWLS_benchmarks_2005_V_1.0/
+benchmark_files/iwls2005_blif.zip
+benchmark_files/iwls2005_blif/
+benchmark_files/iwls2005_large_blif.zip
+benchmark_files/iwls2005_large_blif/
+benchmark_files/iwls_1.0.tar.gz
+benchmark_files/iwls_1.0/
+
