@@ -330,7 +330,12 @@ aiger* Utils::readAiger(string path)
 
 void Utils::parseAigSimFile(string path_to_aigsim_input, TestCase& testcase, unsigned number_of_inputs)
 {
-	ifstream infile(path_to_aigsim_input.c_str());
+	//ifstream infile(path_to_aigsim_input.c_str());
+
+	ifstream infile;
+	infile.open(path_to_aigsim_input.c_str());
+	MASSERT(infile, "could not open aigsim file: " + path_to_aigsim_input)
+
 	string input_vector_line;
 	while (infile >> input_vector_line)
 	{

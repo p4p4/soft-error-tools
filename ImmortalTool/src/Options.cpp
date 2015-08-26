@@ -214,6 +214,7 @@ bool Options::parse(int argc, char **argv)
 				cerr << "Option -tc must be followed by a path(s) to testcase-file(s)" << endl;
 				return true;
 			}
+			--arg_count;
 			testcase_mode_ = TC_FILES;
 		}
 		else if (arg == "-tcr")
@@ -447,3 +448,7 @@ Options::~Options()
 	}
 }
 
+unsigned Options::getNumErrLatches() const
+{
+	return num_err_latches_;
+}

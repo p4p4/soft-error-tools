@@ -244,11 +244,11 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 					cnf_next = AIG2CNF::instance().getNextStateVars();
 
 				}
-				Utils::debugPrint(real_rename_map, "Rename map:");
+//				Utils::debugPrint(real_rename_map, "Rename map:");
 				T_copy.setVarValue(AIG2CNF::instance().getAlarmOutput(), false); // alarm = false
 				T_copy.renameVars(real_rename_map);
 				solver_->incAddCNF(T_copy);
-				L_DBG("T_Copy = " << endl <<T_copy.toString() << endl);
+//				L_DBG("T_Copy = " << endl <<T_copy.toString() << endl);
 
 				if (!err_is_no_vulnerability)
 				{
@@ -281,7 +281,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				odiff_literals.push_back(-o_is_diff_enable_literal);
 
 				solver_->incAddClause(o_is_diff_clause);
-				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
+//				Utils::debugPrint(o_is_diff_clause, "o_is_diff_clause: ");
 
 //				Utils::debugPrint(renamed_out_vars, "renamed_out_vars: ");
 
@@ -298,16 +298,9 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				bool sat = solver_->incIsSatModelOrCore(odiff_literals,
 						T_copy.getVars(), model);
 				odiff_literals.back() = -odiff_literals.back();
-				if (true || sat != err_found_with_simulation)
-				{
-					L_DBG("SAT: "<< sat);
-					L_DBG("err_found_with_simulation: " << err_found_with_simulation);
-					//MASSERT(false, "analyze!");
-				}
+
 				if (sat)
 				{
-					L_DBG("found vulnerability: " << component_aig)
-//					Utils::debugPrint(model, "satisfying assignment: ");
 					vulnerable_elements_.insert(component_aig);
 					break;
 				}

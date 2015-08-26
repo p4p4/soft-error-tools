@@ -30,26 +30,29 @@ int main(int argc, char *argv[])
 
 	srand(time(0)); // seed with current time (used for random TestCases)
 	//----------------------------------------------------------------------------
-	L_LOG("File: " << Options::instance().getAigInFileNameOnly());
-
+	L_LOG("Input-File: " << Options::instance().getAigInFileNameOnly()
+			<< ", Num. of Error-Latches: " << Options::instance().getNumErrLatches());
 	BackEnd* error_analysis = Options::instance().getBackEnd();
+	L_LOG("Back-End: " << Options::instance().getBackEndName() << ", mode = "
+			<< Options::instance().getBackEndMode());
 	int tc_mode = Options::instance().getTestcaseMode();
 	switch (tc_mode)
 	{
-		case Options::TC_RANDOM:
-		{
-			error_analysis->findVulnerabilities(Options::instance().getNumTestcases(),
-					Options::instance().getLenRandTestcases());
-			break;
-		}
-		case Options::TC_FILES:
-		{
-			error_analysis->findVulnerabilities(Options::instance().getPathsToTestcases());
-			break;
-		}
-		default: MASSERT(false, "wrong/no testcase-mode provided");
+	case Options::TC_RANDOM:
+	{
+		error_analysis->findVulnerabilities(Options::instance().getNumTestcases(),
+				Options::instance().getLenRandTestcases());
+		break;
 	}
-	error_analysis->findVulnerabilities(1, 10); // TODO modes
+	case Options::TC_FILES:
+	{
+		error_analysis->findVulnerabilities(Options::instance().getPathsToTestcases());
+		break;
+	}
+	default:
+		MASSERT(false, "wrong/no testcase-mode provided")
+		;
+	}
 
 	const set<unsigned> &vulnerabilities = error_analysis->getVulnerableElements();
 

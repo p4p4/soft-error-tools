@@ -220,6 +220,8 @@ public:
 		return testcase_mode_;
 	}
 
+	unsigned getNumErrLatches() const;
+
 protected:
 
 // -------------------------------------------------------------------------------------------
