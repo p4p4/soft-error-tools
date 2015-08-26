@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 		partition_ctr++;
 
 		// generate error output for partition
-		if (partition_ctr == latches_per_error_signal)
+		if (partition_ctr == latches_per_error_signal || latch_ctr == latches_to_protect -1)
 		{
 
 			partition_ctr = 0;
