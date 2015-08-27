@@ -143,7 +143,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					vulnerable_elements_.insert(circuit_->latches[l_cnt].lit);
-//					L_DBG("[sim] found vulnerability " << circuit_->latches[l_cnt].lit <<"(latch.lit) at i,j=" << timestep <<","<<j<<" in testcase number " << tc_index_);
+					L_DBG("[sim] found vulnerability " << circuit_->latches[l_cnt].lit <<"(latch.lit) at i,j=" << timestep <<","<<j<<" in testcase number " << tc_index_);
 //					L_DBG("flipped "<<debugstring)
 //					Utils::debugPrint(outputs[j], "outputs");
 //					Utils::debugPrint(outputs_w_flip, "outputs_f");
