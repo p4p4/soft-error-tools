@@ -38,8 +38,7 @@ extern "C"
 }
 
 // -------------------------------------------------------------------------------------------
-SymbTimeAnalysis::SymbTimeAnalysis(aiger* circuit, int num_err_latches,
-		int mode) :
+SymbTimeAnalysis::SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode) :
 		BackEnd(circuit, num_err_latches, mode), sim_(0)
 {
 	sim_ = new AigSimulator(circuit_);
@@ -75,12 +74,10 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 
 	vector<TestCase> testcases;
 	//for each test case t[][]
-	for (unsigned tc_index_ = 0; tc_index_ < paths_to_TC_files.size();
-			tc_index_++)
+	for (unsigned tc_index_ = 0; tc_index_ < paths_to_TC_files.size(); tc_index_++)
 	{
 		TestCase testcase;
-		Utils::parseAigSimFile(paths_to_TC_files[tc_index_], testcase,
-				circuit_->num_inputs);
+		Utils::parseAigSimFile(paths_to_TC_files[tc_index_], testcase, circuit_->num_inputs);
 		testcases.push_back(testcase);
 	}
 
@@ -92,8 +89,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 {
 	AIG2CNF::instance().initFromAig(circuit_);
 // ---------------- BEGIN 'for each latch' -------------------------
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
-			++c_cnt)
+	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = AIG2CNF::instance().aigLitToCnfLit(component_aig);
@@ -140,12 +136,10 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 			vector<int> cnf_o_terr_orig = AIG2CNF::instance().getOutputs();
 			for (unsigned cnt = 0; cnt < cnf_o_terr_orig.size(); ++cnt)
-				cnf_o_terr_orig[cnt] = Utils::applyRen(first_rename_map,
-						cnf_o_terr_orig[cnt]);
+				cnf_o_terr_orig[cnt] = Utils::applyRen(first_rename_map, cnf_o_terr_orig[cnt]);
 			vector<int> cnf_next_terr_orig = AIG2CNF::instance().getNextStateVars();
 			for (unsigned cnt = 0; cnt < cnf_next_terr_orig.size(); ++cnt)
-				cnf_next_terr_orig[cnt] = Utils::applyRen(first_rename_map,
-						cnf_next_terr_orig[cnt]);
+				cnf_next_terr_orig[cnt] = Utils::applyRen(first_rename_map, cnf_next_terr_orig[cnt]);
 
 			int max_cnf_var_in_Terr = next_free_cnf_var;
 			TestCase& testcase = testcases[tci];
@@ -182,11 +176,8 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 //				break;
 //			}
 
-				bool err_is_no_vulnerability =
-						false
-								&& (alarm
-										|| (equal_outputs
-												&& (next_state == sim_->getNextLatchValues())));
+				bool err_is_no_vulnerability = false
+						&& (alarm || (equal_outputs && (next_state == sim_->getNextLatchValues())));
 
 				vector<int> real_rename_map(max_cnf_var_in_Terr, 0);
 				for (unsigned cnt = 0; cnt < real_rename_map.size(); ++cnt)
@@ -213,8 +204,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				for (unsigned cnt = 0; cnt < circuit_->num_inputs; ++cnt)
 				{
 					unsigned input_cnf = (circuit_->inputs[cnt].lit >> 1) + 1;
-					int input_bit_value = AIG2CNF::instance().aigLitToCnfLit(
-							testcase[i][cnt]);
+					int input_bit_value = AIG2CNF::instance().aigLitToCnfLit(testcase[i][cnt]);
 					real_rename_map[input_cnf] = input_bit_value;
 				}
 
@@ -261,8 +251,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				vector<int> renamed_out_vars;
 				renamed_out_vars.reserve(cnf_o.size());
 				for (unsigned cnt = 0; cnt < cnf_o.size(); ++cnt)
-					renamed_out_vars.push_back(
-							Utils::applyRen(real_rename_map, cnf_o[cnt]));
+					renamed_out_vars.push_back(Utils::applyRen(real_rename_map, cnf_o[cnt]));
 //				Utils::debugPrint(renamed_out_vars, "symbolic outputs: ");
 
 				// clause saying that the outputs o and o' are different
@@ -289,14 +278,12 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				vector<int> renamed_next_state_vars;
 				renamed_next_state_vars.reserve(cnf_next.size());
 				for (unsigned cnt = 0; cnt < cnf_next.size(); ++cnt)
-					renamed_next_state_vars.push_back(
-							Utils::applyRen(real_rename_map, cnf_next[cnt]));
+					renamed_next_state_vars.push_back(Utils::applyRen(real_rename_map, cnf_next[cnt]));
 				solver_->addVarsToKeep(renamed_next_state_vars);
 
 				// call SAT-Solver
 				vector<int> model;
-				bool sat = solver_->incIsSatModelOrCore(odiff_literals,
-						T_copy.getVars(), model);
+				bool sat = solver_->incIsSatModelOrCore(odiff_literals, T_copy.getVars(), model);
 				odiff_literals.back() = -odiff_literals.back();
 
 				if (sat)
@@ -322,8 +309,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 	results[0] = 1; // FALSE and TRUE constants
 
 	// ---------------- BEGIN 'for each latch' -------------------------
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_;
-			++c_cnt)
+	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = component_aig >> 1;
@@ -384,6 +370,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					break;
 				}
 
+
 				// switch concrete simulation to next state
 				concrete_state = next_state; // OR: change to sim_->switchToNextState();
 				//------------------------------------------------------------------------------------
@@ -391,37 +378,41 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 				// set input values according to TestCase to TRUE or FALSE:
 				for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
-					results[(circuit_->inputs[cnt_i].lit >> 1)] =
-							(testcase[i][cnt_i] == 1) ? -1 : 1;
+					results[(circuit_->inputs[cnt_i].lit >> 1)] = (testcase[i][cnt_i] == 1) ? -1 : 1;
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
 				// fi is a variable that indicates whether the component is flipped in step i or not
-				int fi = next_free_cnf_var++;
-				solver_->addVarToKeep(fi);
-				int old_value = results[component_cnf];
-				if (old_value == -1) // old value is true
-					results[component_cnf] = -fi;
-				else if (old_value == 1) // old value is false
-					results[component_cnf] = fi;
-				else
+				bool err_is_no_vulnerability = (alarm
+						|| (equal_outputs && (next_state == sim_->getNextLatchValues())));
+				if (!err_is_no_vulnerability)
 				{
-					int new_value = next_free_cnf_var++;
-					solver_->addVarToKeep(new_value);
-					// new_value == fi ? -old_value : old_value
-					solver_->incAdd3LitClause(fi, old_value, -new_value);
-					solver_->incAdd3LitClause(fi, -old_value, new_value);
-					solver_->incAdd3LitClause(-fi, old_value, new_value);
-					solver_->incAdd3LitClause(-fi, -old_value, -new_value);
-					results[component_cnf] = new_value;
+					int fi = next_free_cnf_var++;
+					solver_->addVarToKeep(fi);
+					int old_value = results[component_cnf];
+					if (old_value == -1) // old value is true
+						results[component_cnf] = -fi;
+					else if (old_value == 1) // old value is false
+						results[component_cnf] = fi;
+					else
+					{
+						int new_value = next_free_cnf_var++;
+						solver_->addVarToKeep(new_value);
+						// new_value == fi ? -old_value : old_value
+						solver_->incAdd3LitClause(fi, old_value, -new_value);
+						solver_->incAdd3LitClause(fi, -old_value, new_value);
+						solver_->incAdd3LitClause(-fi, old_value, new_value);
+						solver_->incAdd3LitClause(-fi, -old_value, -new_value);
+						results[component_cnf] = new_value;
+					}
+
+					// there might be at most one flip in one time-step:
+					// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
+					for (unsigned cnt = 0; cnt < f.size(); cnt++)
+						solver_->incAdd2LitClause(-fi, -f[cnt]);
+
+					f.push_back(fi);
 				}
-
-				// there might be at most one flip in one time-step:
-				// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
-				for (unsigned cnt = 0; cnt < f.size(); cnt++)
-					solver_->incAdd2LitClause(-fi, -f[cnt]);
-
-				f.push_back(fi);
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
@@ -429,10 +420,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				for (unsigned b = 0; b < circuit_->num_ands; ++b)
 				{
 
-					int rhs1_cnf_value = Utils::readCnfValue(results,
-							circuit_->ands[b].rhs1);
-					int rhs0_cnf_value = Utils::readCnfValue(results,
-							circuit_->ands[b].rhs0);
+					int rhs1_cnf_value = Utils::readCnfValue(results, circuit_->ands[b].rhs1);
+					int rhs0_cnf_value = Utils::readCnfValue(results, circuit_->ands[b].rhs0);
 
 					if (rhs1_cnf_value == CNF_FALSE || rhs0_cnf_value == CNF_FALSE) // FALSE and .. = FALSE
 						results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
@@ -471,16 +460,14 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				out_cnf_values.reserve(circuit_->num_outputs - 1);
 				for (unsigned b = 0; b < circuit_->num_outputs - 1; ++b)
 				{
-					out_cnf_values.push_back(
-							Utils::readCnfValue(results, circuit_->outputs[b].lit));
+					out_cnf_values.push_back(Utils::readCnfValue(results, circuit_->outputs[b].lit));
 				}
 
 				vector<int> next_state_cnf_values;
 				next_state_cnf_values.reserve(circuit_->num_latches);
 				for (unsigned b = 0; b < circuit_->num_latches; ++b)
 				{
-					int next_state_var = Utils::readCnfValue(results,
-							circuit_->latches[b].next);
+					int next_state_var = Utils::readCnfValue(results, circuit_->latches[b].next);
 					next_state_cnf_values.push_back(next_state_var);
 					if (abs(next_state_var) > 1)
 						solver_->addVarToKeep(next_state_var);

@@ -12,7 +12,7 @@ import sys
 
 # select tool + mode
 IMMORTAL_BIN = "./immortal-bin"
-BACKEND_MODE = "-b sim -m 0"
+BACKEND_MODE = "-b sta -m 1"
 
 NUM_RAND_TC = "3"
 RAND_TC_LEN = "15"
@@ -20,8 +20,8 @@ RAND_TC_LEN = "15"
 # set benchmarks
 BENCHMARK_DIR = "../../benchmark_files/"        # benchmarking circuits without protection circuits are in here
 #BENCHMARKS_LIST = "basic_benchmarks.txt"     # list of circuit-filenames located within the BENCHMARK_DIR
-BENCHMARKS_LIST = "standard_benchmarks.txt"
-#BENCHMARKS_LIST = "medium_benchmarks.txt"
+#BENCHMARKS_LIST = "standard_benchmarks.txt"
+BENCHMARKS_LIST = "medium_benchmarks.txt"
 
 # convert input circuits with addParityTool (protects the circuit with additional latches, adds an alarm-output)
 add_parity_binary = "./../../AddParityTool/addParityTool"
