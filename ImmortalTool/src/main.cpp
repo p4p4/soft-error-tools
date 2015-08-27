@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	if (quit)
 		return 0;
 
-	srand(time(0)); // seed with current time (used for random TestCases)
+
 	//----------------------------------------------------------------------------
 	BackEnd* error_analysis = Options::instance().getBackEnd();
 	L_LOG("Back-End: " << Options::instance().getBackEndName() << ", mode = "
