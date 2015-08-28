@@ -154,10 +154,10 @@ void TestSymbTimeLocationAnalysis::test4_analysis_w_1_extra_latch()
 	vector<string> tc_files;
 	tc_files.push_back("inputs/3b");
 	tc_files.push_back("inputs/3_bit_input_1");
-//	tc_files.push_back("inputs/3_bit_input_2");
-//	tc_files.push_back("inputs/3_bit_input_3");
-//	tc_files.push_back("inputs/3_bit_input_4");
-//	tc_files.push_back("inputs/3_bit_input_5");
+	tc_files.push_back("inputs/3_bit_input_2");
+	tc_files.push_back("inputs/3_bit_input_3");
+	tc_files.push_back("inputs/3_bit_input_4");
+	tc_files.push_back("inputs/3_bit_input_5");
 
 	//-------------------------------------------
 	// test 4a: 3 of 3 latches protected

@@ -325,9 +325,6 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			//--------------------------------------------------------------------------------------
 			// Optimization: next state does not change,no matter if we flip or not -> remove fi's
 
-			if (false) // skip subsequent optimization? TODO: introduce variable to enable/disable
-				continue;
-
 			int next_state_is_diff = next_free_cnf_var++;
 			vector<int> next_state_is_diff_clause;
 			next_state_is_diff_clause.reserve(next_state_cnf_values.size() + 1);
@@ -366,15 +363,17 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 				f.clear();
 				odiff_enable_literals.clear();
+
+				continue;
 			}
 			else
 			{
-				if (next_state_is_diff_clause.size() == 1)
-				{
-					for (unsigned cnt = 0; cnt < f.size(); cnt++)
-						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff_clause[0]);
-				}
-				else
+//				if (next_state_is_diff_clause.size() == 1)									// TODO!
+//				{
+//					for (unsigned cnt = 0; cnt < f.size(); cnt++)
+//						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff_clause[0]);
+//				}
+//				else
 				{
 					solver_->addVarToKeep(next_state_is_diff);
 					next_state_is_diff_clause.push_back(-next_state_is_diff);
@@ -384,6 +383,54 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				}
 			}
 			//--------------------------------------------------------------------------------------
+
+			//------------------------------------------------------------------------------------
+			// Optimization2: compute unsat core
+			// 0 = disabled, 1 = every iteration, 2 = every 2nd iteration, ...
+			unsigned interval_of_iterations_to_compute_ = 5;
+
+
+			if (i > 0 && (interval_of_iterations_to_compute_ != 0)
+					&& (i % interval_of_iterations_to_compute_ == 0))
+			{
+
+				vector<int> core_assumptions;
+				core_assumptions.reserve(f.size());
+				for(vector<int>::iterator it = f.begin(); it != f.end(); ++it)
+				{
+					core_assumptions.push_back(-*it);
+				}
+				vector<int> more_assumptions;
+				more_assumptions.push_back(next_state_is_diff);
+				vector<int> core;
+				bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,core);
+				MASSERT(is_sat_2 == false, "must not be satisfiable")
+
+				// TODO: not sure if there could be a more efficient way to do this
+				// (e.g. under the assumption that results of core have same order as f):
+				Utils::logPrint(core, "core: ");
+				Utils::logPrint(f,"f: ");
+				set<int> useless(f.begin(),f.end());
+				for(vector<int>::iterator it = core.begin(); it != core.end(); ++it)
+				{
+					useless.erase(- *it);
+				}
+
+				for(set<int>::iterator it = useless.begin(); it != useless.end(); ++it)
+				{
+					solver_->incAddUnitClause(-*it);
+				}
+
+				int num_reduced_f_variables = f.size() - core.size();
+				f.clear();
+				for(vector<int>::iterator it = core.begin(); it != core.end(); ++it)
+				{
+					f.push_back(-*it);
+				}
+				L_LOG("step"<<i<<" reduced f variables: " << num_reduced_f_variables)
+				// END TODO
+
+			}
 
 		} // -- END "for each timestep in testcase" --
 	} // ------ END 'for each latch' ---------------
