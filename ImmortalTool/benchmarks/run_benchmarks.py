@@ -19,14 +19,17 @@ RAND_TC_LEN = "15"
 
 # set benchmarks
 BENCHMARK_DIR = "../../benchmark_files/"        # benchmarking circuits without protection circuits are in here
-#BENCHMARKS_LIST = "basic_benchmarks.txt"     # list of circuit-filenames located within the BENCHMARK_DIR
-#BENCHMARKS_LIST = "standard_benchmarks.txt"
-BENCHMARKS_LIST = "medium_benchmarks.txt"
+# list of circuit-filenames located within the BENCHMARK_DIR:
+#BENCHMARKS_LIST = "basic_benchmarks.txt"	    # very simple benchmarks
+#BENCHMARKS_LIST = "standard_benchmarks.txt"	# easy benchmarks
+#BENCHMARKS_LIST = "medium_benchmarks.txt"	    # slightly more challenging
+BENCHMARKS_LIST = "hard_benchmarks_1.txt"	    # 200 - 800 latches
+
 
 # convert input circuits with addParityTool (protects the circuit with additional latches, adds an alarm-output)
 add_parity_binary = "./../../AddParityTool/addParityTool"
-percentage_to_protect = "50"
-avg_latches = "2"
+percentage_to_protect = "50"    # randomly select this the given percentage of latches to protect 
+avg_latches = "2" 		        # one additional error_latch protects 'avg_latches' latches
 
 TMP_DIR = "tmp/"
 
@@ -46,7 +49,7 @@ with open(BENCHMARKS_LIST) as f:
         sys.stdout.flush()
 
 	# execute converted benchmark with random inputs.
-        cmd_immortal = IMMORTAL_BIN + " -i " + out_file + " -tcr 3 15 " + BACKEND_MODE +" --print=L"
+        cmd_immortal = IMMORTAL_BIN + " -i " + out_file + " -tcr 3 15 " + BACKEND_MODE +" --print=L --seed=123456"
         p = subprocess.Popen(cmd_immortal, shell=True, stderr=subprocess.PIPE) 
         while True: # print output of tool
             out = p.stderr.read(1)
