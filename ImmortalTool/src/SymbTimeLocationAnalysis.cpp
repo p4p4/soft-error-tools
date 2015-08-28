@@ -387,11 +387,11 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			//------------------------------------------------------------------------------------
 			// Optimization2: compute unsat core
 			// 0 = disabled, 1 = every iteration, 2 = every 2nd iteration, ...
-			unsigned interval_of_iterations_to_compute_ = 5;
+			unsigned interval_of_iterations_to_compute_ = 10;
 
 
-			if (i > 0 && (interval_of_iterations_to_compute_ != 0)
-					&& (i % interval_of_iterations_to_compute_ == 0))
+			if (f.size() > 1 && (interval_of_iterations_to_compute_ != 0)
+					&& (f.size() % interval_of_iterations_to_compute_ == 0))
 			{
 
 				vector<int> core_assumptions;
