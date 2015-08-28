@@ -104,6 +104,9 @@ enum AnalysisMode {
 ///
 /// @brief the Sat-Solver instance
 	SatSolver* solver_;
+
+// 0 = disabled, 1 = every iteration, 2 = every 2nd iteration, ...
+unsigned unsat_core_interval_;
 	private:
 
 // -------------------------------------------------------------------------------------------

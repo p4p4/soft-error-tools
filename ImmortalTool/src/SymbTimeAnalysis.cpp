@@ -43,6 +43,7 @@ SymbTimeAnalysis::SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode
 {
 	sim_ = new AigSimulator(circuit_);
 	solver_ = Options::instance().getSATSolver();
+	unsat_core_interval_ = Options::instance().getUnsatCoreInterval();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -559,12 +560,9 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				//------------------------------------------------------------------------------------
 				// Optimization2: compute unsat core
-				// 0 = disabled, 1 = every iteration, 2 = every 2nd iteration, ...
-				unsigned interval_of_iterations_to_compute_ = 8;
 
-
-				if (i > 0 && (interval_of_iterations_to_compute_ != 0)
-						&& (i % interval_of_iterations_to_compute_ == 0))
+				if (f.size() > 1 && (unsat_core_interval_ != 0)
+						&& (f.size() % unsat_core_interval_ == 0))
 				{
 
 					vector<int> core_assumptions;

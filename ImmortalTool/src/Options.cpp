@@ -147,6 +147,11 @@ bool Options::parse(int argc, char **argv)
 			istringstream iss(arg.substr(7, string::npos));
 			iss >> seed_;
 		}
+		else if (arg.find("--uci=") == 0)
+		{
+			istringstream iss(arg.substr(6, string::npos));
+			iss >> unsat_core_interval_;
+		}
 		else if (arg == "-m")
 		{
 			++arg_count;
@@ -448,7 +453,7 @@ void Options::initInputCircuit()
 Options::Options() :
 		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), print_string_(
 				"ERWILD"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
-				"lin_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0), seed_(0)
+				"lin_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0), seed_(0), unsat_core_interval_(0)
 {
 	// nothing to be done
 }

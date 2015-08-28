@@ -58,10 +58,10 @@ class SymbTimeAnalysis: public BackEnd
 /// @brief Destructor.
 	virtual ~SymbTimeAnalysis();
 
-  enum AnalysisMode {
-    NAIVE = 0,
-		SYMBOLIC_SIMULATION = 1
-  };
+	enum AnalysisMode
+	{
+		NAIVE = 0, SYMBOLIC_SIMULATION = 1
+	};
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -122,6 +122,9 @@ class SymbTimeAnalysis: public BackEnd
 ///
 /// @brief the Sat-Solver instance
 	SatSolver* solver_;
+
+// 0 = disabled, 1 = every iteration, 2 = every 2nd iteration, ...
+unsigned unsat_core_interval_;
 
 	private:
 

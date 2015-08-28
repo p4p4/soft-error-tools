@@ -222,6 +222,11 @@ public:
 
 	unsigned getNumErrLatches() const;
 
+	unsigned getUnsatCoreInterval() const
+	{
+		return unsat_core_interval_;
+	}
+
 protected:
 
 // -------------------------------------------------------------------------------------------
@@ -306,6 +311,8 @@ protected:
   unsigned num_err_latches_;
 
   unsigned seed_;
+
+  unsigned unsat_core_interval_;
 
 private:
 
