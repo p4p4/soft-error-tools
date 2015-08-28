@@ -290,7 +290,7 @@ void TestSymbTimeAnalysis::test7_compare_with_simulation_1()
 void TestSymbTimeAnalysis::test8_symbolic_simulation_basic()
 {
 
-//	Logger::instance().enable(Logger::DBG);
+
 
 	//-------------------------------------------
 	// test 8a: 0 of 1 latches protected
@@ -352,6 +352,7 @@ void TestSymbTimeAnalysis::test9_symbolic_simulation_extended()
 	// use constant seed, so that we don't have any non-determinism in the test-case ;-)
 	srand(0xCAFECAFE);
 
+	Logger::instance().enable(Logger::LOG);
 	// Test 9
 	//	Source: IWLS_2002_AIG/LGSynth91/smlexamples/s5378_orig.aig:
 	//	Latches: 164, Protected with AddParityTool: 50% (=82 Latches)
@@ -359,11 +360,12 @@ void TestSymbTimeAnalysis::test9_symbolic_simulation_extended()
 
 	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
 	SymbTimeAnalysis sta(circuit, 2, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
-	sta.findVulnerabilities(5, 5); // 1 TC with 2 timesteps would also already work
+	sta.findVulnerabilities(1, 25); // 1 TC with 2 timesteps would also already work
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
+	cout << "found vulnerabilities: " << vulnerabilities.size() << endl;
 	// out of the 82 unprotected latches, only 67 are real vulnerabilities:
-	CPPUNIT_ASSERT(vulnerabilities.size() == 67);
+	CPPUNIT_ASSERT(vulnerabilities.size() == 69);
 
 }
 
