@@ -57,7 +57,6 @@ class SymbolicSimulator
 /// @brief Destructor.
 	virtual ~SymbolicSimulator();
 
-
 // -------------------------------------------------------------------------------------------
 //
 /// @brief Simpulates one Timestep using an input-vector
@@ -90,14 +89,40 @@ class SymbolicSimulator
 ///
 	void simulateOneTimeStep();
 
+// -------------------------------------------------------------------------------------------
+//
+/// @brief Sets the input values for the next simulation step
+///
+/// The next call of simulateOneTimeStep(void) will use the provided values for the simulation
+///
+/// @param input_values The input vector
 	void setInputValues(const vector<int> &input_values);
 
+// -------------------------------------------------------------------------------------------
+//
+/// @brief Sets a value for a given cnf-variable.
+///
+/// Set a value for a given variable. This can be useful to, for example, modify the circuit
+/// araund the latches (if you add appropriate clauses to the given SAT- solver_ instance
+/// (e.g. f variables in SymbTimeLocation Algorithm, f and c variables in SymbTimeLocationA.)
+///
+/// @param cnf_lit the variable where you want to set a value
+/// @param cnf_value the value to store for the given cnf_lit variable
 	void setResultValue(unsigned cnf_lit, int cnf_value);
+
+// -------------------------------------------------------------------------------------------
+//
+/// @brief returns the value for a given cnf-variable.
+///
+/// @return the value (=result) of the simulation for a given cnf variable
 	int getResultValue(unsigned cnf_lit);
 
+// -------------------------------------------------------------------------------------------
+//
+/// @brief returns the value of the alarm output.
+///
+/// @return the value of the alarm output (in cnf-literal representation)
 	int getAlarmValue();
-
-
 
 // -------------------------------------------------------------------------------------------
 //
@@ -140,12 +165,21 @@ class SymbolicSimulator
 ///
 /// @brief Returns a vector of all the output-values
 ///
-///
 /// @return vector containing the values of the outputs
 	const vector<int> &getOutputValues();
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Returns a vector of all the latch-values
+///
+/// @return vector containing the values of the latches
 	const vector<int> &getLatchValues();
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Returns a vector of all the next-latch-values
+///
+/// @return vector containing the next values of the latches
 	const vector<int> &getNextLatchValues();
 
 // -------------------------------------------------------------------------------------------
@@ -154,11 +188,9 @@ class SymbolicSimulator
 ///
 	void initLatches();
 
-
-
 	protected:
 
-	vector<int> output_values_;
+	vector<int> output_values_;		// TODO: check if they have the latest results in the getters
 	vector<int> latch_values_;
 	vector<int> next_values_;
 
@@ -172,7 +204,6 @@ class SymbolicSimulator
 
 	int& next_free_cnf_var_;
 
-
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Array storing the current values for each variable
@@ -184,8 +215,6 @@ class SymbolicSimulator
 /// @brief The current time-step. Only used for getVerboseString() and for debugging
 ///
 	size_t time_index_;
-
-
 
 	private:
 
