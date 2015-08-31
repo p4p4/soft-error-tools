@@ -148,6 +148,12 @@ class SymbolicSimulator
 
 	const vector<int> &getNextLatchValues();
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief (re)sets the latch values to Zero
+///
+	void initLatches();
+
 
 
 	protected:
@@ -179,11 +185,6 @@ class SymbolicSimulator
 ///
 	size_t time_index_;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief (re)sets the latch values to Zero
-///
-	void initLatches();
 
 
 	private:

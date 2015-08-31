@@ -63,8 +63,8 @@ bool SymbTimeLocationAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 	vulnerable_elements_.clear();
 
 	if (mode_ == STANDARD)
-//		Analyze2(testcases);
-//	else if (mode_ == FREE_INPUTS)
+		Analyze2(testcases);
+	else if (mode_ == FREE_INPUTS)
 		Analyze2_free_inputs(testcases);
 	else
 		MASSERT(false, "unknown mode!");
@@ -91,9 +91,6 @@ bool SymbTimeLocationAnalysis::findVulnerabilities(vector<string> paths_to_TC_fi
 void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 {
 	// used to store the results of the symbolic simulation
-	vector<int> results;
-	results.resize(circuit_->maxvar + 1);
-	results[0] = 1; // FALSE and TRUE constants
 	int next_free_cnf_var = 2;
 
 	// TODO: move outside of this function ----
@@ -115,6 +112,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
+	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
 	// for each testcase-step
 	for (unsigned tc_number = 0; tc_number < testcases.size(); tc_number++)
@@ -156,10 +154,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				solver_->incAdd2LitClause(-map_iter->second, -map_iter2->second);
 		}
 
-		//----------------------------------------------------------------------------------------
-		for (unsigned l = 0; l < circuit_->num_latches; ++l) // initialize latches to false
-			results[(circuit_->latches[l].lit >> 1)] = CNF_FALSE;
-		//----------------------------------------------------------------------------------------
+		symbsim.initLatches();
 
 		TestCase& testcase = testcases[tc_number];
 		for (unsigned i = 0; i < testcase.size(); i++)
@@ -175,12 +170,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			concrete_state = next_state; // OR: change to sim_->switchToNextState();
 			//--------------------------------------------------------------------------------------
 
-			//--------------------------------------------------------------------------------------
 			// set input values according to TestCase to TRUE or FALSE:
-			for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
-				results[(circuit_->inputs[cnt_i].lit >> 1)] =
-						(testcase[i][cnt_i] == AIG_TRUE) ? CNF_TRUE : CNF_FALSE;
-			//--------------------------------------------------------------------------------------
+			symbsim.setInputValues(testcase[i]);
 
 			//--------------------------------------------------------------------------------------
 			// cj is a variable that indicatest whether the corresponding latch is flipped
@@ -193,7 +184,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it)
 			{
 				int latch_output = *it >> 1;
-				int old_value = results[latch_output];
+				int old_value = symbsim.getResultValue(latch_output);
 				int new_value = next_free_cnf_var++;
 				int ci_lit = latch_to_cj[latch_output];
 
@@ -206,7 +197,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				solver_->incAdd3LitClause(-old_value, fi, new_value);
 				solver_->incAdd4LitClause(old_value, -ci_lit, -fi, new_value);
 
-				results[latch_output] = new_value;
+				symbsim.setResultValue(latch_output, new_value);
 			}
 
 			//--------------------------------------------------------------------------------------
@@ -218,68 +209,13 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			f.push_back(fi);
 			//--------------------------------------------------------------------------------------
 
-			//--------------------------------------------------------------------------------------
 			// Symbolic simulation of AND gates
-			for (unsigned b = 0; b < circuit_->num_ands; ++b)
-			{
-
-				int rhs1_cnf_value = Utils::readCnfValue(results, circuit_->ands[b].rhs1);
-				int rhs0_cnf_value = Utils::readCnfValue(results, circuit_->ands[b].rhs0);
-
-				if (rhs1_cnf_value == CNF_FALSE || rhs0_cnf_value == CNF_FALSE) // FALSE and .. = FALSE
-					results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
-				else if (rhs1_cnf_value == CNF_TRUE) // TRUE and X = X
-					results[(circuit_->ands[b].lhs >> 1)] = rhs0_cnf_value;
-				else if (rhs0_cnf_value == CNF_TRUE) // X and TRUE = X
-					results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
-				else if (rhs0_cnf_value == rhs1_cnf_value) // X and X = X
-					results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
-				else if (rhs0_cnf_value == -rhs1_cnf_value) // X and -X = FALSE
-					results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
-				else
-				{
-					int res = next_free_cnf_var++;
-					// res == rhs1_cnf_value & rhs0_cnf_value:
-					// Step 1: (rhs1_cnf_value == false) -> (res == false)
-					solver_->incAdd2LitClause(rhs1_cnf_value, -res);
-					// Step 2: (rhs0_cnf_value == false) -> (res == false)
-					solver_->incAdd2LitClause(rhs0_cnf_value, -res);
-					// Step 3: (rhs0_cnf_value == true && rhs1_cnf_value == true)
-					//   -> (res == true)
-					solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
-					results[(circuit_->ands[b].lhs >> 1)] = res;
-
-				}
-			}
-			//--------------------------------------------------------------------------------------
-
-			//--------------------------------------------------------------------------------------
-			// Symbolic Simulation: get Outputs and next state values, switch to next state
-			int alarm_cnf_val = -Utils::readCnfValue(results,
-					circuit_->outputs[circuit_->num_outputs - 1].lit);
-			solver_->incAddUnitClause(alarm_cnf_val);
-
-			vector<int> out_cnf_values;
-			out_cnf_values.reserve(circuit_->num_outputs - 1);
-			for (unsigned b = 0; b < circuit_->num_outputs - 1; ++b)
-			{
-				out_cnf_values.push_back(Utils::readCnfValue(results, circuit_->outputs[b].lit));
-			}
-
-			vector<int> next_state_cnf_values;
-			next_state_cnf_values.reserve(circuit_->num_latches);
-			for (unsigned b = 0; b < circuit_->num_latches; ++b)
-			{
-				int next_state_var = Utils::readCnfValue(results, circuit_->latches[b].next);
-				next_state_cnf_values.push_back(next_state_var);
-				if (abs(next_state_var) > 1)
-					solver_->addVarToKeep(next_state_var);
-			}
-
-			for (unsigned b = 0; b < circuit_->num_latches; ++b)
-			{
-				results[(circuit_->latches[b].lit >> 1)] = next_state_cnf_values[b];
-			}
+			symbsim.simulateOneTimeStep();
+			// get Outputs and next state values, switch to next state
+			solver_->incAddUnitClause(-symbsim.getAlarmValue());
+			const vector<int> &out_cnf_values = symbsim.getOutputValues();
+			symbsim.switchToNextState();
+			const vector<int> &next_state_cnf_values = symbsim.getLatchValues(); // already next st
 			//--------------------------------------------------------------------------------------
 
 			//--------------------------------------------------------------------------------------
@@ -437,16 +373,12 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 		} // -- END "for each timestep in testcase" --
 	} // ------ END 'for each latch' ---------------
-
 }
 
 void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 {
-	cout << "free inputs method! ;)" << endl;
 	// used to store the results of the symbolic simulation
 	int next_free_cnf_var = 2;
-
-
 
 	// TODO: move outside of this function ----
 	set<int> latches_to_check_;
@@ -467,6 +399,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
+	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
 	// for each testcase-step
 	for (unsigned tc_number = 0; tc_number < testcases.size(); tc_number++)
@@ -508,7 +441,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				solver_->incAdd2LitClause(-map_iter->second, -map_iter2->second);
 		}
 
-		SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
+		symbsim.initLatches();
 
 		TestCase& testcase = testcases[tc_number];
 		for (unsigned i = 0; i < testcase.size(); i++)
@@ -592,7 +525,6 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
-			cout << "call sat solver " << tc_number << ", i=" << i << endl;
 			vector<int> model;
 			while (solver_->incIsSatModelOrCore(odiff_enable_literals, cj_literals, model))
 			{
@@ -622,7 +554,6 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 			int next_state_is_diff = next_free_cnf_var++;
 			vector<int> next_state_is_diff_clause;
-			cout << "resize " << next_state_cnf_values.size() << endl;
 			next_state_is_diff_clause.reserve(next_state_cnf_values.size() + 1);
 			for (size_t cnt = 0; cnt < next_state_cnf_values.size(); ++cnt)
 			{
@@ -690,34 +621,35 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				vector<int> core_assumptions;
 				core_assumptions.reserve(f.size());
 
-				for(vector<int>::iterator it = f.begin(); it != f.end(); ++it)
+				for (vector<int>::iterator it = f.begin(); it != f.end(); ++it)
 				{
 					core_assumptions.push_back(-*it);
 				}
 				vector<int> more_assumptions;
 				more_assumptions.push_back(next_state_is_diff);
 				vector<int> core;
-				bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,core);
+				bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,
+						core);
 				MASSERT(is_sat_2 == false, "must not be satisfiable")
 
 				// TODO: not sure if there could be a more efficient way to do this
 				// (e.g. under the assumption that results of core have same order as f):
 				Utils::logPrint(core, "core: ");
-				Utils::logPrint(f,"f: ");
-				set<int> useless(f.begin(),f.end());
-				for(vector<int>::iterator it = core.begin(); it != core.end(); ++it)
+				Utils::logPrint(f, "f: ");
+				set<int> useless(f.begin(), f.end());
+				for (vector<int>::iterator it = core.begin(); it != core.end(); ++it)
 				{
-					useless.erase(- *it);
+					useless.erase(-*it);
 				}
 
-				for(set<int>::iterator it = useless.begin(); it != useless.end(); ++it)
+				for (set<int>::iterator it = useless.begin(); it != useless.end(); ++it)
 				{
 					solver_->incAddUnitClause(-*it);
 				}
 
 				int num_reduced_f_variables = f.size() - core.size();
 				f.clear();
-				for(vector<int>::iterator it = core.begin(); it != core.end(); ++it)
+				for (vector<int>::iterator it = core.begin(); it != core.end(); ++it)
 				{
 					f.push_back(-*it);
 				}
