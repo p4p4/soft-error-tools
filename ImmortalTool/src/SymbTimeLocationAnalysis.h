@@ -58,7 +58,8 @@ class SymbTimeLocationAnalysis: public BackEnd
 	virtual ~SymbTimeLocationAnalysis();
 
 enum AnalysisMode {
-	STANDARD = 0
+	STANDARD = 0,
+	FREE_INPUTS = 1
 };
 
 // -------------------------------------------------------------------------------------------
@@ -94,6 +95,20 @@ enum AnalysisMode {
 ///
 /// @param testcase a vector of input vectors
 	void Analyze2(vector<TestCase> &testcases);
+
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief tries to find vulnerabilities using the provided TestCases.
+///	Point in time as well as location is symbolic. Some inputs might
+/// as well be symbolic, i.e. have undefined values ('?')
+///
+/// STANDARD mode.
+///
+/// Algorithm ANALYZE2: point in time and location is symbolic
+///
+/// @param testcase a vector of input vectors
+	void Analyze2_free_inputs(vector<TestCase> &testcases);
 
 // -------------------------------------------------------------------------------------------
 ///

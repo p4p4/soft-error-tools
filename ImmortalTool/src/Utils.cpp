@@ -348,15 +348,15 @@ void Utils::parseAigSimFile(string path_to_aigsim_input, TestCase& testcase, uns
 		{
 			if (input_vector_line.c_str()[i] == '0')				// concrete input value
 			{
-				input_vector.push_back(0);
+				input_vector.push_back(AIG_FALSE);
 			}
 			else if (input_vector_line.c_str()[i] == '1')		// concrete input value
 			{
-				input_vector.push_back(1);
+				input_vector.push_back(AIG_TRUE);
 			}
 			else if (input_vector_line.c_str()[i] == '?')		// free (undefined) input value
 			{
-				input_vector.push_back(2);
+				input_vector.push_back(LIT_FREE);
 			}
 			else
 			{

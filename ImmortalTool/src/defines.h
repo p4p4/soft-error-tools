@@ -46,12 +46,15 @@
 
 using namespace std;
 
+// A TestCase is a set of input-vectors. One input-vector per time-step, containing
+// num_of_inputs input-values.
 typedef vector<vector<int> > TestCase;
 
 #define AIG_FALSE			 0
 #define AIG_TRUE 			 1
 #define CNF_FALSE 		 1
 #define CNF_TRUE			-1
+#define LIT_FREE			 2	// undefined value (open variable)
 
 // -------------------------------------------------------------------------------------------
 ///
