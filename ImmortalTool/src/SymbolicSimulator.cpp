@@ -116,6 +116,8 @@ void SymbolicSimulator::simulateOneTimeStep()
 
 		}
 	}
+
+	time_index_++;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -167,7 +169,7 @@ string SymbolicSimulator::getStateString()	// TODO: change from AIGER to CNF
 }
 
 // -------------------------------------------------------------------------------------------
-string SymbolicSimulator::getVerboseStateString() // TODO: change from AIGER to CNF
+string SymbolicSimulator::getVerboseStateString() // TODO: change from AIGER to CNF/check
 {
 	ostringstream str;
 	str << "Time-step: " << time_index_ << endl;
@@ -247,23 +249,18 @@ const vector<int> &SymbolicSimulator::getLatchValues()
 }
 
 // -------------------------------------------------------------------------------------------
-const vector<int> &SymbolicSimulator::getNextLatchValues() // TODO: adapt for cnf
+const vector<int> &SymbolicSimulator::getNextLatchValues()
 {
-	vector<int> latches(circuit_->num_latches);
+	next_values_.clear();
+	next_values_.reserve(circuit_->num_latches);
 
-	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
+	for (unsigned b = 0; b < circuit_->num_latches; ++b)
 	{
-		// TODO: check if a latch output can really be inverted
-		if (circuit_->latches[cnt].next & 1)
-		{
-			latches[cnt] = aiger_not(results_[aiger_lit2var(circuit_->latches[cnt].next)]);
-		}
-		else
-		{
-			latches[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].next)];
-		}
+		int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].next);
+		next_values_.push_back(next_state_var);
 	}
-	return latches;
+
+	return next_values_;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -294,6 +291,8 @@ void SymbolicSimulator::initLatches()
 {
 	for (unsigned l = 0; l < circuit_->num_latches; ++l)
 		results_[(circuit_->latches[l].lit >> 1)] = CNF_FALSE;
+
+	time_index_ = 0;
 }
 
 int SymbolicSimulator::getAlarmValue()

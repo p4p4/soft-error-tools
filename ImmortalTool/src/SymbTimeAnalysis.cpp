@@ -31,6 +31,7 @@
 #include "AIG2CNF.h"
 #include "Options.h"
 #include "Logger.h"
+#include "SymbolicSimulator.h"
 
 extern "C"
 {
@@ -304,10 +305,8 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 {
-	// used to store the results of the symbolic simulation
-	vector<int> results;
-	results.resize(circuit_->maxvar + 1);
-	results[0] = 1; // FALSE and TRUE constants
+	int next_free_cnf_var = 2;
+	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
@@ -315,7 +314,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = component_aig >> 1;
 
-		int next_free_cnf_var = 2;
+		next_free_cnf_var = 2;
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -338,10 +337,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 			solver_->startIncrementalSession(vars_to_keep, 0);
 			solver_->incAddUnitClause(-1); // -1 = TRUE constant
 
-			//--------------------------------------------------------------------------------------
-			for (unsigned l = 0; l < circuit_->num_latches; ++l) // initialize latches to false
-				results[(circuit_->latches[l].lit >> 1)] = CNF_FALSE;
-			//--------------------------------------------------------------------------------------
+			symbsim.initLatches(); // initialize latches to false
+
 
 			TestCase& testcase = testcases[tci];
 			for (unsigned i = 0; i < testcase.size(); i++)
@@ -377,8 +374,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				//------------------------------------------------------------------------------------
 				// set input values according to TestCase to TRUE or FALSE:
-				for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
-					results[(circuit_->inputs[cnt_i].lit >> 1)] = (testcase[i][cnt_i] == 1) ? -1 : 1;
+				symbsim.setInputValues(testcase[i]);
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
@@ -389,11 +385,11 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				{
 					int fi = next_free_cnf_var++;
 					solver_->addVarToKeep(fi);
-					int old_value = results[component_cnf];
-					if (old_value == -1) // old value is true
-						results[component_cnf] = -fi;
-					else if (old_value == 1) // old value is false
-						results[component_cnf] = fi;
+					int old_value = symbsim.getResultValue(component_cnf);
+					if (old_value == CNF_TRUE) // old value is true
+						symbsim.setResultValue(component_cnf, -fi);
+					else if (old_value == CNF_FALSE) // old value is false
+						symbsim.setResultValue(component_cnf, fi);
 					else
 					{
 						int new_value = next_free_cnf_var++;
@@ -403,7 +399,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 						solver_->incAdd3LitClause(fi, -old_value, new_value);
 						solver_->incAdd3LitClause(-fi, old_value, new_value);
 						solver_->incAdd3LitClause(-fi, -old_value, -new_value);
-						results[component_cnf] = new_value;
+						symbsim.setResultValue(component_cnf, new_value);
 					}
 
 					// there might be at most one flip in one time-step:
@@ -417,66 +413,16 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				//------------------------------------------------------------------------------------
 				// Symbolic simulation of AND gates
-				for (unsigned b = 0; b < circuit_->num_ands; ++b)
-				{
-
-					int rhs1_cnf_value = Utils::readCnfValue(results, circuit_->ands[b].rhs1);
-					int rhs0_cnf_value = Utils::readCnfValue(results, circuit_->ands[b].rhs0);
-
-					if (rhs1_cnf_value == CNF_FALSE || rhs0_cnf_value == CNF_FALSE) // FALSE and .. = FALSE
-						results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
-					else if (rhs1_cnf_value == CNF_TRUE) // TRUE and X = X
-						results[(circuit_->ands[b].lhs >> 1)] = rhs0_cnf_value;
-					else if (rhs0_cnf_value == CNF_TRUE) // X and TRUE = X
-						results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
-					else if (rhs0_cnf_value == rhs1_cnf_value) // X and X = X
-						results[(circuit_->ands[b].lhs >> 1)] = rhs1_cnf_value;
-					else if (rhs0_cnf_value == -rhs1_cnf_value) // X and -X = FALSE
-						results[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
-					else
-					{
-						int res = next_free_cnf_var++;
-						// res == rhs1_cnf_value & rhs0_cnf_value:
-						// Step 1: (rhs1_cnf_value == false) -> (res == false)
-						solver_->incAdd2LitClause(rhs1_cnf_value, -res);
-						// Step 2: (rhs0_cnf_value == false) -> (res == false)
-						solver_->incAdd2LitClause(rhs0_cnf_value, -res);
-						// Step 3: (rhs0_cnf_value == true && rhs1_cnf_value == true)
-						//   -> (res == true)
-						solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
-						results[(circuit_->ands[b].lhs >> 1)] = res;
-
-					}
-				}
+				symbsim.simulateOneTimeStep();
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
 				// get Outputs and next state values, swich to next state
-				int alarm_cnf_val = -Utils::readCnfValue(results,
-						circuit_->outputs[circuit_->num_outputs - 1].lit);
-				solver_->incAddUnitClause(alarm_cnf_val);
+				solver_->incAddUnitClause(-symbsim.getAlarmValue());
 
-				vector<int> out_cnf_values;
-				out_cnf_values.reserve(circuit_->num_outputs - 1);
-				for (unsigned b = 0; b < circuit_->num_outputs - 1; ++b)
-				{
-					out_cnf_values.push_back(Utils::readCnfValue(results, circuit_->outputs[b].lit));
-				}
-
-				vector<int> next_state_cnf_values;
-				next_state_cnf_values.reserve(circuit_->num_latches);
-				for (unsigned b = 0; b < circuit_->num_latches; ++b)
-				{
-					int next_state_var = Utils::readCnfValue(results, circuit_->latches[b].next);
-					next_state_cnf_values.push_back(next_state_var);
-					if (abs(next_state_var) > 1)
-						solver_->addVarToKeep(next_state_var);
-				}
-
-				for (unsigned b = 0; b < circuit_->num_latches; ++b)
-				{
-					results[(circuit_->latches[b].lit >> 1)] = next_state_cnf_values[b];
-				}
+				const vector<int> &out_cnf_values = symbsim.getOutputValues();
+				symbsim.switchToNextState();
+				const vector<int> &next_state_cnf_values = symbsim.getLatchValues();
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
@@ -567,34 +513,35 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 					vector<int> core_assumptions;
 					core_assumptions.reserve(f.size());
-					for(vector<int>::iterator it = f.begin(); it != f.end(); ++it)
+					for (vector<int>::iterator it = f.begin(); it != f.end(); ++it)
 					{
 						core_assumptions.push_back(-*it);
 					}
 					vector<int> more_assumptions;
 					more_assumptions.push_back(next_state_is_diff);
 					vector<int> core;
-					bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,core);
+					bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,
+							core);
 					MASSERT(is_sat_2 == false, "must not be satisfiable")
 
 					// TODO: not sure if there could be a more efficient way to do this
 					// (e.g. under the assumption that results of core have same order as f):
 					Utils::logPrint(core, "core: ");
-					Utils::logPrint(f,"f: ");
-					set<int> useless(f.begin(),f.end());
-					for(vector<int>::iterator it = core.begin(); it != core.end(); ++it)
+					Utils::logPrint(f, "f: ");
+					set<int> useless(f.begin(), f.end());
+					for (vector<int>::iterator it = core.begin(); it != core.end(); ++it)
 					{
-						useless.erase(- *it);
+						useless.erase(-*it);
 					}
 
-					for(set<int>::iterator it = useless.begin(); it != useless.end(); ++it)
+					for (set<int>::iterator it = useless.begin(); it != useless.end(); ++it)
 					{
 						solver_->incAddUnitClause(-*it);
 					}
 
 					int num_reduced_f_variables = f.size() - core.size();
 					f.clear();
-					for(vector<int>::iterator it = core.begin(); it != core.end(); ++it)
+					for (vector<int>::iterator it = core.begin(); it != core.end(); ++it)
 					{
 						f.push_back(-*it);
 					}
