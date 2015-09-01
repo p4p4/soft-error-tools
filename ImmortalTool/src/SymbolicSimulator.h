@@ -98,6 +98,9 @@ class SymbolicSimulator
 /// @param input_values The input vector
 	void setInputValues(const vector<int> &input_values);
 
+
+	void setCnfInputValues(const vector<int> &input_values_as_cnf);
+
 // -------------------------------------------------------------------------------------------
 //
 /// @brief Sets a value for a given cnf-variable.

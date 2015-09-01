@@ -334,6 +334,15 @@ void SymbolicSimulator::setInputValues(const vector<int>& input_values)
 
 }
 
+void SymbolicSimulator::setCnfInputValues(const vector<int>& input_values_as_cnf)
+{
+	MASSERT(input_values_as_cnf.size() == circuit_->num_inputs, "Input vector has wrong length!");
+
+	// set input values
+	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
+			results_[(circuit_->inputs[cnt_i].lit >> 1)] = input_values_as_cnf[cnt_i];
+}
+
 // -------------------------------------------------------------------------------------------
 void SymbolicSimulator::setResultValue(unsigned cnf_lit, int cnf_value)
 {
@@ -359,3 +368,5 @@ int SymbolicSimulator::getAlarmValue()
 {
 	return Utils::readCnfValue(results_, circuit_->outputs[circuit_->num_outputs - 1].lit);
 }
+
+

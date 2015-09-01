@@ -61,8 +61,8 @@ bool SymbTimeLocationAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 	vulnerable_elements_.clear();
 
 	if (mode_ == STANDARD)
-//		Analyze2(testcases);
-//	else if (mode_ == FREE_INPUTS)
+		Analyze2(testcases);
+	else if (mode_ == FREE_INPUTS)
 		Analyze2_free_inputs(testcases);
 	else
 		MASSERT(false, "unknown mode!");
@@ -491,7 +491,8 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// Symbolic simulation of AND gates
-			symbsim.simulateOneTimeStep(testcase[i]);
+			symbsim.setCnfInputValues(sim_ok.getInputValues());
+			symbsim.simulateOneTimeStep();
 			// get Outputs and next state values, switch to next state
 			solver_->incAddUnitClause(-symbsim.getAlarmValue()); // set alarm to false
 			const vector<int> &out_cnf_values = symbsim.getOutputValues();
