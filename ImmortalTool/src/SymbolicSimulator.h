@@ -49,7 +49,7 @@ class SymbolicSimulator
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Creates a new AigerSimulator instance to a given circuit.
+/// @brief Creates a SymbolicSimulator instance to a given circuit and an incr SAT session
 	SymbolicSimulator(aiger* circuit, SatSolver* solver, int& next_free_cnf_var_reference);
 
 // -------------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ class SymbolicSimulator
 
 // -------------------------------------------------------------------------------------------
 //
-/// @brief Simpulates one Timestep using an input-vector
+/// @brief Simulates one Timestep using an input-vector
 ///
 /// Computes all outputs of a circuit according to the provided input-vector
 /// and the current latch values
@@ -69,7 +69,7 @@ class SymbolicSimulator
 
 // -------------------------------------------------------------------------------------------
 //
-/// @brief Simpulates one Timestep using an input-vector and a state-vector
+/// @brief Simulates one Timestep using an input-vector and a state-vector
 ///
 /// Computes all outputs of a circuit according to the provided input-vector
 /// and the *provided* latch values
@@ -80,7 +80,7 @@ class SymbolicSimulator
 
 // -------------------------------------------------------------------------------------------
 //
-/// @brief Simpulates one Timestep
+/// @brief Simulates one Timestep
 ///
 /// Computes all outputs of a circuit according to the current latch values and
 /// the current input-values (if any).
@@ -184,15 +184,29 @@ class SymbolicSimulator
 
 // -------------------------------------------------------------------------------------------
 ///
+/// @brief Returns a vector of all the input-values
+/// Undefined '?' inputs are replaced by fresh variables.
+///
+/// @return vector containing the input values.
+	const vector<int> &getInputValues();
+
+// -------------------------------------------------------------------------------------------
+///
 /// @brief (re)sets the latch values to Zero
 ///
 	void initLatches();
 
 	protected:
 
+	vector<int> input_values_;
 	vector<int> output_values_;		// TODO: check if they have the latest results in the getters
 	vector<int> latch_values_;
 	vector<int> next_values_;
+
+	//TODO input bool
+	bool output_values_is_latest_;
+	bool latch_values_is_latest_;
+	bool next_values_is_latest_;
 
 // -------------------------------------------------------------------------------------------
 ///

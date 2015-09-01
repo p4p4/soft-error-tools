@@ -48,6 +48,10 @@ SymbolicSimulator::SymbolicSimulator(aiger* circuit, SatSolver* solver,
 	results_[0] = CNF_FALSE; // FALSE and TRUE constants
 
 	initLatches();
+
+	output_values_is_latest_ = false;
+	latch_values_is_latest_ = false;
+	next_values_is_latest_ = false;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -116,6 +120,10 @@ void SymbolicSimulator::simulateOneTimeStep()
 
 		}
 	}
+
+	output_values_is_latest_ = false;
+	latch_values_is_latest_ = false;
+	next_values_is_latest_ = false;
 
 	time_index_++;
 }
@@ -227,37 +235,83 @@ void SymbolicSimulator::switchToNextState()
 	{
 		results_[(circuit_->latches[b].lit >> 1)] = latch_values_[b];
 	}
+
+	output_values_is_latest_ = false;
+	latch_values_is_latest_ = true;
+	next_values_is_latest_ = false;
 }
 
 // -------------------------------------------------------------------------------------------
 const vector<int> &SymbolicSimulator::getOutputValues()
 {
-	output_values_.clear();
-	output_values_.reserve(circuit_->num_outputs - 1);
-	for (unsigned b = 0; b < circuit_->num_outputs - 1; ++b)
+
+	if (!output_values_is_latest_)
 	{
-		output_values_.push_back(Utils::readCnfValue(results_, circuit_->outputs[b].lit));
+		output_values_.clear();
+		output_values_.reserve(circuit_->num_outputs - 1);
+		for (unsigned b = 0; b < circuit_->num_outputs - 1; ++b)
+		{
+			output_values_.push_back(Utils::readCnfValue(results_, circuit_->outputs[b].lit));
+		}
+		output_values_is_latest_ = true;
 	}
 
 	return output_values_;
+
+}
+
+// -------------------------------------------------------------------------------------------
+const vector<int>& SymbolicSimulator::getInputValues()
+{
+	if (true) // TODO
+	{
+		input_values_.clear();
+		input_values_.reserve(circuit_->num_inputs);
+		for (unsigned b = 0; b < circuit_->num_inputs; ++b)
+		{
+			input_values_.push_back(results_[(circuit_->inputs[b].lit >> 1)]);
+		}
+		//input_values_is_latest_ = true;
+	}
+
+	return input_values_;
 }
 
 // -------------------------------------------------------------------------------------------
 const vector<int> &SymbolicSimulator::getLatchValues()
 {
+	if (!latch_values_is_latest_)
+	{
+		latch_values_.clear();
+		latch_values_.reserve(circuit_->num_latches);
+		for (unsigned b = 0; b < circuit_->num_latches; ++b)
+		{
+			int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].next);
+			latch_values_.push_back(next_state_var);
+			if (abs(next_state_var) > 1)
+				solver_->addVarToKeep(next_state_var);
+		}
+		latch_values_is_latest_ = true;
+	}
+
 	return latch_values_;
 }
 
 // -------------------------------------------------------------------------------------------
 const vector<int> &SymbolicSimulator::getNextLatchValues()
 {
-	next_values_.clear();
-	next_values_.reserve(circuit_->num_latches);
 
-	for (unsigned b = 0; b < circuit_->num_latches; ++b)
+	if (!next_values_is_latest_)
 	{
-		int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].next);
-		next_values_.push_back(next_state_var);
+		next_values_.clear();
+		next_values_.reserve(circuit_->num_latches);
+
+		for (unsigned b = 0; b < circuit_->num_latches; ++b)
+		{
+			int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].next);
+			next_values_.push_back(next_state_var);
+		}
+		next_values_is_latest_ = true;
 	}
 
 	return next_values_;
@@ -272,6 +326,8 @@ void SymbolicSimulator::setInputValues(const vector<int>& input_values)
 	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
 		results_[(circuit_->inputs[cnt_i].lit >> 1)] =
 				(input_values[cnt_i] == AIG_TRUE) ? CNF_TRUE : CNF_FALSE;
+
+	// TODO: handle '?' inputs
 }
 
 // -------------------------------------------------------------------------------------------
@@ -297,6 +353,5 @@ void SymbolicSimulator::initLatches()
 
 int SymbolicSimulator::getAlarmValue()
 {
-	return Utils::readCnfValue(results_,
-						circuit_->outputs[circuit_->num_outputs - 1].lit);
+	return Utils::readCnfValue(results_, circuit_->outputs[circuit_->num_outputs - 1].lit);
 }
