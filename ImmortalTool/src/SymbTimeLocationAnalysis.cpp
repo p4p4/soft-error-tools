@@ -63,8 +63,8 @@ bool SymbTimeLocationAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 	vulnerable_elements_.clear();
 
 	if (mode_ == STANDARD)
-		Analyze2(testcases);
-	else if (mode_ == FREE_INPUTS)
+//		Analyze2(testcases);
+//	else if (mode_ == FREE_INPUTS)
 		Analyze2_free_inputs(testcases);
 	else
 		MASSERT(false, "unknown mode!");
@@ -409,6 +409,9 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 		vector<int> concrete_state;
 		concrete_state.resize(circuit_->num_latches);
 
+		vector<int> cnf_concrete_state;
+		cnf_concrete_state.assign(circuit_->num_latches, -1);
+
 		// f = a set of variables fi indicating whether the latch is *flipped in _step_ i* or not
 		vector<int> f;
 
@@ -452,6 +455,16 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			sim_->simulateOneTimeStep(testcase[i], concrete_state);
 			vector<int> outputs = sim_->getOutputs();
 			vector<int> next_state = sim_->getNextLatchValues();
+
+			//######################
+			SymbolicSimulator sim_ok(circuit_,solver_,next_free_cnf_var);
+			sim_ok.simulateOneTimeStep(testcase[i],cnf_concrete_state);
+			Utils::debugPrint(outputs, "a-outputs");
+			Utils::debugPrint(sim_ok.getOutputValues(), "sy-outputs");
+			Utils::debugPrint(next_state, "a-next_state");
+			Utils::debugPrint(sim_ok.getNextLatchValues(), "sy-next_state");
+			cnf_concrete_state = sim_ok.getNextLatchValues();
+			//######################
 
 			// switch concrete simulation to next state
 			concrete_state = next_state; // OR: change to sim_->switchToNextState();
