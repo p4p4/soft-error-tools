@@ -129,6 +129,29 @@ void SymbolicSimulator::simulateOneTimeStep()
 }
 
 // -------------------------------------------------------------------------------------------
+void SymbolicSimulator::switchToNextState()
+{
+	latch_values_.clear();
+	latch_values_.reserve(circuit_->num_latches);
+	for (unsigned b = 0; b < circuit_->num_latches; ++b)
+	{
+		int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].next);
+		latch_values_.push_back(next_state_var);
+		if (abs(next_state_var) > 1)
+			solver_->addVarToKeep(next_state_var);
+	}
+
+	for (unsigned b = 0; b < circuit_->num_latches; ++b)
+	{
+		results_[(circuit_->latches[b].lit >> 1)] = latch_values_[b];
+	}
+
+	output_values_is_latest_ = false;
+	latch_values_is_latest_ = true;
+	next_values_is_latest_ = false;
+}
+
+// -------------------------------------------------------------------------------------------
 string SymbolicSimulator::getStateString()	// TODO: change from AIGER to CNF
 {
 	ostringstream str;
@@ -219,29 +242,6 @@ string SymbolicSimulator::getVerboseStateString() // TODO: change from AIGER to 
 }
 
 // -------------------------------------------------------------------------------------------
-void SymbolicSimulator::switchToNextState()
-{
-	latch_values_.clear();
-	latch_values_.reserve(circuit_->num_latches);
-	for (unsigned b = 0; b < circuit_->num_latches; ++b)
-	{
-		int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].next);
-		latch_values_.push_back(next_state_var);
-		if (abs(next_state_var) > 1)
-			solver_->addVarToKeep(next_state_var);
-	}
-
-	for (unsigned b = 0; b < circuit_->num_latches; ++b)
-	{
-		results_[(circuit_->latches[b].lit >> 1)] = latch_values_[b];
-	}
-
-	output_values_is_latest_ = false;
-	latch_values_is_latest_ = true;
-	next_values_is_latest_ = false;
-}
-
-// -------------------------------------------------------------------------------------------
 const vector<int> &SymbolicSimulator::getOutputValues()
 {
 
@@ -324,10 +324,15 @@ void SymbolicSimulator::setInputValues(const vector<int>& input_values)
 
 	// set input values according to TestCase to TRUE or FALSE:
 	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
-		results_[(circuit_->inputs[cnt_i].lit >> 1)] =
-				(input_values[cnt_i] == AIG_TRUE) ? CNF_TRUE : CNF_FALSE;
+	{
+		if (input_values[cnt_i] == AIG_TRUE)
+			results_[(circuit_->inputs[cnt_i].lit >> 1)] = CNF_TRUE;
+		else if (input_values[cnt_i] == AIG_FALSE)
+			results_[(circuit_->inputs[cnt_i].lit >> 1)] = CNF_FALSE;
+		else // (if LIT_FREE) handle '?' input:
+			results_[(circuit_->inputs[cnt_i].lit >> 1)] = next_free_cnf_var_++;
+	}
 
-	// TODO: handle '?' inputs
 }
 
 // -------------------------------------------------------------------------------------------
