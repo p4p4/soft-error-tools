@@ -460,9 +460,11 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			SymbolicSimulator sim_ok(circuit_,solver_,next_free_cnf_var);
 			sim_ok.simulateOneTimeStep(testcase[i],cnf_concrete_state);
 			Utils::debugPrint(outputs, "a-outputs");
-			Utils::debugPrint(sim_ok.getOutputValues(), "sy-outputs");
+			vector<int> coutputs = sim_ok.getOutputValues();
+			vector<int> cnext_state = sim_ok.getNextLatchValues();
+			Utils::debugPrint(coutputs, "sy-outputs");
 			Utils::debugPrint(next_state, "a-next_state");
-			Utils::debugPrint(sim_ok.getNextLatchValues(), "sy-next_state");
+			Utils::debugPrint(cnext_state, "sy-next_state");
 			cnf_concrete_state = sim_ok.getNextLatchValues();
 			//######################
 
