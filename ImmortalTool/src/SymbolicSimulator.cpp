@@ -117,8 +117,6 @@ void SymbolicSimulator::simulateOneTimeStep()
 			//   -> (res == true)
 			solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
 			results_[(circuit_->ands[b].lhs >> 1)] = res;
-			cout << "simulate concrete result: " << endl;
-
 		}
 	}
 

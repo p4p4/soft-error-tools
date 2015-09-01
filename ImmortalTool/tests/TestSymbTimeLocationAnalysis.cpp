@@ -39,6 +39,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestSymbTimeLocationAnalysis);
 void TestSymbTimeLocationAnalysis::setUp()
 {
   //setup for testcases
+	Logger::instance().enable(Logger::DBG);
 }
 
 // -------------------------------------------------------------------------------------------

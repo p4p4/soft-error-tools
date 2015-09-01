@@ -44,7 +44,6 @@ SymbTimeLocationAnalysis::SymbTimeLocationAnalysis(aiger* circuit, int num_err_l
 		BackEnd(circuit, num_err_latches, mode)
 {
 	AIG2CNF::instance().initFromAig(circuit);
-	sim_ = new AigSimulator(circuit_);
 	solver_ = Options::instance().getSATSolver();
 	unsat_core_interval_ = Options::instance().getUnsatCoreInterval();
 }
@@ -53,7 +52,6 @@ SymbTimeLocationAnalysis::SymbTimeLocationAnalysis(aiger* circuit, int num_err_l
 SymbTimeLocationAnalysis::~SymbTimeLocationAnalysis()
 {
 	delete sim_;
-	delete solver_;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -90,6 +88,7 @@ bool SymbTimeLocationAnalysis::findVulnerabilities(vector<string> paths_to_TC_fi
 // -------------------------------------------------------------------------------------------
 void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 {
+	sim_ = new AigSimulator(circuit_);
 	// used to store the results of the symbolic simulation
 	int next_free_cnf_var = 2;
 
@@ -373,6 +372,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 		} // -- END "for each timestep in testcase" --
 	} // ------ END 'for each latch' ---------------
+
+	delete sim_;
 }
 
 void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
@@ -380,7 +381,6 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	// used to store the results of the symbolic simulation
 	int next_free_cnf_var = 2;
 
-	// TODO: move outside of this function ----
 	set<int> latches_to_check_;
 
 	//------------------------------------------------------------------------------------------
@@ -399,18 +399,12 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
+	SymbolicSimulator sim_ok(circuit_,solver_,next_free_cnf_var);
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
 	// for each testcase-step
 	for (unsigned tc_number = 0; tc_number < testcases.size(); tc_number++)
 	{
-
-		// initial state for concrete simulation = (0 0 0 0 0 0 0)  (AIG literals)
-		vector<int> concrete_state;
-		concrete_state.resize(circuit_->num_latches);
-
-		vector<int> cnf_concrete_state;
-		cnf_concrete_state.assign(circuit_->num_latches, -1);
 
 		// f = a set of variables fi indicating whether the latch is *flipped in _step_ i* or not
 		vector<int> f;
@@ -445,6 +439,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 		}
 
 		symbsim.initLatches();
+		sim_ok.initLatches();
 
 		TestCase& testcase = testcases[tc_number];
 		for (unsigned i = 0; i < testcase.size(); i++)
@@ -452,24 +447,10 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// Concrete simulations:
-			sim_->simulateOneTimeStep(testcase[i], concrete_state);
-			vector<int> outputs = sim_->getOutputs();
-			vector<int> next_state = sim_->getNextLatchValues();
-
-			//######################
-			SymbolicSimulator sim_ok(circuit_,solver_,next_free_cnf_var);
-			sim_ok.simulateOneTimeStep(testcase[i],cnf_concrete_state);
-			Utils::debugPrint(outputs, "a-outputs");
-			vector<int> coutputs = sim_ok.getOutputValues();
-			vector<int> cnext_state = sim_ok.getNextLatchValues();
-			Utils::debugPrint(coutputs, "sy-outputs");
-			Utils::debugPrint(next_state, "a-next_state");
-			Utils::debugPrint(cnext_state, "sy-next_state");
-			cnf_concrete_state = sim_ok.getNextLatchValues();
-			//######################
-
-			// switch concrete simulation to next state
-			concrete_state = next_state; // OR: change to sim_->switchToNextState();
+			sim_ok.simulateOneTimeStep(testcase[i]);
+			const vector<int> &correct_outputs = sim_ok.getOutputValues();
+			sim_ok.switchToNextState();
+			const vector<int> &correct_next_state = sim_ok.getLatchValues();
 			//--------------------------------------------------------------------------------------
 
 			// set input values according to TestCase to TRUE or FALSE:
@@ -526,9 +507,9 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
 			for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
 			{
-				if (outputs[cnt] == AIG_TRUE) // simulation result of output is true
+				if (correct_outputs[cnt] == CNF_TRUE) // simulation result of output is true
 					o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
-				else if (outputs[cnt] == AIG_FALSE)
+				else if (correct_outputs[cnt] == CNF_FALSE)
 					o_is_diff_clause.push_back(out_cnf_values[cnt]);
 			}
 			int o_is_diff_enable_literal = next_free_cnf_var++;
@@ -573,7 +554,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			for (size_t cnt = 0; cnt < next_state_cnf_values.size(); ++cnt)
 			{
 				int lit_to_add = 0;
-				if (next_state[cnt] == AIG_TRUE) // simulation result of output is true
+				if (correct_next_state[cnt] == CNF_TRUE) // simulation result of output is true
 					lit_to_add = -next_state_cnf_values[cnt]; // add negated output
 				else
 					lit_to_add = next_state_cnf_values[cnt];
