@@ -41,7 +41,7 @@ extern "C"
 // -------------------------------------------------------------------------------------------
 SymbTimeLocationAnalysis::SymbTimeLocationAnalysis(aiger* circuit, int num_err_latches,
 		int mode) :
-		BackEnd(circuit, num_err_latches, mode)
+		BackEnd(circuit, num_err_latches, mode), sim_(0)
 {
 	AIG2CNF::instance().initFromAig(circuit);
 	solver_ = Options::instance().getSATSolver();
