@@ -51,7 +51,7 @@ SymbTimeLocationAnalysis::SymbTimeLocationAnalysis(aiger* circuit, int num_err_l
 // -------------------------------------------------------------------------------------------
 SymbTimeLocationAnalysis::~SymbTimeLocationAnalysis()
 {
-	delete sim_;
+	delete solver_;
 }
 
 // -------------------------------------------------------------------------------------------
