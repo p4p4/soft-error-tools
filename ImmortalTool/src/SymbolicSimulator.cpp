@@ -117,6 +117,7 @@ void SymbolicSimulator::simulateOneTimeStep()
 			//   -> (res == true)
 			solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
 			results_[(circuit_->ands[b].lhs >> 1)] = res;
+			cout << "simulate concrete result: " << endl;
 
 		}
 	}
@@ -227,13 +228,13 @@ string SymbolicSimulator::getVerboseStateString() // TODO: change from AIGER to 
 	{
 		str << "output: " << circuit_->outputs[cnt].lit << "=´";
 
-		if (circuit_->ands[cnt].rhs1 % 2 != 0)
+		if (circuit_->outputs[cnt].lit % 2 == 0)
 		{
 			str << results_[aiger_lit2var(circuit_->outputs[cnt].lit)] << "´" << endl;
 		}
 		else
 		{
-			str << aiger_not(results_[aiger_lit2var(circuit_->outputs[cnt].lit)]) << "´" << endl;
+			str << -results_[aiger_lit2var(circuit_->outputs[cnt].lit)] << "´" << endl;
 		}
 
 	}
@@ -245,11 +246,11 @@ string SymbolicSimulator::getVerboseStateString() // TODO: change from AIGER to 
 const vector<int> &SymbolicSimulator::getOutputValues()
 {
 
-	if (!output_values_is_latest_)
+	if (true)
 	{
 		output_values_.clear();
-		output_values_.reserve(circuit_->num_outputs - 1);
-		for (unsigned b = 0; b < circuit_->num_outputs - 1; ++b)
+		output_values_.reserve(circuit_->num_outputs);
+		for (unsigned b = 0; b < circuit_->num_outputs; ++b)
 		{
 			output_values_.push_back(Utils::readCnfValue(results_, circuit_->outputs[b].lit));
 		}
