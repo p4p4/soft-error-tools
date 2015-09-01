@@ -399,7 +399,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
-	SymbolicSimulator sim_ok(circuit_,solver_,next_free_cnf_var);
+	SymbolicSimulator sim_ok(circuit_,solver_, next_free_cnf_var);
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
 	// for each testcase-step
@@ -446,15 +446,13 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
 			//--------------------------------------------------------------------------------------
-			// Concrete simulations:
+			// Correct simulation:
 			sim_ok.simulateOneTimeStep(testcase[i]);
 			const vector<int> &correct_outputs = sim_ok.getOutputValues();
 			sim_ok.switchToNextState();
 			const vector<int> &correct_next_state = sim_ok.getLatchValues();
 			//--------------------------------------------------------------------------------------
 
-			// set input values according to TestCase to TRUE or FALSE:
-			symbsim.setInputValues(testcase[i]);
 
 			//--------------------------------------------------------------------------------------
 			// cj is a variable that indicatest whether the corresponding latch is flipped
@@ -490,12 +488,12 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 			f.push_back(fi);
-			//--------------------------------------------------------------------------------------
 
+			//--------------------------------------------------------------------------------------
 			// Symbolic simulation of AND gates
-			symbsim.simulateOneTimeStep();
+			symbsim.simulateOneTimeStep(testcase[i]);
 			// get Outputs and next state values, switch to next state
-			solver_->incAddUnitClause(-symbsim.getAlarmValue());
+			solver_->incAddUnitClause(-symbsim.getAlarmValue()); // set alarm to false
 			const vector<int> &out_cnf_values = symbsim.getOutputValues();
 			symbsim.switchToNextState();
 			const vector<int> &next_state_cnf_values = symbsim.getLatchValues(); // already next st
