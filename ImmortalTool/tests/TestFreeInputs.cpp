@@ -85,24 +85,24 @@ void TestFreeInputs::test1()
 	set<unsigned> should_be_vulnerable; // empty
 	checkVulnerabilities("inputs/toggle.perfect.aag", tc_files,
 			should_be_vulnerable, 1, SymbTimeLocationAnalysis::FREE_INPUTS);
-//	//-------------------------------------------
-//	// test 4b: 2 of 3 latches protected
-//
-//	should_be_vulnerable.insert(10); // 10 is vulnerable
-//	checkVulnerabilities("inputs/toggle.1vulnerability.aag", tc_files,
-//			should_be_vulnerable, 1, SymbTimeLocationAnalysis::FREE_INPUTS);
-//
-//	//-------------------------------------------
-//	// test 4c: 1 of 3 latches protected
-//	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
-//	checkVulnerabilities("inputs/toggle.2vulnerabilities.aag", tc_files,
-//			should_be_vulnerable, 1, SymbTimeLocationAnalysis::FREE_INPUTS);
-//
-//	//-------------------------------------------
-//	// test 4d: 0 of 3 latches protected
-//	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
-//	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
-//			should_be_vulnerable, 0, SymbTimeLocationAnalysis::FREE_INPUTS);
+	//-------------------------------------------
+	// test 4b: 2 of 3 latches protected
+
+	should_be_vulnerable.insert(10); // 10 is vulnerable
+	checkVulnerabilities("inputs/toggle.1vulnerability.aag", tc_files,
+			should_be_vulnerable, 1, SymbTimeLocationAnalysis::FREE_INPUTS);
+
+	//-------------------------------------------
+	// test 4c: 1 of 3 latches protected
+	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
+	checkVulnerabilities("inputs/toggle.2vulnerabilities.aag", tc_files,
+			should_be_vulnerable, 1, SymbTimeLocationAnalysis::FREE_INPUTS);
+
+	//-------------------------------------------
+	// test 4d: 0 of 3 latches protected
+	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
+	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
+			should_be_vulnerable, 0, SymbTimeLocationAnalysis::FREE_INPUTS);
 }
 
 

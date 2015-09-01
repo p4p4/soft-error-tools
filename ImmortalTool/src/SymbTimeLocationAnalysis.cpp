@@ -381,6 +381,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	// used to store the results of the symbolic simulation
 	int next_free_cnf_var = 2;
 
+	cout << "free input analysis" << endl;
 	set<int> latches_to_check_;
 
 	//------------------------------------------------------------------------------------------

@@ -329,7 +329,10 @@ void SymbolicSimulator::setInputValues(const vector<int>& input_values)
 		else if (input_values[cnt_i] == AIG_FALSE)
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = CNF_FALSE;
 		else // (if LIT_FREE) handle '?' input:
+		{
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = next_free_cnf_var_++;
+			cout << "value for input " << cnt_i << ": " << results_[(circuit_->inputs[cnt_i].lit >> 1)] << endl;
+		}
 	}
 
 }
