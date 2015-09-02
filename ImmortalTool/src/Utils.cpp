@@ -346,13 +346,17 @@ void Utils::parseAigSimFile(string path_to_aigsim_input, TestCase& testcase, uns
 		input_vector.reserve(number_of_inputs);
 		for (unsigned i = 0; i < input_vector_line.length(); i++)
 		{
-			if (input_vector_line.c_str()[i] == '0')
+			if (input_vector_line.c_str()[i] == '0')				// concrete input value
 			{
-				input_vector.push_back(0);
+				input_vector.push_back(AIG_FALSE);
 			}
-			else if (input_vector_line.c_str()[i] == '1')
+			else if (input_vector_line.c_str()[i] == '1')		// concrete input value
 			{
-				input_vector.push_back(1);
+				input_vector.push_back(AIG_TRUE);
+			}
+			else if (input_vector_line.c_str()[i] == '?')		// free (undefined) input value
+			{
+				input_vector.push_back(LIT_FREE);
 			}
 			else
 			{
