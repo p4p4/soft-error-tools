@@ -22,6 +22,7 @@
 //
 // ----------------------------------------------------------------------------
 
+#include <stdint.h> // include this header for uint64_t
 #include "TestFreeInputs.h"
 #include "../src/SymbTimeLocationAnalysis.h"
 #include "../src/SimulationBasedAnalysis.h" // for comparison
@@ -110,7 +111,7 @@ void TestFreeInputs::test2()
 {
 	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
 		CPPUNIT_ASSERT_MESSAGE("can not open inputs/s5378.50percent.aag", circuit != 0);
-
+		uint64_t foo = 123;
 		Options::instance().setUnsatCoreInterval(0);
 		vector<string> tc_files;
 		tc_files.push_back("inputs/35_bit_input_1");

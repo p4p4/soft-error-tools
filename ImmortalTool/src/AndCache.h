@@ -58,6 +58,8 @@ public:
 
   int addAndGate(int left, int right, int& next_free_cnf_var);
 
+  void clearCache();
+
 protected:
   map<uint64_t, int> cache_;
   SatSolver* solver_;

@@ -76,3 +76,8 @@ int AndCache::addAndGate(int left, int right, int& next_free_cnf_var)
 	else // we already have this AND gate
 		return found.first->second;
 }
+
+void AndCache::clearCache()
+{
+	cache_.clear();
+}

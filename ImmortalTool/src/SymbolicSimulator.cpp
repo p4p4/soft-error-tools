@@ -41,7 +41,7 @@ extern "C"
 // -------------------------------------------------------------------------------------------
 SymbolicSimulator::SymbolicSimulator(aiger* circuit, SatSolver* solver,
 		int& next_free_cnf_var_reference) :
-		time_index_(0), solver_(solver), next_free_cnf_var_(next_free_cnf_var_reference)
+		time_index_(0), solver_(solver), next_free_cnf_var_(next_free_cnf_var_reference), cache_(0)
 {
 	circuit_ = circuit;
 	results_.resize(circuit_->maxvar + 1);
@@ -107,16 +107,24 @@ void SymbolicSimulator::simulateOneTimeStep()
 			results_[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
 		else
 		{
-			int res = next_free_cnf_var_++;
-			// res == rhs1_cnf_value & rhs0_cnf_value:
-			// Step 1: (rhs1_cnf_value == false) -> (res == false)
-			solver_->incAdd2LitClause(rhs1_cnf_value, -res);
-			// Step 2: (rhs0_cnf_value == false) -> (res == false)
-			solver_->incAdd2LitClause(rhs0_cnf_value, -res);
-			// Step 3: (rhs0_cnf_value == true && rhs1_cnf_value == true)
-			//   -> (res == true)
-			solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
-			results_[(circuit_->ands[b].lhs >> 1)] = res;
+			if (cache_ == 0)
+			{
+				int res = next_free_cnf_var_++;
+				// res == rhs1_cnf_value & rhs0_cnf_value:
+				// Step 1: (rhs1_cnf_value == false) -> (res == false)
+				solver_->incAdd2LitClause(rhs1_cnf_value, -res);
+				// Step 2: (rhs0_cnf_value == false) -> (res == false)
+				solver_->incAdd2LitClause(rhs0_cnf_value, -res);
+				// Step 3: (rhs0_cnf_value == true && rhs1_cnf_value == true)
+				//   -> (res == true)
+				solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
+				results_[(circuit_->ands[b].lhs >> 1)] = res;
+			}
+			else
+			{
+				results_[(circuit_->ands[b].lhs >> 1)] = cache_->addAndGate(rhs0_cnf_value,
+						rhs1_cnf_value, next_free_cnf_var_);
+			}
 		}
 	}
 
@@ -331,7 +339,8 @@ void SymbolicSimulator::setInputValues(const vector<int>& input_values)
 		else // (if LIT_FREE) handle '?' input:
 		{
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = next_free_cnf_var_++;
-			cout << "value for input " << cnt_i << ": " << results_[(circuit_->inputs[cnt_i].lit >> 1)] << endl;
+			cout << "value for input " << cnt_i << ": "
+					<< results_[(circuit_->inputs[cnt_i].lit >> 1)] << endl;
 		}
 	}
 
@@ -343,7 +352,7 @@ void SymbolicSimulator::setCnfInputValues(const vector<int>& input_values_as_cnf
 
 	// set input values
 	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
-			results_[(circuit_->inputs[cnt_i].lit >> 1)] = input_values_as_cnf[cnt_i];
+		results_[(circuit_->inputs[cnt_i].lit >> 1)] = input_values_as_cnf[cnt_i];
 }
 
 // -------------------------------------------------------------------------------------------
@@ -372,4 +381,12 @@ int SymbolicSimulator::getAlarmValue()
 	return Utils::readCnfValue(results_, circuit_->outputs[circuit_->num_outputs - 1].lit);
 }
 
+AndCache* SymbolicSimulator::getCache()
+{
+	return cache_;
+}
 
+void SymbolicSimulator::setCache(AndCache* cache)
+{
+	cache_ = cache;
+}
