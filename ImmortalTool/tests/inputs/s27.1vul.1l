@@ -1,0 +1,22 @@
+aig 19 4 4 2 11
+30
+28
+32
+30
+29
+38
+	
+
+l3 Err_latch_0
+o1 Err_out_Final
+c
+s27.bench
+This file was written by ABC on Mon Aug  3 13:05:15 2015
+For information about AIGER format, refer to http://fmv.jku.at/aiger
+----------------------------------------------------
+This file has been converted with AddParityTool. Input file:
+benchmarks/IWLS_2002_AIG/iscas89/s27_orig.aig
+Number of Latches (total): 3
+Latches to protect: 34% (1 Latches)
+Number of additional latches: 1
+  (~1 latches per new latch)
