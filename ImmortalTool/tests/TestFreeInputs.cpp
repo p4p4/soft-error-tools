@@ -26,6 +26,7 @@
 #include "../src/SymbTimeLocationAnalysis.h"
 #include "../src/SimulationBasedAnalysis.h" // for comparison
 #include "../src/Utils.h"
+#include "../src/Options.h"
 #include "../src/Logger.h"
 
 extern "C"
@@ -105,4 +106,26 @@ void TestFreeInputs::test1()
 			should_be_vulnerable, 0, SymbTimeLocationAnalysis::FREE_INPUTS);
 }
 
+void TestFreeInputs::test2()
+{
+	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
+		CPPUNIT_ASSERT_MESSAGE("can not open inputs/s5378.50percent.aag", circuit != 0);
 
+		Options::instance().setUnsatCoreInterval(0);
+		vector<string> tc_files;
+		tc_files.push_back("inputs/35_bit_input_1");
+
+		SymbTimeLocationAnalysis sta(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
+		sta.findVulnerabilities(tc_files);
+		const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
+
+		// DEBUG: print the vulnerable latches
+		for (set<unsigned>::iterator it = vulnerabilities.begin();
+				it != vulnerabilities.end(); ++it)
+		{
+			cout << "  Latch " << *it << endl;
+		}
+		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+
+		aiger_reset(circuit);
+}

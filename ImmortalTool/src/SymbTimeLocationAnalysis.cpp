@@ -576,6 +576,10 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 					lit_to_add = -next_state_cnf_values[cnt]; // add negated output
 				else if(correct_next_state[cnt] == CNF_FALSE)
 					lit_to_add = next_state_cnf_values[cnt];
+				else if (next_state_cnf_values[cnt] == CNF_TRUE) // simulation result of output is true
+					lit_to_add = -correct_next_state[cnt]; // add negated output
+				else if(next_state_cnf_values[cnt] == CNF_FALSE)
+					lit_to_add = correct_next_state[cnt];
 				else if (correct_next_state[cnt] != next_state_cnf_values[cnt]) // both are symbolic and not equal
 				{
 					lit_to_add = next_free_cnf_var++;
@@ -616,22 +620,22 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 				continue;
 			}
-			else
-			{
-//				if (next_state_is_diff_clause.size() == 1)									// TODO!
+//			else
+//			{
+////				if (next_state_is_diff_clause.size() == 1)									// TODO!
+////				{
+////					for (unsigned cnt = 0; cnt < f.size(); cnt++)
+////						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff_clause[0]);
+////				}
+////				else
 //				{
+//					solver_->addVarToKeep(next_state_is_diff);
+//					next_state_is_diff_clause.push_back(-next_state_is_diff);
+//					solver_->incAddClause(next_state_is_diff_clause);
 //					for (unsigned cnt = 0; cnt < f.size(); cnt++)
-//						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff_clause[0]);
+//						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff);
 //				}
-//				else
-				{
-					solver_->addVarToKeep(next_state_is_diff);
-					next_state_is_diff_clause.push_back(-next_state_is_diff);
-					solver_->incAddClause(next_state_is_diff_clause);
-					for (unsigned cnt = 0; cnt < f.size(); cnt++)
-						solver_->incAdd2LitClause(-f[cnt], next_state_is_diff);
-				}
-			}
+//			}
 			//--------------------------------------------------------------------------------------
 
 			//------------------------------------------------------------------------------------
