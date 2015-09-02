@@ -503,7 +503,9 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// clause saying that the outputs o and o' are different
+			int o_is_diff_enable_literal = next_free_cnf_var++;
 			vector<int> o_is_diff_clause;
+
 			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
 			for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
 			{
@@ -511,8 +513,24 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 					o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
 				else if (correct_outputs[cnt] == CNF_FALSE)
 					o_is_diff_clause.push_back(out_cnf_values[cnt]);
+				else if (out_cnf_values[cnt] == CNF_TRUE)
+					o_is_diff_clause.push_back(-correct_outputs[cnt]);
+				else if (out_cnf_values[cnt] == CNF_FALSE)
+					o_is_diff_clause.push_back(-correct_outputs[cnt]);
+//				else if (out_cnf_values[cnt] == -correct_outputs[cnt])	// TODO: try this later
+//					;
+				else if (out_cnf_values[cnt] != correct_outputs[cnt]) // both are symbolic and not equal
+				{
+					int o_is_different_var = next_free_cnf_var++;
+					// both outputs are true --> o_is_different_var is false
+					solver_->incAdd3LitClause(-correct_outputs[cnt], -out_cnf_values[cnt], -o_is_different_var);
+					// both outputs are false --> o_is_different_var is false
+					solver_->incAdd3LitClause(correct_outputs[cnt], out_cnf_values[cnt], -o_is_different_var);
+					o_is_diff_clause.push_back(o_is_different_var);
+				}
 			}
-			int o_is_diff_enable_literal = next_free_cnf_var++;
+
+
 			o_is_diff_clause.push_back(o_is_diff_enable_literal);
 			odiff_enable_literals.push_back(-o_is_diff_enable_literal);
 			solver_->addVarToKeep(o_is_diff_enable_literal);
@@ -556,8 +574,17 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				int lit_to_add = 0;
 				if (correct_next_state[cnt] == CNF_TRUE) // simulation result of output is true
 					lit_to_add = -next_state_cnf_values[cnt]; // add negated output
-				else
+				else if(correct_next_state[cnt] == CNF_FALSE)
 					lit_to_add = next_state_cnf_values[cnt];
+				else if (correct_next_state[cnt] != next_state_cnf_values[cnt]) // both are symbolic and not equal
+				{
+					lit_to_add = next_free_cnf_var++;
+					// both outputs are true --> o_is_different_var is false
+					solver_->incAdd3LitClause(-correct_next_state[cnt], -next_state_cnf_values[cnt], -lit_to_add);
+					// both outputs are false --> o_is_different_var is false
+					solver_->incAdd3LitClause(correct_next_state[cnt], next_state_cnf_values[cnt], -lit_to_add);
+				}
+
 				if (lit_to_add != CNF_FALSE)
 					next_state_is_diff_clause.push_back(lit_to_add);
 			}
