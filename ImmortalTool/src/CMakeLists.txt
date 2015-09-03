@@ -21,17 +21,14 @@ include_directories("${AIGER_INCLUDE_DIR}")
 #include_directories("${RAREQS_INCLUDE_DIR}")
 #include_directories("${BLOQQER_INCLUDE_DIR}")
 include_directories("${LINGELING_INCLUDE_DIR}")
-#include_directories("${MINISAT_INCLUDE_DIR}")
-#include_directories("${PICOSAT_INCLUDE_DIR}")
+include_directories("${MINISAT_INCLUDE_DIR}")
+include_directories("${PICOSAT_INCLUDE_DIR}")
 
 # set the default build type to 'debug'.
 SET(CMAKE_BUILD_TYPE Debug CACHE STRING "default to debug" FORCE)
 
-#SET_SOURCE_FILES_PROPERTIES(ParallelLearner.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -std=c++0x")
-#SET_SOURCE_FILES_PROPERTIES(ParExtractor.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -std=c++0x")
-#SET_SOURCE_FILES_PROPERTIES(Options.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -std=c++0x")
-#SET_SOURCE_FILES_PROPERTIES(UnivExpander.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -std=c++0x")
-#SET_SOURCE_FILES_PROPERTIES(MiniSatApi.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -Wno-parentheses -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS")
+
+SET_SOURCE_FILES_PROPERTIES(MiniSatApi.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -Wno-parentheses -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS")
 
 add_library(${PROJECT}
 ##       SHARED
@@ -41,8 +38,8 @@ add_library(${PROJECT}
 #target_link_libraries(${PROJECT} ${RAREQS_LIBRARIES})
 #target_link_libraries(${PROJECT} ${BLOQQER_LIBRARIES})
 target_link_libraries(${PROJECT} ${LINGELING_LIBRARIES})
-#target_link_libraries(${PROJECT} ${MINISAT_LIBRARIES})
-#target_link_libraries(${PROJECT} ${PICOSAT_LIBRARIES})
+target_link_libraries(${PROJECT} ${MINISAT_LIBRARIES})
+target_link_libraries(${PROJECT} ${PICOSAT_LIBRARIES})
 set_target_properties(${PROJECT} PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC -DNDEBUG -O3")
 
 add_executable(${PROJECT}-bin main)
@@ -51,8 +48,8 @@ target_link_libraries(${PROJECT}-bin ${AIGER_LIBRARIES})
 #target_link_libraries(${PROJECT}-bin ${RAREQS_LIBRARIES})
 #target_link_libraries(${PROJECT}-bin ${BLOQQER_LIBRARIES})
 target_link_libraries(${PROJECT}-bin ${LINGELING_LIBRARIES})
-#target_link_libraries(${PROJECT}-bin ${MINISAT_LIBRARIES})
-#target_link_libraries(${PROJECT}-bin ${PICOSAT_LIBRARIES})
+target_link_libraries(${PROJECT}-bin ${MINISAT_LIBRARIES})
+target_link_libraries(${PROJECT}-bin ${PICOSAT_LIBRARIES})
 target_link_libraries(${PROJECT}-bin ${PROJECT})
 set_target_properties(${PROJECT}-bin PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC -DNDEBUG")
 

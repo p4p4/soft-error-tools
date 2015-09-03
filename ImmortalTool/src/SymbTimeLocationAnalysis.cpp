@@ -444,15 +444,16 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 		symbsim.initLatches();
 		sim_ok.initLatches();
 
-		AndCacheFor2Simulators cache(sim_ok.getResults(), symbsim.getResults(), solver_,
-				next_free_cnf_var);
-//		AndCache cache(solver_);
+//		AndCacheFor2Simulators cache(sim_ok.getResults(), symbsim.getResults(), solver_,
+//				next_free_cnf_var);
+		AndCacheMap cache(solver_);
 		symbsim.setCache(&cache);
-//		sim_ok.setCache(&cache);
+		sim_ok.setCache(&cache);
 
 		TestCase& testcase = testcases[tc_number];
 		for (unsigned i = 0; i < testcase.size(); i++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
+
 
 //			cache.clearCache();
 			//--------------------------------------------------------------------------------------

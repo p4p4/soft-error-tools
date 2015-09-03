@@ -7,6 +7,8 @@ CNF.cpp
 LingelingApi.cpp
 Logger.cpp
 Options.cpp
+PicoSatApi.cpp
+MiniSatApi.cpp
 SatSolver.cpp
 SimulationBasedAnalysis.cpp
 Stopwatch.cpp
