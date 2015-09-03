@@ -22,54 +22,69 @@
 //
 // ----------------------------------------------------------------------------
 
-#ifndef CPP_UNIT_TestFreeInputs_H__
-#define CPP_UNIT_TestFreeInputs_H__
+// -------------------------------------------------------------------------------------------
+/// @file AndCacheFor2Simulators.h
+/// @brief Contains the declaration of the class AndCacheFor2Simulators.
+// -------------------------------------------------------------------------------------------
 
+#ifndef AndCacheFor2Simulators_H__
+#define AndCacheFor2Simulators_H__
 
-#include <cppunit/TestFixture.h>
-#include <cppunit/extensions/HelperMacros.h>
-
-#include "../src/SymbTimeLocationAnalysis.h"
+#include "defines.h"
+#include "SatSolver.h"
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @class TestFreeInputs
+/// @class AndCacheFor2Simulators
 /// @brief TODO
 ///
 /// @author TODO
 /// @version 1.2.0
-class TestFreeInputs : public CPPUNIT_NS::TestFixture
+class AndCacheFor2Simulators
 {
-  CPPUNIT_TEST_SUITE(TestFreeInputs);
-  CPPUNIT_TEST(test1);
-  CPPUNIT_TEST(test2);
-  CPPUNIT_TEST_SUITE_END();
-
 public:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Initializes the object under test.
-  void setUp();
+/// @brief Constructor.
+  AndCacheFor2Simulators(vector<int> &results1, vector<int> &results2, SatSolver* solver, int& next_free_cnf_var);
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Shuts down the object under test.
-  void tearDown();
+/// @brief Destructor.
+  virtual ~AndCacheFor2Simulators();
 
-void checkVulnerabilities(string path_to_aiger_circuit,
-		vector<string> tc_files, set<unsigned> should_be_vulnerable,
-		int num_err_latches, int mode);
+
+  void addAndGate(int lhs_aig_lit, int rhs0_aig_lit, int rhs1_aig_lit);
 
 protected:
 
+  vector<int> &results1_;
+  vector<int> &results2_;
+  SatSolver* solver_;
+  int &next_free_cnf_var_;
+
+private:
+
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Give brief description of test here.
-  void test1();
+/// @brief Copy constructor.
+///
+/// The copy constructor is disabled (set private) and not implemented.
+///
+/// @param other The source for creating the copy.
+  AndCacheFor2Simulators(const AndCacheFor2Simulators &other);
 
-  void test2();
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Assignment operator.
+///
+/// The assignment operator is disabled (set private) and not implemented.
+///
+/// @param other The source for creating the copy.
+/// @return The result of the assignment, i.e, *this.
+  AndCacheFor2Simulators& operator=(const AndCacheFor2Simulators &other);
 
 };
 
-#endif // CPP_UNIT_TestFreeInputs_H__
+#endif // AndCacheFor2Simulators_H__

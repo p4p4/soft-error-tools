@@ -26,6 +26,7 @@
 #include "../src/SymbTimeLocationAnalysis.h"
 #include "../src/SimulationBasedAnalysis.h" // for comparison
 #include "../src/Utils.h"
+#include "../src/Options.h"
 #include "../src/Logger.h"
 
 extern "C"
@@ -40,6 +41,7 @@ void TestSymbTimeLocationAnalysis::setUp()
 {
   //setup for testcases
 	Logger::instance().enable(Logger::DBG);
+	Options::instance().setUnsatCoreInterval(2);
 }
 
 // -------------------------------------------------------------------------------------------

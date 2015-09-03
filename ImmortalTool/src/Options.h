@@ -227,6 +227,11 @@ public:
 		return unsat_core_interval_;
 	}
 
+	void setUnsatCoreInterval(unsigned unsatCoreInterval)
+	{
+		unsat_core_interval_ = unsatCoreInterval;
+	}
+
 protected:
 
 // -------------------------------------------------------------------------------------------

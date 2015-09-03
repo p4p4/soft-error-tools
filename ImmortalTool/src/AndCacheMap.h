@@ -22,54 +22,69 @@
 //
 // ----------------------------------------------------------------------------
 
-#ifndef CPP_UNIT_TestFreeInputs_H__
-#define CPP_UNIT_TestFreeInputs_H__
+// -------------------------------------------------------------------------------------------
+/// @file AndCacheMap.h
+/// @brief Contains the declaration of the class AndCacheMap.
+// -------------------------------------------------------------------------------------------
 
+#ifndef AndCacheMap_H__
+#define AndCacheMap_H__
 
-#include <cppunit/TestFixture.h>
-#include <cppunit/extensions/HelperMacros.h>
+#include <stdint.h>
+#include "defines.h"
+#include "SatSolver.h"
 
-#include "../src/SymbTimeLocationAnalysis.h"
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @class TestFreeInputs
+/// @class AndCacheMap
 /// @brief TODO
 ///
 /// @author TODO
 /// @version 1.2.0
-class TestFreeInputs : public CPPUNIT_NS::TestFixture
+class AndCacheMap
 {
-  CPPUNIT_TEST_SUITE(TestFreeInputs);
-  CPPUNIT_TEST(test1);
-  CPPUNIT_TEST(test2);
-  CPPUNIT_TEST_SUITE_END();
-
 public:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Initializes the object under test.
-  void setUp();
+/// @brief Constructor.
+  AndCacheMap(SatSolver* solver);
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Shuts down the object under test.
-  void tearDown();
+/// @brief Destructor.
+  virtual ~AndCacheMap();
 
-void checkVulnerabilities(string path_to_aiger_circuit,
-		vector<string> tc_files, set<unsigned> should_be_vulnerable,
-		int num_err_latches, int mode);
+  int addAndGate(int left, int right, int& next_free_cnf_var);
+
+  void clearCache();
 
 protected:
+  map<uint64_t, int> cache_;
+  SatSolver* solver_;
+
+private:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Give brief description of test here.
-  void test1();
+/// @brief Copy constructor.
+///
+/// The copy constructor is disabled (set private) and not implemented.
+///
+/// @param other The source for creating the copy.
+  AndCacheMap(const AndCacheMap &other);
 
-  void test2();
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Assignment operator.
+///
+/// The assignment operator is disabled (set private) and not implemented.
+///
+/// @param other The source for creating the copy.
+/// @return The result of the assignment, i.e, *this.
+  AndCacheMap& operator=(const AndCacheMap &other);
 
 };
 
-#endif // CPP_UNIT_TestFreeInputs_H__
+#endif // AndCacheMap_H__

@@ -1,5 +1,7 @@
 AIG2CNF.cpp
 AigSimulator.cpp
+AndCacheFor2Simulators.cpp
+AndCacheMap.cpp
 BackEnd.cpp
 CNF.cpp
 LingelingApi.cpp
@@ -9,7 +11,7 @@ SatSolver.cpp
 SimulationBasedAnalysis.cpp
 Stopwatch.cpp
 StringUtils.cpp
-SymbolicSimulator.cpp
 SymbTimeAnalysis.cpp
 SymbTimeLocationAnalysis.cpp
+SymbolicSimulator.cpp
 Utils.cpp
