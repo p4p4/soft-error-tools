@@ -20,10 +20,10 @@ RAND_TC_LEN = "15"
 # set benchmarks
 BENCHMARK_DIR = "../../benchmark_files/"        # benchmarking circuits without protection circuits are in here
 # list of circuit-filenames located within the BENCHMARK_DIR:
-#BENCHMARKS_LIST = "basic_benchmarks.txt"	    # very simple benchmarks
+BENCHMARKS_LIST = "basic_benchmarks.txt"	    # very simple benchmarks
 #BENCHMARKS_LIST = "standard_benchmarks.txt"	# easy benchmarks
 #BENCHMARKS_LIST = "medium_benchmarks.txt"	    # slightly more challenging
-BENCHMARKS_LIST = "hard_benchmarks_1.txt"	    # 200 - 800 latches
+#BENCHMARKS_LIST = "hard_benchmarks_1.txt"	    # 200 - 800 latches
 
 
 # convert input circuits with addParityTool (protects the circuit with additional latches, adds an alarm-output)

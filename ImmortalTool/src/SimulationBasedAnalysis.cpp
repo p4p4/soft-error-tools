@@ -29,7 +29,7 @@
 #include "SimulationBasedAnalysis.h"
 #include "Logger.h"
 #include "Utils.h"
-
+#include "ErrorTraceManager.h"
 extern "C"
 {
 #include "aiger.h"
@@ -147,6 +147,16 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 //					L_DBG("flipped "<<debugstring)
 //					Utils::debugPrint(outputs[j], "outputs");
 //					Utils::debugPrint(outputs_w_flip, "outputs_f");
+
+					// TODO: iff...
+					ErrorTrace* trace = new ErrorTrace;
+					trace->error_timestep_ = j;
+					trace->flipped_timestep_ = timestep;
+					trace->latch_index_ = circuit_->latches[l_cnt].lit;
+					trace->output_is_ = outputs_w_flip;
+					trace->output_shouldbe_ = outputs[j];
+					trace->input_trace_ = current_TC_;
+					ErrorTraceManager::instance().error_traces_.push_back(trace);
 
 					l_is_vulnerable = true;
 					break;
