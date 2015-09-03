@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ "$DEMIURGETP" = "" ]
+if [ "$IMMORTALTP" = "" ]
 then
-   echo "The Environment variable DEMIURGETP is undefined."
+   echo "The Environment variable IMMORTALTP is undefined."
    exit 1
 fi
 
@@ -18,11 +18,11 @@ then
 fi
 
 echo " Unpacking MiniSat ..."
-rm -rf $DEMIURGETP/minisat
-tar -xzf $MINISAT_ACHRIVE -C $DEMIURGETP
+rm -rf $IMMORTALTP/minisat
+tar -xzf $MINISAT_ACHRIVE -C $IMMORTALTP
 
 echo " Compiling MiniSat ..."
-export MROOT=$DEMIURGETP/minisat
-cd $DEMIURGETP/minisat/core
+export MROOT=$IMMORTALTP/minisat
+cd $IMMORTALTP/minisat/core
 make rs
 make libr

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ "$DEMIURGETP" = "" ]
+if [ "$IMMORTALTP" = "" ]
 then
-   echo "The Environment variable DEMIURGETP is undefined."
+   echo "The Environment variable IMMORTALTP is undefined."
    exit 1
 fi
 
@@ -18,12 +18,12 @@ then
 fi
 
 echo " Unpacking PicoSAT ..."
-rm -rf $DEMIURGETP/picosat
-tar -xzf $PICOSAT_ACHRIVE -C $DEMIURGETP
-mv $DEMIURGETP/$PICOSAT $DEMIURGETP/picosat
+rm -rf $IMMORTALTP/picosat
+tar -xzf $PICOSAT_ACHRIVE -C $IMMORTALTP
+mv $IMMORTALTP/$PICOSAT $IMMORTALTP/picosat
 
 echo " Compiling PicoSAT ..."
-cd $DEMIURGETP/picosat
+cd $IMMORTALTP/picosat
 ./configure -t
 make
 
