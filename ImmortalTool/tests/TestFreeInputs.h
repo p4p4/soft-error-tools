@@ -43,6 +43,8 @@ class TestFreeInputs : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE(TestFreeInputs);
   CPPUNIT_TEST(test1);
   CPPUNIT_TEST(test2);
+  CPPUNIT_TEST(test3);
+  CPPUNIT_TEST(test4);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -57,7 +59,11 @@ public:
 /// @brief Shuts down the object under test.
   void tearDown();
 
-void checkVulnerabilities(string path_to_aiger_circuit,
+void checkVulnerabilitiesSTLA(string path_to_aiger_circuit,
+		vector<string> tc_files, set<unsigned> should_be_vulnerable,
+		int num_err_latches, int mode);
+
+void checkVulnerabilitiesSTA(string path_to_aiger_circuit,
 		vector<string> tc_files, set<unsigned> should_be_vulnerable,
 		int num_err_latches, int mode);
 
@@ -69,6 +75,9 @@ protected:
   void test1();
 
   void test2();
+
+  void test3();
+  void test4();
 
 };
 

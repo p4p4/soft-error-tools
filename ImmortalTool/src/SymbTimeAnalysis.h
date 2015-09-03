@@ -60,7 +60,9 @@ class SymbTimeAnalysis: public BackEnd
 
 	enum AnalysisMode
 	{
-		NAIVE = 0, SYMBOLIC_SIMULATION = 1
+		NAIVE = 0,
+		SYMBOLIC_SIMULATION = 1,
+		FREE_INPUTS = 2
 	};
 
 // -------------------------------------------------------------------------------------------
@@ -112,6 +114,9 @@ class SymbTimeAnalysis: public BackEnd
 ///
 /// @param testcase a vector of input vectors
 	void Analyze1_symb_sim(vector<TestCase> &testcases);
+
+
+	void Analyze1_free_inputs(vector<TestCase> &testcases);
 
 // -------------------------------------------------------------------------------------------
 ///

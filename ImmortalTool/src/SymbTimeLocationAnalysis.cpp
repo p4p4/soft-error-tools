@@ -409,7 +409,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	for (unsigned tc_number = 0; tc_number < testcases.size(); tc_number++)
 	{
 
-		// f = a set of variables fi indicating whether the latch is *flipped in _step_ i* or not
+		// f = a set of variables fi indicating whether a latch is *flipped in _step_ i* or not
 		vector<int> f;
 
 		// a set of cj-literals indicating whether *the _latch_ C_j is flipped* or not
