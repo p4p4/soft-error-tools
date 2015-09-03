@@ -43,7 +43,6 @@ extern "C"
 SymbTimeAnalysis::SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode) :
 		BackEnd(circuit, num_err_latches, mode), sim_(0)
 {
-	sim_ = new AigSimulator(circuit_);
 	solver_ = Options::instance().getSATSolver();
 	unsat_core_interval_ = Options::instance().getUnsatCoreInterval();
 }
@@ -51,7 +50,6 @@ SymbTimeAnalysis::SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode
 // -------------------------------------------------------------------------------------------
 SymbTimeAnalysis::~SymbTimeAnalysis()
 {
-	delete sim_;
 	delete solver_;
 }
 
@@ -92,6 +90,8 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 // -------------------------------------------------------------------------------------------
 void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 {
+	sim_ = new AigSimulator(circuit_);
+
 	AIG2CNF::instance().initFromAig(circuit_);
 // ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
@@ -304,10 +304,13 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
+
+	delete sim_;
 }
 
 void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 {
+	sim_ = new AigSimulator(circuit_);
 	int next_free_cnf_var = 2;
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
@@ -557,6 +560,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
 
+	delete sim_;
 }
 
 void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)

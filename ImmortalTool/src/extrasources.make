@@ -4,11 +4,12 @@ AndCacheFor2Simulators.cpp
 AndCacheMap.cpp
 BackEnd.cpp
 CNF.cpp
+ErrorTraceManager.cpp
 LingelingApi.cpp
 Logger.cpp
+MiniSatApi.cpp
 Options.cpp
 PicoSatApi.cpp
-MiniSatApi.cpp
 SatSolver.cpp
 SimulationBasedAnalysis.cpp
 Stopwatch.cpp
