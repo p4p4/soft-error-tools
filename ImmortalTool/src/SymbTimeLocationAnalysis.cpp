@@ -32,6 +32,8 @@
 #include "Options.h"
 #include "Logger.h"
 #include "SymbolicSimulator.h"
+#include "AndCacheMap.h"
+#include "AndCacheFor2Simulators.h"
 
 extern "C"
 {
@@ -400,7 +402,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
-	SymbolicSimulator sim_ok(circuit_,solver_, next_free_cnf_var);
+	SymbolicSimulator sim_ok(circuit_, solver_, next_free_cnf_var);
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
 	// for each testcase-step
@@ -442,18 +444,25 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 		symbsim.initLatches();
 		sim_ok.initLatches();
 
+		AndCacheFor2Simulators cache(sim_ok.getResults(), symbsim.getResults(), solver_,
+				next_free_cnf_var);
+//		AndCache cache(solver_);
+		symbsim.setCache(&cache);
+//		sim_ok.setCache(&cache);
+
 		TestCase& testcase = testcases[tc_number];
 		for (unsigned i = 0; i < testcase.size(); i++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
+//			cache.clearCache();
 			//--------------------------------------------------------------------------------------
 			// Correct simulation:
 			sim_ok.simulateOneTimeStep(testcase[i]);
 			const vector<int> &correct_outputs = sim_ok.getOutputValues();
-			sim_ok.switchToNextState();
-			const vector<int> &correct_next_state = sim_ok.getLatchValues();
+//
+//			const vector<int> &correct_next_state = sim_ok.getLatchValues();
+			const vector<int> &correct_next_state = sim_ok.getNextLatchValues();
 			//--------------------------------------------------------------------------------------
-
 
 			//--------------------------------------------------------------------------------------
 			// cj is a variable that indicatest whether the corresponding latch is flipped
@@ -499,6 +508,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			const vector<int> &out_cnf_values = symbsim.getOutputValues();
 			symbsim.switchToNextState();
 			const vector<int> &next_state_cnf_values = symbsim.getLatchValues(); // already next st
+			sim_ok.switchToNextState(); // concrete simulation also to next state
 			//--------------------------------------------------------------------------------------
 
 			//--------------------------------------------------------------------------------------
@@ -523,13 +533,14 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				{
 					int o_is_different_var = next_free_cnf_var++;
 					// both outputs are true --> o_is_different_var is false
-					solver_->incAdd3LitClause(-correct_outputs[cnt], -out_cnf_values[cnt], -o_is_different_var);
+					solver_->incAdd3LitClause(-correct_outputs[cnt], -out_cnf_values[cnt],
+							-o_is_different_var);
 					// both outputs are false --> o_is_different_var is false
-					solver_->incAdd3LitClause(correct_outputs[cnt], out_cnf_values[cnt], -o_is_different_var);
+					solver_->incAdd3LitClause(correct_outputs[cnt], out_cnf_values[cnt],
+							-o_is_different_var);
 					o_is_diff_clause.push_back(o_is_different_var);
 				}
 			}
-
 
 			o_is_diff_clause.push_back(o_is_diff_enable_literal);
 			odiff_enable_literals.push_back(-o_is_diff_enable_literal);
@@ -540,6 +551,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
 			vector<int> model;
+			cout << "call SAT.." << endl;
 			while (solver_->incIsSatModelOrCore(odiff_enable_literals, cj_literals, model))
 			{
 //				Utils::debugPrint(model, "sat assignment: ");
@@ -558,6 +570,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 					}
 				}
 			}
+			cout << "SAT done" << endl;
 
 			// negate (=set to positive face) newest odiff_enable_literal to disable
 			// the previous o_is_diff_clausefor the next iterations
@@ -574,19 +587,21 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				int lit_to_add = 0;
 				if (correct_next_state[cnt] == CNF_TRUE) // simulation result of output is true
 					lit_to_add = -next_state_cnf_values[cnt]; // add negated output
-				else if(correct_next_state[cnt] == CNF_FALSE)
+				else if (correct_next_state[cnt] == CNF_FALSE)
 					lit_to_add = next_state_cnf_values[cnt];
 				else if (next_state_cnf_values[cnt] == CNF_TRUE) // simulation result of output is true
 					lit_to_add = -correct_next_state[cnt]; // add negated output
-				else if(next_state_cnf_values[cnt] == CNF_FALSE)
+				else if (next_state_cnf_values[cnt] == CNF_FALSE)
 					lit_to_add = correct_next_state[cnt];
 				else if (correct_next_state[cnt] != next_state_cnf_values[cnt]) // both are symbolic and not equal
 				{
 					lit_to_add = next_free_cnf_var++;
 					// both outputs are true --> o_is_different_var is false
-					solver_->incAdd3LitClause(-correct_next_state[cnt], -next_state_cnf_values[cnt], -lit_to_add);
+					solver_->incAdd3LitClause(-correct_next_state[cnt], -next_state_cnf_values[cnt],
+							-lit_to_add);
 					// both outputs are false --> o_is_different_var is false
-					solver_->incAdd3LitClause(correct_next_state[cnt], next_state_cnf_values[cnt], -lit_to_add);
+					solver_->incAdd3LitClause(correct_next_state[cnt], next_state_cnf_values[cnt],
+							-lit_to_add);
 				}
 
 				if (lit_to_add != CNF_FALSE)
