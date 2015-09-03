@@ -41,7 +41,7 @@ extern "C"
 // -------------------------------------------------------------------------------------------
 SymbolicSimulator::SymbolicSimulator(aiger* circuit, SatSolver* solver,
 		int& next_free_cnf_var_reference) :
-		time_index_(0), solver_(solver), next_free_cnf_var_(next_free_cnf_var_reference), cache_(0)
+		time_index_(0), solver_(solver), next_free_cnf_var_(next_free_cnf_var_reference), cache_map_(0), cache_2sim_(0)
 {
 	circuit_ = circuit;
 	results_.resize(circuit_->maxvar + 1);
@@ -107,7 +107,19 @@ void SymbolicSimulator::simulateOneTimeStep()
 			results_[(circuit_->ands[b].lhs >> 1)] = CNF_FALSE;
 		else
 		{
-			if (cache_ == 0)
+			if (cache_map_ != 0)
+			{
+				results_[(circuit_->ands[b].lhs >> 1)] = cache_map_->addAndGate(rhs0_cnf_value,
+						rhs1_cnf_value, next_free_cnf_var_);
+
+//				if(results_[(circuit_->ands[b].lhs >> 1)] == 815 || rhs0_cnf_value == 815 || rhs1_cnf_value == 815)
+//					cout << "insert.. " << "(aig="<<circuit_->ands[b].lhs << ") " << results_[(circuit_->ands[b].lhs >> 1)] << "= " << rhs0_cnf_value << " and " << rhs1_cnf_value << endl;
+			}
+			else if(cache_2sim_ != 0 )
+			{
+				cache_2sim_->addAndGate(circuit_->ands[b].lhs, circuit_->ands[b].rhs0, circuit_->ands[b].rhs1);
+			}
+			else // no cache
 			{
 				int res = next_free_cnf_var_++;
 				// res == rhs1_cnf_value & rhs0_cnf_value:
@@ -119,11 +131,6 @@ void SymbolicSimulator::simulateOneTimeStep()
 				//   -> (res == true)
 				solver_->incAdd3LitClause(-rhs0_cnf_value, -rhs1_cnf_value, res);
 				results_[(circuit_->ands[b].lhs >> 1)] = res;
-			}
-			else
-			{
-				results_[(circuit_->ands[b].lhs >> 1)] = cache_->addAndGate(rhs0_cnf_value,
-						rhs1_cnf_value, next_free_cnf_var_);
 			}
 		}
 	}
@@ -381,12 +388,20 @@ int SymbolicSimulator::getAlarmValue()
 	return Utils::readCnfValue(results_, circuit_->outputs[circuit_->num_outputs - 1].lit);
 }
 
-AndCache* SymbolicSimulator::getCache()
+
+void SymbolicSimulator::setCache(AndCacheMap* cache)
 {
-	return cache_;
+	cache_map_ = cache;
+	cache_2sim_ = 0;
 }
 
-void SymbolicSimulator::setCache(AndCache* cache)
+void SymbolicSimulator::setCache(AndCacheFor2Simulators* cache)
 {
-	cache_ = cache;
+	cache_2sim_ = cache;
+	cache_map_ = 0;
+}
+
+vector<int>& SymbolicSimulator::getResults()
+{
+	return results_;
 }

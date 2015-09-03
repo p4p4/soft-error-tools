@@ -1,6 +1,7 @@
 AIG2CNF.cpp
 AigSimulator.cpp
-AndCache.cpp
+AndCacheFor2Simulators.cpp
+AndCacheMap.cpp
 BackEnd.cpp
 CNF.cpp
 LingelingApi.cpp

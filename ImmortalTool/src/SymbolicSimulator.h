@@ -32,7 +32,8 @@
 
 #include "defines.h"
 #include "SatSolver.h"
-#include "AndCache.h"
+#include "AndCacheMap.h"
+#include "AndCacheFor2Simulators.h"
 
 struct aiger;
 
@@ -198,8 +199,9 @@ class SymbolicSimulator
 /// @brief (re)sets the latch values to Zero
 ///
 	void initLatches();
-	AndCache* getCache();
-	void setCache(AndCache* cache);
+	void setCache(AndCacheMap* cache);
+	void setCache(AndCacheFor2Simulators* cache);
+	vector<int>& getResults();
 
 	protected:
 
@@ -223,7 +225,8 @@ class SymbolicSimulator
 
 	int& next_free_cnf_var_;
 
-	AndCache* cache_;
+	AndCacheMap* cache_map_;
+	AndCacheFor2Simulators* cache_2sim_;
 
 // -------------------------------------------------------------------------------------------
 ///
