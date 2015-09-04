@@ -202,6 +202,7 @@ class SymbolicSimulator
 	void setCache(AndCacheMap* cache);
 	void setCache(AndCacheFor2Simulators* cache);
 	vector<int>& getResults();
+	const vector<int>& getOpenInputVars() const;
 
 	protected:
 
@@ -209,6 +210,8 @@ class SymbolicSimulator
 	vector<int> output_values_;		// TODO: check if they have the latest results in the getters
 	vector<int> latch_values_;
 	vector<int> next_values_;
+
+	vector<int> open_input_vars_;
 
 	//TODO input bool
 	bool output_values_is_latest_;

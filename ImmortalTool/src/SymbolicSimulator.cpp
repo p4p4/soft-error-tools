@@ -345,6 +345,7 @@ void SymbolicSimulator::setInputValues(const vector<int>& input_values)
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = CNF_FALSE;
 		else // (if LIT_FREE) handle '?' input:
 		{
+			open_input_vars_.push_back(next_free_cnf_var_);
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = next_free_cnf_var_++;
 //			cout << "value for input " << cnt_i << ": "
 //					<< results_[(circuit_->inputs[cnt_i].lit >> 1)] << endl;
@@ -404,4 +405,9 @@ void SymbolicSimulator::setCache(AndCacheFor2Simulators* cache)
 vector<int>& SymbolicSimulator::getResults()
 {
 	return results_;
+}
+
+const vector<int>& SymbolicSimulator::getOpenInputVars() const
+{
+	return open_input_vars_;
 }

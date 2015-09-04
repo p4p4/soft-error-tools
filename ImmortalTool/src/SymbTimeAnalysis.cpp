@@ -630,6 +630,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 
 			// f = a set of variables fi indicating whether the latch is flipped in step i or not
 			vector<int> f;
+			map<int, unsigned> fi_to_timestep;
 
 			// a set of literals to enable or disable the represented output_is_different clauses,
 			// necessary for incremental solving. At each sat-solver call only the newest clause
@@ -650,6 +651,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 			symbsim.setCache(&cache);
 
 			TestCase& testcase = testcases[tci];
+			TestCase real_cnf_inputs;
 			for (unsigned i = 0; i < testcase.size(); i++)
 			{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
 
@@ -684,8 +686,10 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
-				// set input values according to TestCase to TRUE or FALSE:
+				// set input values according to TestCase to TRUE/FALSE or same symb values as sim_ok:
 				symbsim.setCnfInputValues(sim_ok.getInputValues());
+				if (Options::instance().isUseDiagnosticOutput())
+					real_cnf_inputs.push_back(sim_ok.getInputValues());
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
@@ -717,6 +721,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 						solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 					f.push_back(fi);
+					fi_to_timestep[fi] = i;
 				}
 				//------------------------------------------------------------------------------------
 
@@ -771,11 +776,19 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
-//				vector<int> model; // TODO: maybe make use of the satisfying assignment
-//				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
-//						vars_to_keep, model);
-
-				bool sat = solver_->incIsSat(odiff_enable_literals);
+				vector<int> model; // TODO: maybe make use of the satisfying assignment
+				bool sat;
+				if (Options::instance().isUseDiagnosticOutput())
+				{
+					vector<int> vars_of_interest = f;
+					const vector<int> &open_in = sim_ok.getOpenInputVars();
+					vars_of_interest.insert(vars_of_interest.end(), open_in.begin(), open_in.end());
+					sat = solver_->incIsSatModelOrCore(odiff_enable_literals, vars_of_interest, model);
+				}
+				else
+				{
+					sat = solver_->incIsSat(odiff_enable_literals);
+				}
 
 				// negate (=set to positive face) newest odiff_enable_literal to disable
 				// the previous o_is_diff_clausefor the next iterations
@@ -783,6 +796,10 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				if (sat)
 				{
 					vulnerable_elements_.insert(component_aig);
+					if (Options::instance().isUseDiagnosticOutput())
+					{
+						addErrorTrace(component_aig, i, fi_to_timestep, model, real_cnf_inputs, true);
+					}
 					break;
 				}
 
@@ -898,20 +915,59 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 }
 
 void SymbTimeAnalysis::addErrorTrace(unsigned latch_aig, unsigned err_timestep,
-		map<int, unsigned>& f_to_i, const vector<int> &model, const TestCase& tc)
+		map<int, unsigned>& f_to_i, const vector<int> &model, const TestCase& tc, bool open_inputs)
 {
 	ErrorTrace* trace = new ErrorTrace;
 	trace->error_timestep_ = err_timestep;
 	trace->latch_index_ = latch_aig;
-	trace->input_trace_ = tc;
 
-	for (unsigned model_count = 0; model_count < model.size(); model_count++)
+	if (!open_inputs)
 	{
-		if (model[model_count] > 0)
+		for (unsigned model_count = 0; model_count < model.size(); model_count++)
 		{
-			trace->flipped_timestep_ = f_to_i[model[model_count]];
-			break;
+			if (model[model_count] > 0)
+			{
+				trace->flipped_timestep_ = f_to_i[model[model_count]];
+				break;
+			}
+		}
+		trace->input_trace_ = tc;
+	}
+	else
+	{
+		for (unsigned model_count = 0; model_count < model.size(); model_count++)
+		{
+			int lit = model[model_count];
+			map<int,unsigned>::iterator it = f_to_i.find(lit);
+			if(lit > 0 && it != f_to_i.end()) // we have found the fi variable which was set to TRUE
+			{
+				trace->flipped_timestep_ = it->second; // store i
+			}
+			else if (it == f_to_i.end()) // if not in map, then it must be a free input literal
+			{
+				f_to_i[lit] = (lit>0) ? AIG_TRUE : AIG_FALSE;
+			}
+		}
+
+		f_to_i[CNF_TRUE] = AIG_TRUE;
+		f_to_i[CNF_FALSE] = AIG_FALSE;
+
+		TestCase &real_input_values = trace->input_trace_;
+		real_input_values.reserve(tc.size());
+		for(TestCase::const_iterator in = tc.begin(); in != tc.end(); ++in)
+		{
+
+			vector<int> real_input_vector;
+			real_input_vector.reserve(in->size());
+			for(vector<int>::const_iterator iv = in->begin(); iv != in->end(); ++iv)
+			{
+				real_input_vector.push_back(f_to_i[*iv]);
+			}
+			real_input_values.push_back(real_input_vector);
 		}
 	}
+
+
+
 	ErrorTraceManager::instance().error_traces_.push_back(trace);
 }

@@ -115,8 +115,8 @@ class SymbTimeAnalysis: public BackEnd
 
 	void Analyze1_free_inputs(vector<TestCase> &testcases);
 
-	void addErrorTrace(unsigned latch_aig, unsigned err_timestep,
-			map<int, unsigned> &f_to_i, const vector<int> &model, const TestCase &tc);
+	void addErrorTrace(unsigned latch_aig, unsigned err_timestep, map<int, unsigned> &f_to_i,
+			const vector<int> &model, const TestCase &tc, bool open_inputs = false);
 
 // -------------------------------------------------------------------------------------------
 ///
