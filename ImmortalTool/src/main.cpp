@@ -64,24 +64,7 @@ int main(int argc, char *argv[])
 
 	if (Options::instance().isUseDiagnosticOutput())
 	{
-		vector<ErrorTrace*> &et = ErrorTraceManager::instance().error_traces_;
-		cout << "--------------------------------------------" << endl;
-		for (unsigned i = 0; i < et.size(); i++)
-		{
-			unsigned timestep = et[i]->error_timestep_;
-			cout << "Latch: " << et[i]->latch_index_ << " flipped at " << et[i]->flipped_timestep_
-					<< endl;
-			cout << "Error happened at timestep " << timestep << endl;
-
-			Utils::logPrint(et[i]->output_is_, "output was");
-			Utils::logPrint(et[i]->output_shouldbe_, "should have been");
-			cout << "input vectors:" << endl;
-			for (unsigned j = 0; j <= timestep; j++)
-			{
-				Utils::logPrint(et[i]->input_trace_[j], "step ");
-			}
-			cout << "--------------------------------------------" << endl;
-		}
+		ErrorTraceManager::instance().printErrorTraces();
 	}
 
 	//----------------------------------------------------------------------------

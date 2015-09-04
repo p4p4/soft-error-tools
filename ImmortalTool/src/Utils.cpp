@@ -262,6 +262,7 @@ void Utils::logPrint(const vector<int> &vec, string prefix)
 }
 
 
+
 // -------------------------------------------------------------------------------------------
 void Utils::debugCheckWinReg(const CNF &winning_region)
 {

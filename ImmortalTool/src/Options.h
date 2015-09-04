@@ -237,6 +237,8 @@ public:
 		return use_diagnostic_output_;
 	}
 
+	aiger* getCircuit();
+
 protected:
 
 // -------------------------------------------------------------------------------------------

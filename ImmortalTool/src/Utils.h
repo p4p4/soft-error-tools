@@ -266,6 +266,20 @@ public:
 
   static void logPrint(const vector<int> &vec, string prefix = "");
 
+  static inline string vecToString(const vector<int>& vec)
+  {
+    ostringstream oss;
+    oss << "[";
+    for(size_t count = 0; count < vec.size(); ++count)
+    {
+      oss << vec[count];
+      if(count != vec.size() - 1)
+        oss << ", ";
+    }
+    oss << "]";
+    return  oss.str();
+  }
+
 //  static void logPrint(const set<int> &set, string prefix = "");
 
 // -------------------------------------------------------------------------------------------

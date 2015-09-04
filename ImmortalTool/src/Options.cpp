@@ -476,3 +476,8 @@ unsigned Options::getNumErrLatches() const
 {
 	return num_err_latches_;
 }
+
+aiger* Options::getCircuit()
+{
+	return circuit_;
+}
