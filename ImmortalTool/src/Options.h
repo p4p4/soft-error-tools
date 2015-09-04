@@ -232,6 +232,11 @@ public:
 		unsat_core_interval_ = unsatCoreInterval;
 	}
 
+	bool isUseDiagnosticOutput() const
+	{
+		return use_diagnostic_output_;
+	}
+
 protected:
 
 // -------------------------------------------------------------------------------------------
@@ -318,6 +323,8 @@ protected:
   unsigned seed_;
 
   unsigned unsat_core_interval_;
+
+  bool use_diagnostic_output_;
 
 private:
 

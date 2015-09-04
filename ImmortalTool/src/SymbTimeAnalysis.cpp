@@ -33,6 +33,7 @@
 #include "Logger.h"
 #include "SymbolicSimulator.h"
 #include "AndCacheMap.h"
+#include "ErrorTraceManager.h"
 
 extern "C"
 {
@@ -134,6 +135,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 			vector<int> f;
 			vector<int> odiff_literals;
+			map<int,unsigned> fi_to_timestep;
 
 			vector<int> vars_to_keep;
 			vars_to_keep.push_back(1); // TRUE and FALSE literals
@@ -218,6 +220,8 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				if (!err_is_no_vulnerability)
 				{
 					f.push_back(fi);
+					fi_to_timestep[fi] = i; // TODO: only if diagnostic outputs
+
 					real_rename_map[f_orig] = fi;
 					real_rename_map[poss_neg_state_cnf_var] = next_free_cnf_var++;
 					solver_->addVarToKeep(fi);
@@ -288,12 +292,17 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 				// call SAT-Solver
 				vector<int> model;
-				bool sat = solver_->incIsSatModelOrCore(odiff_literals, T_copy.getVars(), model);
+				bool sat = solver_->incIsSatModelOrCore(odiff_literals, f, model);
 				odiff_literals.back() = -odiff_literals.back();
 
 				if (sat)
 				{
 					vulnerable_elements_.insert(component_aig);
+
+
+					if (Options::instance().isUseDiagnosticOutput())
+						addErrorTrace(component_aig,i,fi_to_timestep,model,testcase);
+
 					break;
 				}
 
@@ -855,4 +864,23 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
+}
+
+void SymbTimeAnalysis::addErrorTrace(unsigned latch_aig, unsigned err_timestep,
+		map<int, unsigned>& f_to_i, const vector<int> &model, const TestCase& tc)
+{
+	ErrorTrace* trace = new ErrorTrace;
+	trace->error_timestep_ = err_timestep;
+	trace->latch_index_ = latch_aig;
+	trace->input_trace_ = tc;
+
+	for(unsigned model_count=0; model_count < model.size(); model_count++)
+	{
+		if (model[model_count] > 0)
+		{
+			trace->flipped_timestep_ = f_to_i[model[model_count]];
+			break;
+		}
+	}
+	ErrorTraceManager::instance().error_traces_.push_back(trace);
 }

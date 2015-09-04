@@ -60,9 +60,7 @@ class SymbTimeAnalysis: public BackEnd
 
 	enum AnalysisMode
 	{
-		NAIVE = 0,
-		SYMBOLIC_SIMULATION = 1,
-		FREE_INPUTS = 2
+		NAIVE = 0, SYMBOLIC_SIMULATION = 1, FREE_INPUTS = 2
 	};
 
 // -------------------------------------------------------------------------------------------
@@ -115,8 +113,10 @@ class SymbTimeAnalysis: public BackEnd
 /// @param testcase a vector of input vectors
 	void Analyze1_symb_sim(vector<TestCase> &testcases);
 
-
 	void Analyze1_free_inputs(vector<TestCase> &testcases);
+
+	void addErrorTrace(unsigned latch_aig, unsigned err_timestep,
+			map<int, unsigned> &f_to_i, const vector<int> &model, const TestCase &tc);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -129,7 +129,7 @@ class SymbTimeAnalysis: public BackEnd
 	SatSolver* solver_;
 
 // 0 = disabled, 1 = every iteration, 2 = every 2nd iteration, ...
-unsigned unsat_core_interval_;
+	unsigned unsat_core_interval_;
 
 	private:
 

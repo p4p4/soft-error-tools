@@ -256,6 +256,10 @@ bool Options::parse(int argc, char **argv)
 			}
 			testcase_mode_ = TC_RANDOM;
 		}
+		else if (arg == "-d")
+		{
+			use_diagnostic_output_ = true;
+		}
 	}
 
 	if (aig_in_file_name_ == "")
@@ -272,7 +276,7 @@ bool Options::parse(int argc, char **argv)
 	initInputCircuit();
 	initLogger();
 
-	if(seed_==0)
+	if (seed_ == 0)
 		srand(time(0)); // seed with current time (used for random TestCases)
 	else
 		srand(seed_);
@@ -376,10 +380,10 @@ SatSolver* Options::getSATSolver(bool rand_models, bool min_cores) const
 {
 	if (sat_solver_ == "lin_api")
 		return new LingelingApi(rand_models, min_cores);
-  if(sat_solver_ == "min_api")
-    return new MiniSatApi(rand_models, min_cores);
-  if(sat_solver_ == "pic_api")
-    return new PicoSatApi(rand_models, min_cores);
+	if (sat_solver_ == "min_api")
+		return new MiniSatApi(rand_models, min_cores);
+	if (sat_solver_ == "pic_api")
+		return new PicoSatApi(rand_models, min_cores);
 	MASSERT(false, "Unknown SAT solver name.");
 	return NULL;
 }
@@ -444,10 +448,8 @@ void Options::initInputCircuit()
 		}
 	}
 	L_LOG("Input-File: " << getAigInFileNameOnly())
-	L_LOG("Inputs: " << circuit_->num_inputs
-			<< ", Latches: " << circuit_->num_latches - num_err_latches_
-			<< ", Error Latches: " << num_err_latches_
-			<< ", Outputs: " << circuit_->num_outputs-1)
+	L_LOG(
+			"Inputs: " << circuit_->num_inputs << ", Latches: " << circuit_->num_latches - num_err_latches_ << ", Error Latches: " << num_err_latches_ << ", Outputs: " << circuit_->num_outputs-1)
 
 }
 
@@ -455,7 +457,8 @@ void Options::initInputCircuit()
 Options::Options() :
 		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), print_string_(
 				"ERWILD"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
-				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0), seed_(0), unsat_core_interval_(0)
+				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0), seed_(
+				0), unsat_core_interval_(0), use_diagnostic_output_(false)
 {
 	// nothing to be done
 }

@@ -28,6 +28,7 @@
 
 #include "SimulationBasedAnalysis.h"
 #include "Logger.h"
+#include "Options.h"
 #include "Utils.h"
 #include "ErrorTraceManager.h"
 extern "C"
@@ -143,20 +144,18 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					vulnerable_elements_.insert(circuit_->latches[l_cnt].lit);
-					L_DBG("[sim] found vulnerability " << circuit_->latches[l_cnt].lit <<"(latch.lit) at i,j=" << timestep <<","<<j<<" in testcase number " << tc_index_);
-//					L_DBG("flipped "<<debugstring)
-//					Utils::debugPrint(outputs[j], "outputs");
-//					Utils::debugPrint(outputs_w_flip, "outputs_f");
 
-					// TODO: iff...
-					ErrorTrace* trace = new ErrorTrace;
-					trace->error_timestep_ = j;
-					trace->flipped_timestep_ = timestep;
-					trace->latch_index_ = circuit_->latches[l_cnt].lit;
-					trace->output_is_ = outputs_w_flip;
-					trace->output_shouldbe_ = outputs[j];
-					trace->input_trace_ = current_TC_;
-					ErrorTraceManager::instance().error_traces_.push_back(trace);
+					if (Options::instance().isUseDiagnosticOutput())
+					{
+						ErrorTrace* trace = new ErrorTrace;
+						trace->error_timestep_ = j;
+						trace->flipped_timestep_ = timestep;
+						trace->latch_index_ = circuit_->latches[l_cnt].lit;
+						trace->output_is_ = outputs_w_flip;
+						trace->output_shouldbe_ = outputs[j];
+						trace->input_trace_ = current_TC_;
+						ErrorTraceManager::instance().error_traces_.push_back(trace);
+					}
 
 					l_is_vulnerable = true;
 					break;
