@@ -1,0 +1,29 @@
+aig 111 10 10 2 91
+57
+63
+70
+77
+97
+103
+106
+113
+118
+124
+197
+223
+(0$&&+.$6N.2786?572/-
+>.l<-lxB.zwywt"kˆ”#ƒˆ¦
+„ª(‡ž(¼	¨©¤¤®¯®®l8 Err_latch_0
+l9 Err_latch_1
+o1 Err_out_Final
+c
+s208.1.bench
+This file was written by ABC on Mon Aug  3 13:14:41 2015
+For information about AIGER format, refer to http://fmv.jku.at/aiger
+----------------------------------------------------
+This file has been converted with AddParityTool. Input file:
+../../benchmark_files/IWLS_2005_AIG/s208.aig
+Number of Latches (total): 8
+Latches to protect: 50% (4 Latches)
+Number of additional latches: 2
+  (~2 latches per new latch)

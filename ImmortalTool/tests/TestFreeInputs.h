@@ -45,6 +45,8 @@ class TestFreeInputs : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test2);
   CPPUNIT_TEST(test3);
   CPPUNIT_TEST(test4);
+  CPPUNIT_TEST(test5_sta);
+  CPPUNIT_TEST(test6_stla);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -78,6 +80,9 @@ protected:
 
   void test3();
   void test4();
+
+  void test5_sta();
+  void test6_stla();
 
 };
 

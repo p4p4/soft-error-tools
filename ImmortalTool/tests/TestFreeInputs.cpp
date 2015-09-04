@@ -153,6 +153,7 @@ void TestFreeInputs::test2()
 			cout << "  Latch " << *it << endl;
 		}
 		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+		CPPUNIT_ASSERT(vulnerabilities.size() == 75);
 
 		aiger_reset(circuit);
 }
@@ -208,6 +209,59 @@ void TestFreeInputs::test4()
 			cout << "  Latch " << *it << endl;
 		}
 		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+		CPPUNIT_ASSERT(vulnerabilities.size() == 75);
+
+		aiger_reset(circuit);
+}
+
+void TestFreeInputs::test5_sta()
+{
+	aiger* circuit = Utils::readAiger("inputs/protected_IWLS_2005_AIG_s208.aig");
+		CPPUNIT_ASSERT_MESSAGE("can not open inputs/protected_IWLS_2005_AIG_s208.aig", circuit != 0);
+		vector<string> tc_files;
+
+		tc_files.push_back("inputs/s208_concreteunsat.input");
+		SymbTimeAnalysis sta(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
+		sta.findVulnerabilities(tc_files);
+		CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+
+		tc_files.clear();
+		tc_files.push_back("inputs/s208_concretesat.input");
+		SymbTimeAnalysis sta2(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
+		sta2.findVulnerabilities(tc_files);
+		CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
+
+		tc_files.clear();
+		tc_files.push_back("inputs/s208_open.input");
+		SymbTimeAnalysis sta3(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
+		sta3.findVulnerabilities(tc_files);
+		CPPUNIT_ASSERT(sta3.getVulnerableElements().size() == 1);
+
+		aiger_reset(circuit);
+}
+
+void TestFreeInputs::test6_stla()
+{
+	aiger* circuit = Utils::readAiger("inputs/protected_IWLS_2005_AIG_s208.aig");
+		CPPUNIT_ASSERT_MESSAGE("can not open inputs/protected_IWLS_2005_AIG_s208.aig", circuit != 0);
+		vector<string> tc_files;
+
+		tc_files.push_back("inputs/s208_concreteunsat.input");
+		SymbTimeLocationAnalysis sta(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
+		sta.findVulnerabilities(tc_files);
+		CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+
+		tc_files.clear();
+		tc_files.push_back("inputs/s208_concretesat.input");
+		SymbTimeLocationAnalysis sta2(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
+		sta2.findVulnerabilities(tc_files);
+		CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
+
+		tc_files.clear();
+		tc_files.push_back("inputs/s208_open.input");
+		SymbTimeLocationAnalysis sta3(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
+		sta3.findVulnerabilities(tc_files);
+		CPPUNIT_ASSERT(sta3.getVulnerableElements().size() == 1);
 
 		aiger_reset(circuit);
 }
