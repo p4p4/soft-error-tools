@@ -34,6 +34,7 @@
 #include "SymbolicSimulator.h"
 #include "AndCacheMap.h"
 #include "AndCacheFor2Simulators.h"
+#include "ErrorTraceManager.h"
 
 extern "C"
 {
@@ -125,6 +126,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 		// f = a set of variables fi indicating whether the latch is *flipped in _step_ i* or not
 		vector<int> f;
+		map<int, unsigned> fi_to_timestep;
 
 		// a set of cj-literals indicating whether *the _latch_ C_j is flipped* or not
 		vector<int> cj_literals;
@@ -158,6 +160,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 		symbsim.initLatches();
 
 		TestCase& testcase = testcases[tc_number];
+
 		for (unsigned i = 0; i < testcase.size(); i++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
@@ -208,6 +211,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 			f.push_back(fi);
+			fi_to_timestep[fi] = i;
 			//--------------------------------------------------------------------------------------
 
 			// Symbolic simulation of AND gates
@@ -240,21 +244,47 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
 			vector<int> model;
-			while (solver_->incIsSatModelOrCore(odiff_enable_literals, cj_literals, model))
+			ErrorTrace* trace = 0;
+			bool useDiagnostic = Options::instance().isUseDiagnosticOutput();
+
+			vector<int> &vars_of_interest = cj_literals;
+			if(useDiagnostic)
 			{
+				vector<int> cj_and_f = f;
+				cj_and_f.insert(cj_and_f.end(), cj_literals.begin(), cj_literals.end());
+				vars_of_interest = cj_and_f;
+			}
+
+			while (solver_->incIsSatModelOrCore(odiff_enable_literals, vars_of_interest, model))
+			{
+				if (useDiagnostic)
+				{
+				  trace = new ErrorTrace;
+
+				  trace->error_timestep_ = i;
+				  trace->input_trace_ = testcase;
+				  ErrorTraceManager::instance().error_traces_.push_back(trace);
+				}
 //				Utils::debugPrint(model, "sat assignment: ");
 				vector<int>::iterator model_iter;
 				for (model_iter = model.begin(); model_iter != model.end(); ++model_iter)
 				{
-					int cj_lit = *model_iter;
-					if (cj_lit > 0) // we have found the one and only cj signal which was active
+					int lit = *model_iter;
+					if (lit > 0 && lit < next_cnf_var_after_ci_vars) // we have found the one and only cj signal which was active
 					{
 						// Add vulnerable latch (represented by cj) to list of vulnerabilities
 						// Add blocking clause so that the sat-solver can report other vulnerabilities
-						vulnerable_elements_.insert(cj_to_latch[cj_lit]);
-						latches_to_check_.erase(cj_to_latch[cj_lit]);
-						solver_->incAddUnitClause(-cj_lit); // blocking clause
-						break;
+						vulnerable_elements_.insert(cj_to_latch[lit]);
+						latches_to_check_.erase(cj_to_latch[lit]);
+						solver_->incAddUnitClause(-lit); // blocking clause
+						if(!useDiagnostic)
+							break; // we are done here
+						else
+							trace->latch_index_ = cj_to_latch[lit];
+					}
+					else if (useDiagnostic && lit >= next_cnf_var_after_ci_vars) // we have found the one and onely fi signal
+					{
+						trace->flipped_timestep_ = fi_to_timestep[lit];
 					}
 				}
 			}
