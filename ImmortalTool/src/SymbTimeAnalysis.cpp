@@ -64,7 +64,7 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 		Analyze1_naive(testcases);
 	else if (mode_ == SYMBOLIC_SIMULATION)
 		Analyze1_symb_sim(testcases);
-	else if(mode_ == FREE_INPUTS)
+	else if (mode_ == FREE_INPUTS)
 		Analyze1_free_inputs(testcases);
 	else
 		MASSERT(false, "unknown mode!");
@@ -135,7 +135,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 			vector<int> f;
 			vector<int> odiff_literals;
-			map<int,unsigned> fi_to_timestep;
+			map<int, unsigned> fi_to_timestep;
 
 			vector<int> vars_to_keep;
 			vars_to_keep.push_back(1); // TRUE and FALSE literals
@@ -176,12 +176,22 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				// check if vulnerablitiy already found
 				bool equal_outputs = (outputs == outputs2);
 				bool err_found_with_simulation = (!equal_outputs && !alarm);
-//			if (err_found_with_simulation)
-//			{
-//				L_DBG("BREAK Sim Latch " << component_aig);
-//				vulnerable_elements_.insert(component_aig);
-//				break;
-//			}
+				if (err_found_with_simulation)
+				{
+					vulnerable_elements_.insert(component_aig);
+
+					if (Options::instance().isUseDiagnosticOutput())
+					{
+						ErrorTrace* trace = new ErrorTrace;
+						trace->flipped_timestep_ = i;
+						trace->error_timestep_ = i;
+						trace->latch_index_ = component_aig;
+						trace->input_trace_ = testcase;
+						ErrorTraceManager::instance().error_traces_.push_back(trace);
+					}
+					break;
+
+				}
 
 				bool err_is_no_vulnerability = false
 						&& (alarm || (equal_outputs && (next_state == sim_->getNextLatchValues())));
@@ -220,7 +230,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				if (!err_is_no_vulnerability)
 				{
 					f.push_back(fi);
-					fi_to_timestep[fi] = i; // TODO: only if diagnostic outputs
+					fi_to_timestep[fi] = i;
 
 					real_rename_map[f_orig] = fi;
 					real_rename_map[poss_neg_state_cnf_var] = next_free_cnf_var++;
@@ -292,16 +302,20 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 				// call SAT-Solver
 				vector<int> model;
-				bool sat = solver_->incIsSatModelOrCore(odiff_literals, f, model);
+				bool sat = false;
+				if (Options::instance().isUseDiagnosticOutput())
+					sat = solver_->incIsSatModelOrCore(odiff_literals, f, model);
+				else
+					sat = solver_->incIsSat(odiff_literals);
+
 				odiff_literals.back() = -odiff_literals.back();
 
 				if (sat)
 				{
 					vulnerable_elements_.insert(component_aig);
 
-
 					if (Options::instance().isUseDiagnosticOutput())
-						addErrorTrace(component_aig,i,fi_to_timestep,model,testcase);
+						addErrorTrace(component_aig, i, fi_to_timestep, model, testcase);
 
 					break;
 				}
@@ -323,7 +337,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 	int next_free_cnf_var = 2;
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
-	// ---------------- BEGIN 'for each latch' -------------------------
+// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
@@ -340,6 +354,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 			// f = a set of variables fi indicating whether the latch is flipped in step i or not
 			vector<int> f;
+			map<int, unsigned> fi_to_timestep;
 
 			// a set of literals to enable or disable the represented output_is_different clauses,
 			// necessary for incremental solving. At each sat-solver call only the newest clause
@@ -353,7 +368,6 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 			solver_->incAddUnitClause(-1); // -1 = TRUE constant
 
 			symbsim.initLatches(); // initialize latches to false
-
 
 			TestCase& testcase = testcases[tci];
 			for (unsigned i = 0; i < testcase.size(); i++)
@@ -380,6 +394,17 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				if (err_found_with_simulation)
 				{
 					vulnerable_elements_.insert(component_aig);
+
+					if (Options::instance().isUseDiagnosticOutput())
+					{
+						ErrorTrace* trace = new ErrorTrace;
+						trace->flipped_timestep_ = i;
+						trace->error_timestep_ = i;
+						trace->latch_index_ = component_aig;
+						trace->input_trace_ = testcase;
+						ErrorTraceManager::instance().error_traces_.push_back(trace);
+					}
+
 					break;
 				}
 
@@ -423,6 +448,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 						solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 					f.push_back(fi);
+					fi_to_timestep[fi] = i;
 				}
 				//------------------------------------------------------------------------------------
 
@@ -464,14 +490,22 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 //				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals,
 //						vars_to_keep, model);
 
-				bool sat = solver_->incIsSat(odiff_enable_literals);
+				vector<int> model;
+				bool sat = false;
+				if (Options::instance().isUseDiagnosticOutput())
+					sat = solver_->incIsSatModelOrCore(odiff_enable_literals, f, model);
+				else
+					sat = solver_->incIsSat(odiff_enable_literals);
 
-				// negate (=set to positive face) newest odiff_enable_literal to disable
-				// the previous o_is_diff_clausefor the next iterations
 				odiff_enable_literals.back() = -odiff_enable_literals.back();
+
 				if (sat)
 				{
 					vulnerable_elements_.insert(component_aig);
+
+					if (Options::instance().isUseDiagnosticOutput())
+						addErrorTrace(component_aig, i, fi_to_timestep, model, testcase);
+
 					break;
 				}
 
@@ -579,7 +613,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 	SymbolicSimulator sim_ok(circuit_, solver_, next_free_cnf_var);
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
-	// ---------------- BEGIN 'for each latch' -------------------------
+// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
@@ -614,7 +648,6 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 			AndCacheMap cache(solver_);
 			sim_ok.setCache(&cache);
 			symbsim.setCache(&cache);
-
 
 			TestCase& testcase = testcases[tci];
 			for (unsigned i = 0; i < testcase.size(); i++)
@@ -716,8 +749,8 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 						o_is_diff_clause.push_back(-outputs[cnt]);
 					else if (out_cnf_values[cnt] == CNF_FALSE)
 						o_is_diff_clause.push_back(-outputs[cnt]);
-	//				else if (out_cnf_values[cnt] == -outputs[cnt])	// TODO: try this later
-	//					;
+					//				else if (out_cnf_values[cnt] == -outputs[cnt])	// TODO: try this later
+					//					;
 					else if (out_cnf_values[cnt] != outputs[cnt]) // both are symbolic and not equal
 					{
 						int o_is_different_var = next_free_cnf_var++;
@@ -725,8 +758,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 						solver_->incAdd3LitClause(-outputs[cnt], -out_cnf_values[cnt],
 								-o_is_different_var);
 						// both outputs are false --> o_is_different_var is false
-						solver_->incAdd3LitClause(outputs[cnt], out_cnf_values[cnt],
-								-o_is_different_var);
+						solver_->incAdd3LitClause(outputs[cnt], out_cnf_values[cnt], -o_is_different_var);
 						o_is_diff_clause.push_back(o_is_different_var);
 					}
 				}
@@ -736,7 +768,6 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				solver_->addVarToKeep(o_is_diff_enable_literal);
 				solver_->incAddClause(o_is_diff_clause);
 				//------------------------------------------------------------------------------------
-
 
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
@@ -874,7 +905,7 @@ void SymbTimeAnalysis::addErrorTrace(unsigned latch_aig, unsigned err_timestep,
 	trace->latch_index_ = latch_aig;
 	trace->input_trace_ = tc;
 
-	for(unsigned model_count=0; model_count < model.size(); model_count++)
+	for (unsigned model_count = 0; model_count < model.size(); model_count++)
 	{
 		if (model[model_count] > 0)
 		{
