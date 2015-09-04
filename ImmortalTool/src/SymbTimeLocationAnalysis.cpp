@@ -248,10 +248,11 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			bool useDiagnostic = Options::instance().isUseDiagnosticOutput();
 
 			vector<int> &vars_of_interest = cj_literals;
-			if(useDiagnostic)
+			if (useDiagnostic)
 			{
 				vector<int> cj_and_f = f;
 				cj_and_f.insert(cj_and_f.end(), cj_literals.begin(), cj_literals.end());
+
 				vars_of_interest = cj_and_f;
 			}
 
@@ -259,30 +260,29 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			{
 				if (useDiagnostic)
 				{
-				  trace = new ErrorTrace;
+					trace = new ErrorTrace;
 
-				  trace->error_timestep_ = i;
-				  trace->input_trace_ = testcase;
-				  ErrorTraceManager::instance().error_traces_.push_back(trace);
+					trace->error_timestep_ = i;
+					trace->input_trace_ = testcase;
+					ErrorTraceManager::instance().error_traces_.push_back(trace);
 				}
-//				Utils::debugPrint(model, "sat assignment: ");
 				vector<int>::iterator model_iter;
 				for (model_iter = model.begin(); model_iter != model.end(); ++model_iter)
 				{
 					int lit = *model_iter;
-					if (lit > 0 && lit < next_cnf_var_after_ci_vars) // we have found the one and only cj signal which was active
+					if (lit > 0 && lit < next_cnf_var_after_ci_vars) // we have found the one and only active cj signal
 					{
 						// Add vulnerable latch (represented by cj) to list of vulnerabilities
 						// Add blocking clause so that the sat-solver can report other vulnerabilities
 						vulnerable_elements_.insert(cj_to_latch[lit]);
 						latches_to_check_.erase(cj_to_latch[lit]);
 						solver_->incAddUnitClause(-lit); // blocking clause
-						if(!useDiagnostic)
+						if (!useDiagnostic)
 							break; // we are done here
 						else
 							trace->latch_index_ = cj_to_latch[lit];
 					}
-					else if (useDiagnostic && lit >= next_cnf_var_after_ci_vars) // we have found the one and onely fi signal
+					else if (useDiagnostic && lit >= next_cnf_var_after_ci_vars) // we have found the one and only active fi signal
 					{
 						trace->flipped_timestep_ = fi_to_timestep[lit];
 					}
@@ -441,6 +441,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 		// f = a set of variables fi indicating whether a latch is *flipped in _step_ i* or not
 		vector<int> f;
+		map<int, unsigned> fi_to_timestep;
 
 		// a set of cj-literals indicating whether *the _latch_ C_j is flipped* or not
 		vector<int> cj_literals;
@@ -481,9 +482,9 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 		sim_ok.setCache(&cache);
 
 		TestCase& testcase = testcases[tc_number];
+		TestCase real_cnf_inputs;
 		for (unsigned i = 0; i < testcase.size(); i++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
-
 
 //			cache.clearCache();
 			//--------------------------------------------------------------------------------------
@@ -529,6 +530,12 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 			f.push_back(fi);
+
+			if (Options::instance().isUseDiagnosticOutput())
+			{
+				fi_to_timestep[fi] = i;
+				real_cnf_inputs.push_back(sim_ok.getInputValues());
+			}
 
 			//--------------------------------------------------------------------------------------
 			// Symbolic simulation of AND gates
@@ -582,26 +589,83 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
 			vector<int> model;
-			cout << "call SAT.." << endl;
-			while (solver_->incIsSatModelOrCore(odiff_enable_literals, cj_literals, model))
+			ErrorTrace* trace = 0;
+			bool useDiagnostic = Options::instance().isUseDiagnosticOutput();
+
+			vector<int> &vars_of_interest = cj_literals;
+			if (useDiagnostic)
 			{
-//				Utils::debugPrint(model, "sat assignment: ");
+				vector<int> cj_f_openinputs = f;
+				cj_f_openinputs.insert(cj_f_openinputs.end(), cj_literals.begin(), cj_literals.end());
+				const vector<int> &open_in = sim_ok.getOpenInputVars();
+				cj_f_openinputs.insert(cj_f_openinputs.end(), open_in.begin(), open_in.end());
+
+				vars_of_interest = cj_f_openinputs;
+			}
+
+			while (solver_->incIsSatModelOrCore(odiff_enable_literals, vars_of_interest, model))
+			{
+				if (useDiagnostic)
+				{
+					trace = new ErrorTrace;
+
+					trace->error_timestep_ = i;
+					ErrorTraceManager::instance().error_traces_.push_back(trace);
+				}
+
+				map<int, unsigned> cnf_input_var_to_aig_truth_lit;
+				cnf_input_var_to_aig_truth_lit[CNF_TRUE] = AIG_TRUE;
+				cnf_input_var_to_aig_truth_lit[CNF_FALSE] = AIG_FALSE;
+
 				vector<int>::iterator model_iter;
 				for (model_iter = model.begin(); model_iter != model.end(); ++model_iter)
 				{
-					int cj_lit = *model_iter;
-					if (cj_lit > 0) // we have found the one and only cj signal which was active
+					int lit = *model_iter;
+					if (lit > 0 && lit < next_cnf_var_after_ci_vars) // we have found the one and only cj signal which was active
 					{
 						// Add vulnerable latch (represented by cj) to list of vulnerabilities
 						// Add blocking clause so that the sat-solver can report other vulnerabilities
-						vulnerable_elements_.insert(cj_to_latch[cj_lit]);
-						latches_to_check_.erase(cj_to_latch[cj_lit]);
-						solver_->incAddUnitClause(-cj_lit); // blocking clause
-						break;
+						vulnerable_elements_.insert(cj_to_latch[lit]);
+						latches_to_check_.erase(cj_to_latch[lit]);
+						solver_->incAddUnitClause(-lit); // blocking clause
+
+						if (!useDiagnostic)
+							break; // we are done here
+						else
+							trace->latch_index_ = cj_to_latch[lit];
+					}
+					else if (useDiagnostic && abs(lit) >= next_cnf_var_after_ci_vars) // not a ci var
+					{
+						map<int, unsigned>::iterator it = fi_to_timestep.find(lit);
+						if (lit > 0 && it != fi_to_timestep.end()) // we have found the fi variable which was set to TRUE
+						{
+							trace->flipped_timestep_ = it->second; // store i
+						}
+						else if (it == fi_to_timestep.end()) // if not in map, then it must be a free input literal
+						{
+							cnf_input_var_to_aig_truth_lit[lit] = (lit > 0) ? AIG_TRUE : AIG_FALSE;
+						}
+
+					}
+				} // END read SAT assignment
+
+				if (useDiagnostic)
+				{
+					TestCase &real_input_values = trace->input_trace_;
+					real_input_values.reserve(real_cnf_inputs.size());
+					for (TestCase::const_iterator in = real_cnf_inputs.begin(); in != real_cnf_inputs.end(); ++in)
+					{
+
+						vector<int> real_input_vector;
+						real_input_vector.reserve(in->size());
+						for (vector<int>::const_iterator iv = in->begin(); iv != in->end(); ++iv)
+						{
+							real_input_vector.push_back(cnf_input_var_to_aig_truth_lit[*iv]);
+						}
+						real_input_values.push_back(real_input_vector);
 					}
 				}
 			}
-			cout << "SAT done" << endl;
 
 			// negate (=set to positive face) newest odiff_enable_literal to disable
 			// the previous o_is_diff_clausefor the next iterations

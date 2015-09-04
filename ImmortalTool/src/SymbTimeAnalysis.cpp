@@ -641,7 +641,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 			vector<int> vars_to_keep;
 			vars_to_keep.push_back(1); // TRUE and FALSE literals
 			solver_->startIncrementalSession(vars_to_keep, 0);
-			solver_->incAddUnitClause(-1); // -1 = TRUE constant
+			solver_->incAddUnitClause(CNF_TRUE); // TRUE constant
 
 			sim_ok.initLatches();
 			symbsim.initLatches(); // initialize latches to false
@@ -776,8 +776,8 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
-				vector<int> model; // TODO: maybe make use of the satisfying assignment
-				bool sat;
+				vector<int> model;
+				bool sat = false;
 				if (Options::instance().isUseDiagnosticOutput())
 				{
 					vector<int> vars_of_interest = f;
