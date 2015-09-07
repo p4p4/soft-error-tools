@@ -68,14 +68,21 @@ string ErrorTraceManager::errorTraceToString(ErrorTrace* et)
 	oss << "------------------------------------------" << endl; // todo: make fancy
 	for (unsigned j = 0; j <= timestep; j++)
 	{
-		if(j==et->flipped_timestep_)
-		{
+		if (j == et->flipped_timestep_)
 			sim.flipValue(et->latch_index_);
-		}
+
 		sim.simulateOneTimeStep(et->input_trace_[j]);
 		sim_ok.simulateOneTimeStep(et->input_trace_[j]);
-		oss << "i=" << j << ": "  << sim.getStateString() << endl;
-		oss << "[[" << j << ": "  << sim_ok.getStateString() << "]]" << endl;
+		oss << "[ OK] i=" << j << ": " << sim_ok.getStateString() << endl;
+		if (j >= et->flipped_timestep_)
+		{
+			oss << "[ERR] i=" << j << ": " << sim.getStateString();
+			if (j == et->flipped_timestep_)
+				oss << " <<< flipped in this state!";
+			if (j == et->error_timestep_)
+				oss << " <<< wrong output in this state!";
+			oss << endl;
+		}
 		sim.switchToNextState();
 		sim_ok.switchToNextState();
 	}
