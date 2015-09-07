@@ -334,3 +334,7 @@ void AigSimulator::initLatches()
 	}
 }
 
+void AigSimulator::flipValue(unsigned aiger_lit)
+{
+	results_[aiger_lit2var(aiger_lit)] = aiger_not(results_[aiger_lit2var(aiger_lit)]);
+}

@@ -113,6 +113,8 @@ class AigSimulator
 ///
 	void switchToNextState();
 
+	void flipValue(unsigned aiger_lit);
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Returns a string representation of the current state
