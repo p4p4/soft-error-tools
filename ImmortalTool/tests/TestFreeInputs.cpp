@@ -147,12 +147,12 @@ void TestFreeInputs::test2()
 		const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 		// DEBUG: print the vulnerable latches
-		for (set<unsigned>::iterator it = vulnerabilities.begin();
-				it != vulnerabilities.end(); ++it)
-		{
-			cout << "  Latch " << *it << endl;
-		}
-		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+//		for (set<unsigned>::iterator it = vulnerabilities.begin();
+//				it != vulnerabilities.end(); ++it)
+//		{
+//			cout << "  Latch " << *it << endl;
+//		}
+//		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
 		CPPUNIT_ASSERT(vulnerabilities.size() == 75);
 
 		aiger_reset(circuit);
@@ -203,12 +203,12 @@ void TestFreeInputs::test4()
 		const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 		// DEBUG: print the vulnerable latches
-		for (set<unsigned>::iterator it = vulnerabilities.begin();
-				it != vulnerabilities.end(); ++it)
-		{
-			cout << "  Latch " << *it << endl;
-		}
-		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+//		for (set<unsigned>::iterator it = vulnerabilities.begin();
+//				it != vulnerabilities.end(); ++it)
+//		{
+//			cout << "  Latch " << *it << endl;
+//		}
+//		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
 		CPPUNIT_ASSERT(vulnerabilities.size() == 75);
 
 		aiger_reset(circuit);

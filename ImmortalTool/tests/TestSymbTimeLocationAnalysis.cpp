@@ -40,8 +40,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestSymbTimeLocationAnalysis);
 void TestSymbTimeLocationAnalysis::setUp()
 {
   //setup for testcases
-	Logger::instance().enable(Logger::DBG);
-	Options::instance().setUnsatCoreInterval(2);
+//	Logger::instance().enable(Logger::DBG);
+//	Options::instance().setUnsatCoreInterval(2);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ void TestSymbTimeLocationAnalysis::test3_two_latches()
 	aiger* circuit = Utils::readAiger("inputs/two_latches.protected.aag");
 	SymbTimeLocationAnalysis sta(circuit, 1, SymbTimeLocationAnalysis::STANDARD);
 	sta.findVulnerabilities(1, 2);
-	L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
+//	L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
 	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 	aiger_reset(circuit);
 

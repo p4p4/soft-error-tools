@@ -259,6 +259,13 @@ bool Options::parse(int argc, char **argv)
 		else if (arg == "-d")
 		{
 			use_diagnostic_output_ = true;
+			if (arg_count + 1 < argc && argv[arg_count+1][0] != '-')
+			{
+				arg_count++;
+				string diagnostic_output_path(argv[arg_count]);
+				diagnostic_output_to_file_ = true;
+				diagnostic_output_path_ = diagnostic_output_path;
+			}
 		}
 	}
 
@@ -270,7 +277,7 @@ bool Options::parse(int argc, char **argv)
 
 	if (testcase_mode_ == TC_UNDEFINED)
 	{
-		cerr << "No testcase(s) provided." << endl;
+		cerr << "No test-case provided." << endl;
 		return true;
 	}
 	initInputCircuit();
@@ -458,7 +465,8 @@ Options::Options() :
 		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), print_string_(
 				"ERWILD"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0), seed_(
-				0), unsat_core_interval_(0), use_diagnostic_output_(false)
+				0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(false),
+				diagnostic_output_path_("")
 {
 	// nothing to be done
 }

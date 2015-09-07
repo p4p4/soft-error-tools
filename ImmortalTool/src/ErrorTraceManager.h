@@ -39,8 +39,6 @@ class ErrorTrace
 	unsigned latch_index_;
 	unsigned flipped_timestep_;
 	unsigned error_timestep_;
-	vector<int> output_shouldbe_;
-	vector<int> output_is_;
 	TestCase input_trace_;
 };
 

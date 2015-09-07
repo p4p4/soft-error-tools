@@ -397,7 +397,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				{
 					f.push_back(-*it);
 				}
-				L_LOG("step"<<i<<" reduced f variables: " << num_reduced_f_variables)
+				L_DBG("step"<<i<<" reduced f variables: " << num_reduced_f_variables)
 				// END TODO
 
 			}
@@ -413,7 +413,6 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	// used to store the results of the symbolic simulation
 	int next_free_cnf_var = 2;
 
-	cout << "free input analysis" << endl;
 	set<int> latches_to_check_;
 
 	//------------------------------------------------------------------------------------------

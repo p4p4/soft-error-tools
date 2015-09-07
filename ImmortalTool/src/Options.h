@@ -239,6 +239,16 @@ public:
 
 	aiger* getCircuit();
 
+	const string& getDiagnosticOutputPath() const
+	{
+		return diagnostic_output_path_;
+	}
+
+	bool isDiagnosticOutputToFile() const
+	{
+		return diagnostic_output_to_file_;
+	}
+
 protected:
 
 // -------------------------------------------------------------------------------------------
@@ -327,7 +337,8 @@ protected:
   unsigned unsat_core_interval_;
 
   bool use_diagnostic_output_;
-
+  bool diagnostic_output_to_file_;
+  string diagnostic_output_path_;
 private:
 
 // -------------------------------------------------------------------------------------------

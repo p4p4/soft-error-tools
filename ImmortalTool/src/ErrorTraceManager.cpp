@@ -31,6 +31,7 @@
 #include "Options.h"
 #include "Utils.h"
 #include "AigSimulator.h"
+#include <fstream>
 
 ErrorTraceManager *ErrorTraceManager::instance_ = NULL;
 
@@ -92,10 +93,30 @@ string ErrorTraceManager::errorTraceToString(ErrorTrace* et)
 
 void ErrorTraceManager::printErrorTraces()
 {
-	cout << "--------------------------------------------" << endl;
-	for (unsigned i = 0; i < error_traces_.size(); i++)
+
+	if (Options::instance().isDiagnosticOutputToFile())
 	{
-		cout << errorTraceToString(error_traces_[i]);
+	  ofstream out_file;
+	  out_file.open(Options::instance().getDiagnosticOutputPath().c_str());
+		MASSERT(out_file,
+				"could not write diagnostic output file: " + Options::instance().getDiagnosticOutputPath())
+
+	  out_file << "--------------------------------------------" << endl;
+		for (unsigned i = 0; i < error_traces_.size(); i++)
+		{
+			out_file << errorTraceToString(error_traces_[i]);
+			out_file << "--------------------------------------------" << endl;
+		}
+
+	  out_file.close();
+	}
+	else
+	{
 		cout << "--------------------------------------------" << endl;
+		for (unsigned i = 0; i < error_traces_.size(); i++)
+		{
+			cout << errorTraceToString(error_traces_[i]);
+			cout << "--------------------------------------------" << endl;
+		}
 	}
 }

@@ -1,6 +1,4 @@
 # Doxyfile 1.8.1.2
-# Created by Robert Koenighofer with the command 'doxygen -g' and then
-# customized for our needs.
 
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project.
@@ -28,7 +26,7 @@ DOXYFILE_ENCODING      = UTF-8
 # identify the project. Note that if you do not use Doxywizard you need
 # to put quotes around the project name if it contains spaces.
 
-PROJECT_NAME           = "demiurge"
+PROJECT_NAME           = "OpenSEA"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number.
 # This could be handy for archiving the generated documentation or
@@ -40,7 +38,7 @@ PROJECT_NUMBER         = "1.2.0"
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "A synthesis tool for safety specifications."
+PROJECT_BRIEF          = "A tool for Soft Error Analysis"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not

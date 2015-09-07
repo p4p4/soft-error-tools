@@ -121,14 +121,12 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 			state[l_cnt] = aiger_not(state[l_cnt]); // don't forget to restore state again later
 			AigSimulator sim_w_flip(circuit_);
 
-//			string debugstring = "\n";
 			// for all j >= i:
 			for (unsigned j = timestep; j < states.size(); ++j)
 			{
 				// next_state[], out[], alarm = simulate1step(state[], t[j])
 				sim_w_flip.simulateOneTimeStep(current_TC_[j], state);
 
-//				debugstring += sim_w_flip.getStateString() + "\n";
 				state = sim_w_flip.getNextLatchValues(); // state = next state
 				vector<int> outputs_w_flip = sim_w_flip.getOutputs();
 
@@ -151,8 +149,6 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 						trace->error_timestep_ = j;
 						trace->flipped_timestep_ = timestep;
 						trace->latch_index_ = circuit_->latches[l_cnt].lit;
-						trace->output_is_ = outputs_w_flip;
-						trace->output_shouldbe_ = outputs[j];
 						trace->input_trace_ = current_TC_;
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
 					}

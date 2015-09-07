@@ -156,7 +156,7 @@ void TestSymbTimeAnalysis::test3_two_latches()
 	aiger* circuit = Utils::readAiger("inputs/two_latches.protected.aag");
 	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
 	sta.findVulnerabilities(1, 2);
-	L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
+//	L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
 	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 	aiger_reset(circuit);
 
@@ -363,8 +363,7 @@ void TestSymbTimeAnalysis::test9_symbolic_simulation_extended()
 	sta.findVulnerabilities(1, 25); // 1 TC with 2 timesteps would also already work
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
-	cout << "found vulnerabilities: " << vulnerabilities.size() << endl;
-	// out of the 82 unprotected latches, only 67 are real vulnerabilities:
+//	cout << "found vulnerabilities: " << vulnerabilities.size() << endl;
 	CPPUNIT_ASSERT(vulnerabilities.size() == 69);
 
 }
