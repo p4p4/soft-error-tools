@@ -272,7 +272,7 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 	unsigned bad_signal = next_free_aig_lit;
 	next_free_aig_lit += 2;
 	aiger_add_and(mc_circuit, bad_signal, output_is_different, aiger_not(alarm2));
-	aiger_add_bad(mc_circuit, bad_signal, "bad_sig(diff_output&no_alarm)"); // or add_output?
+	aiger_add_output(mc_circuit, bad_signal, "bad_sig(diff_output&no_alarm)"); // or add_output?
 
 	return mc_circuit;
 

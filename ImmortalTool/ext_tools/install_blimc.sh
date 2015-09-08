@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ "$DEMIURGETP" = "" ]
+if [ "$IMMORTALTP" = "" ]
 then
-   echo "The Environment variable DEMIURGETP is undefined."
+   echo "The Environment variable IMMORTALTP is undefined."
    exit 1
 fi
 
@@ -18,15 +18,15 @@ then
 fi
 
 echo " Unpacking the BLIMC model checker ..."
-rm -rf $DEMIURGETP/blimc
-tar -xzf $BLIMC_ACHRIVE -C $DEMIURGETP
-mv $DEMIURGETP/$BLIMC $DEMIURGETP/blimc
+rm -rf $IMMORTALTP/blimc
+tar -xzf $BLIMC_ACHRIVE -C $IMMORTALTP
+mv $IMMORTALTP/$BLIMC $IMMORTALTP/blimc
 
 echo " Compiling the BLIMC model checker ..."
-cd $DEMIURGETP/blimc
+cd $IMMORTALTP/blimc
 ./configure
-cp $DEMIURGETP/blimc/makefile $DEMIURGETP/blimc/makefile_orig
-sed 's/AIGER=/AIGER=$(DEMIURGETP)\/aiger-1.9.4/' $DEMIURGETP/blimc/makefile_orig > $DEMIURGETP/blimc/makefile
+cp $IMMORTALTP/blimc/makefile $IMMORTALTP/blimc/makefile_orig
+sed 's/AIGER=/AIGER=$(IMMORTALTP)\/aiger-1.9.4/' $IMMORTALTP/blimc/makefile_orig > $IMMORTALTP/blimc/makefile
 make
 make blimc
 

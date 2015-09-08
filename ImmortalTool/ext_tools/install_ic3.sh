@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ "$DEMIURGETP" = "" ]
+if [ "$IMMORTALTP" = "" ]
 then
-   echo "The Environment variable DEMIURGETP is undefined."
+   echo "The Environment variable IMMORTALTP is undefined."
    exit 1
 fi
 
@@ -25,24 +25,24 @@ then
 fi
 
 echo " Unpacking IC3 ..."
-rm -rf $DEMIURGETP/ic3
-unzip ic3.zip -d $DEMIURGETP/
-mv $DEMIURGETP/IC3ref-master $DEMIURGETP/ic3
-cp -r $DEMIURGETP/aiger-1.9.4/ $DEMIURGETP/ic3/aiger/
-unzip minisat_ic3.zip -d $DEMIURGETP/ic3/
-mv $DEMIURGETP/ic3/minisat-master $DEMIURGETP/ic3/minisat
+rm -rf $IMMORTALTP/ic3
+unzip ic3.zip -d $IMMORTALTP/
+mv $IMMORTALTP/IC3ref-master $IMMORTALTP/ic3
+cp -r $IMMORTALTP/aiger-1.9.4/ $IMMORTALTP/ic3/aiger/
+unzip minisat_ic3.zip -d $IMMORTALTP/ic3/
+mv $IMMORTALTP/ic3/minisat-master $IMMORTALTP/ic3/minisat
 echo " Patching IC3 ..."
-sed -i 's/\/\/ create/aiger_reencode(aig); \/\/ create/g' $DEMIURGETP/ic3/main.cpp
-sed -i 's/return 1;/return (rv?20:10);/g' $DEMIURGETP/ic3/main.cpp
+sed -i 's/\/\/ create/aiger_reencode(aig); \/\/ create/g' $IMMORTALTP/ic3/main.cpp
+sed -i 's/return 1;/return (rv?20:10);/g' $IMMORTALTP/ic3/main.cpp
 echo " Compiling Minisat for IC3 ..."
 # otherwise the compiler does not like this:
-sed -i 's/PRIi64/ PRIi64/g' $DEMIURGETP/ic3/minisat/minisat/utils/Options.h
-cd $DEMIURGETP/ic3/minisat/
+sed -i 's/PRIi64/ PRIi64/g' $IMMORTALTP/ic3/minisat/minisat/utils/Options.h
+cd $IMMORTALTP/ic3/minisat/
 make
 echo " Compiling IC3 itself ..."
-cd $DEMIURGETP/ic3/aiger/
+cd $IMMORTALTP/ic3/aiger/
 make clean
-cd $DEMIURGETP/ic3/
+cd $IMMORTALTP/ic3/
 make
 
 
