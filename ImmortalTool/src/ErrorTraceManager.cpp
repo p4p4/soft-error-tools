@@ -65,8 +65,8 @@ string ErrorTraceManager::errorTraceToString(ErrorTrace* et)
 
 	AigSimulator sim(Options::instance().getCircuit());
 	AigSimulator sim_ok(Options::instance().getCircuit());
-	oss << "i=X: state | inputs | outputs | next state" << endl;
-	oss << "------------------------------------------" << endl; // todo: make fancy
+	oss << "[SIM] i=?: state | inputs | outputs | next state" << endl;
+	oss << "-------------------------------------------------" << endl; // todo: make fancy
 	for (unsigned j = 0; j <= timestep; j++)
 	{
 		if (j == et->flipped_timestep_)
@@ -112,11 +112,13 @@ void ErrorTraceManager::printErrorTraces()
 	}
 	else
 	{
-		cout << "--------------------------------------------" << endl;
+		cout << endl << endl;
+		cout << "=================================================" << endl;
 		for (unsigned i = 0; i < error_traces_.size(); i++)
 		{
 			cout << errorTraceToString(error_traces_[i]);
-			cout << "--------------------------------------------" << endl;
+			cout << endl << endl;
+			cout << "================================================="  << endl;
 		}
 	}
 }
