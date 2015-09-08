@@ -132,7 +132,7 @@ unsigned add_f_c_multiplexer_circuit(aiger* mc_circuit, unsigned latch_lit, unsi
 //						 | |
 //		 ...     | |  +---+    ...
 //						 | +-o|   |
-//						 +--|o|   +--------+  cn'
+//						 +---o|   +--------+  cn'
 //			cn  +-------+   |
 //									+---+
 //
@@ -216,10 +216,11 @@ unsigned create_f_signal(aiger* mc_circuit)
 //	           				|  |   +-+         +----+       |       |     +---o|    |
 //		           			|  +-----| circ_cpy|       +----+       |     |    |    |
 //		          			+--------| (modif) +-------+    |       |     |    +----+
-//			 		f_in+--------------+-+-------+-----+      +-------+     |
+//			 		f_in+-----[magic]--+-+-------+-----+      +-------+     |
 //				                      |              |                    |
-//	  		ci .. cn -------------+              +--------------------+
+//	  		ci .. cn -------------+              +-------------[magic]-+
 //													                       alarm_output
+//
 //
 aiger* aiger_create_MC_copy(aiger* original_circuit)
 {
@@ -305,7 +306,34 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 	// create BAD signal:
 	// the BAD signal is true when the outputs of the two circuits are different AND the alarm
 	// in the second circuit is set to false
-	unsigned alarm2 = orig_to_copy[original_circuit->outputs[original_circuit->num_outputs-1].lit];
+	unsigned alarm2_sig = orig_to_copy[original_circuit->outputs[original_circuit->num_outputs-1].lit];
+	//--
+	// if alarm2_sig is true, alarm_existed stays true for ever
+	//					+---------------------------+
+	//					|                           | f_latch_lit
+	//					|   +----+     +-----+      |
+	//					+---+    |     |     |      |
+	//							| OR +--+--+latch+------+
+	// alarm2_sig---+    |  |  |     |
+	//	  					+----+  |  +--^--+
+	//		  								|
+	//			  							+---------------+ alarm2_existed
+	//
+
+	unsigned alarm_latch_lit = next_free_aig_lit; // = latch output
+	next_free_aig_lit += 2;
+
+	unsigned alarm2_existed = next_free_aig_lit; // = OR output
+	next_free_aig_lit += 2;
+
+	// OR Gate:
+	aiger_add_and(mc_circuit, alarm2_existed, aiger_not(alarm_latch_lit), aiger_not(alarm2_sig));
+	alarm2_existed = aiger_not(alarm2_existed);
+
+	aiger_add_latch(mc_circuit, alarm_latch_lit, alarm2_existed, "f_latch");
+
+
+	//--
 	unsigned output_is_different = 0; // initially FALSE
 	for (unsigned i = 0; i < original_circuit->num_outputs -1; i++) // all outs  except alarm
 	{
@@ -326,7 +354,7 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 	unsigned bad_signal = next_free_aig_lit;
 	next_free_aig_lit += 2;
 	// alarm == false && output_is_different
-	aiger_add_and(mc_circuit, bad_signal, output_is_different, aiger_not(alarm2));
+	aiger_add_and(mc_circuit, bad_signal, output_is_different, aiger_not(alarm2_existed));
 	aiger_add_output(mc_circuit, bad_signal, "bad_sig(diff_output&no_alarm)"); // or add_output?
 
 	return mc_circuit;
