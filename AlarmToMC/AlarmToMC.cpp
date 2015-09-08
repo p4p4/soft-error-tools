@@ -31,6 +31,7 @@ map<unsigned, unsigned> orig_to_copy;
 vector<int> ci_variables;
 
 // -------------------------------------------------------------------------------------------
+// @brief creates an XOR Gate:
 //											___
 //			input1---------|   \
 //							       | +  |----- output = input1 xor input2 (returned)
@@ -57,6 +58,13 @@ unsigned aiger_add_xor(aiger* circuit, unsigned int input1, unsigned int input2)
 	return xor_out;
 }
 
+// -------------------------------------------------------------------------------------------
+// @brief creates an OR gate:
+//											___
+//			input1---------|   \
+//							       |OR |----- output = input1 OR input2 (returned)
+//			input2 --------|___/
+//
 unsigned aiger_add_or(aiger* circuit, unsigned int input1, unsigned int input2)
 {
 	unsigned output = next_free_aig_lit;
@@ -66,7 +74,7 @@ unsigned aiger_add_or(aiger* circuit, unsigned int input1, unsigned int input2)
 }
 
 // -------------------------------------------------------------------------------------------
-//
+// @brief creates a multiplexer
 // this function returns the literal for the multiplexer-output, which has the value of
 // in_active, if the select output is true, and in_not_active otherwise
 //														 ___
@@ -95,6 +103,7 @@ unsigned add_multiplexer(aiger* circuit, unsigned select, unsigned in_active,
 }
 
 // -------------------------------------------------------------------------------------------
+// @brief creates a circuit which flips the given latch_lit iff f and c are both true
 //
 //                    +──────────────|      ___
 //										|				 ___   +─────| 0 \
@@ -111,6 +120,21 @@ unsigned add_f_c_multiplexer_circuit(aiger* mc_circuit, unsigned latch_lit, unsi
 }
 
 // -------------------------------------------------------------------------------------------
+// @brief creates the ci signals. ci'= true iff only ci=true AND all other are false
+//
+//			c1 +---+-----------------+  c1'
+//						 |
+//						 |    +---+
+//						 +---o|   |
+//						 |    |   +--------+  c2'
+//			c2  +----+--+   |
+//						 | |  +---+
+//						 | |
+//		 ...     | |  +---+    ...
+//						 | +-o|   |
+//						 +--|o|   +--------+  cn'
+//			cn  +-------+   |
+//									+---+
 //
 void create_ci_signals(aiger* circuit)
 {
@@ -142,6 +166,17 @@ void create_ci_signals(aiger* circuit)
 }
 
 // -------------------------------------------------------------------------------------------
+// @brief creates the f_ral_sig, which is true when f_in is set to true the first time
+//
+//					+---------------------------+
+//					|                           | f_latch_lit
+//					|   +----+ or_ +-----+      |
+//					+---+    | out |     |      |       +-----+
+//							| OR +--+--+latch+------+------o|     |
+// f_in --------+    |  |  |     |              |AND  +----+ f_real_sig
+//	  					+----+  |  +--^--+      +-------+     |
+//		  								|               |       +-----+
+//			  							+---------------+ or_output
 //
 unsigned create_f_signal(aiger* mc_circuit)
 {
@@ -167,6 +202,25 @@ unsigned create_f_signal(aiger* mc_circuit)
 }
 
 // -------------------------------------------------------------------------------------------
+// @brief creates 2 copies of original_circuit to translate it to a MC problem:
+// error if the outputs of the 2 circuites are different, but alarm is set to false
+//
+//					                   +---------+ outputs1:
+//					i1  +--------------+         +-------+
+//					i2  |--------------| circuit |       |
+//					i3  +----- --------+         +----+  |    +-------+
+//				           	|  |   | +---------+    |  +----+       |
+//          					|  |   |                +-------+       |          +----+
+//	          				|  |   |             outputs2:  |       +----------+    |
+//				          	|  |   | +---------+    +-------+  !=   |          |AND +-----+ bad
+//	           				|  |   +-+         +----+       |       |     +---o|    |
+//		           			|  +-----| circ_cpy|       +----+       |     |    |    |
+//		          			+--------| (modif) +-------+    |       |     |    +----+
+//			 		f_in+--------------+-+-------+-----+      +-------+     |
+//				                      |              |                    |
+//	  		ci .. cn -------------+              +--------------------+
+//													                       alarm_output
+//
 aiger* aiger_create_MC_copy(aiger* original_circuit)
 {
 	orig_to_copy[0] = 0; // FALSE stays FALSE
@@ -200,7 +254,7 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 
 	// -----------------------------------------------------------------------------------------
 	// copy all latches
-	// for copied latches, all latch outputs except for the error_latches are replaced by a
+	// for copied latches,  all latch outputs except for the error_latches are replaced by a
 	// circuit, which flips the output iff the corresponding ci signal and the f singal are TRUE
 	for (unsigned i = 0; i < original_circuit->num_latches; i++)
 	{
@@ -271,6 +325,7 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 
 	unsigned bad_signal = next_free_aig_lit;
 	next_free_aig_lit += 2;
+	// alarm == false && output_is_different
 	aiger_add_and(mc_circuit, bad_signal, output_is_different, aiger_not(alarm2));
 	aiger_add_output(mc_circuit, bad_signal, "bad_sig(diff_output&no_alarm)"); // or add_output?
 
@@ -279,6 +334,8 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 }
 
 // -------------------------------------------------------------------------------------------
+// @brief: computes the number of error-latches
+// error-latches are additional latches, which have been introduced for the alarm output
 void compute_num_or_err_latches(aiger* aig_original)
 {
 	const string prefix("Err_latch_");
@@ -295,9 +352,12 @@ void compute_num_or_err_latches(aiger* aig_original)
 	}
 }
 // -------------------------------------------------------------------------------------------
+// @ brief prints Help to stdout
 void print_help(int argc, char* argv[])
 {
-	cout << "USAGE: " << argv[0] << endl;
+	cout << "USAGE: " << argv[0] << "<input-aiger-file> <output-aiger-file>" << endl;
+	cout << "     <input-aiger-file> ..... path to the aiger circuit with protection logic" << endl;
+	cout << "     <output-aiger-file> .... path to the resulting MC-compatible aiger circuit" << endl;
 }
 
 // -------------------------------------------------------------------------------------------
