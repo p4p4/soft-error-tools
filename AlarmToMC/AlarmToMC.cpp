@@ -136,13 +136,14 @@ unsigned add_f_c_multiplexer_circuit(aiger* mc_circuit, unsigned latch_lit, unsi
 //			cn  +-------+   |
 //									+---+
 //
-void create_ci_signals(aiger* circuit)
+void create_ci_signals(aiger* circuit, unsigned num_orig_latches)
 {
+
 	// create inputs
 	vector<int> ci_in;
-	ci_in.reserve(num_err_latches_);
+	ci_in.reserve(num_orig_latches);
 
-	for (unsigned i = 0; i < num_err_latches_; i++)
+	for (unsigned i = 0; i < num_orig_latches; i++)
 	{
 		ci_in.push_back(next_free_aig_lit);
 		aiger_add_input(circuit, next_free_aig_lit, "ci");
@@ -151,7 +152,7 @@ void create_ci_signals(aiger* circuit)
 
 	// create real ci-signals (where at most one can be active at one timestep. therefore only
 	// one ci input may be active)
-	for (unsigned i = 0; i < num_err_latches_; i++)
+	for (unsigned i = 0; i < num_orig_latches; i++)
 	{
 		unsigned ci_signal = ci_in[i];
 		for (unsigned j = 0; j < i; j++)
@@ -244,7 +245,8 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 	// create ci_inputs and ci_signal for each latch:
 	// the corresponding ci_signal to a ci_input is TRUE, iff only this one input is set to TRUE
 	// the ci_signla indicates *which* latch has to be flipped
-	create_ci_signals(mc_circuit);
+	unsigned num_orig_latches = original_circuit->num_latches - num_err_latches_;
+	create_ci_signals(mc_circuit, num_orig_latches);
 
 	// -----------------------------------------------------------------------------------------
 	// create f signal and f_input:
@@ -280,7 +282,7 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 		}
 
 		aiger_add_latch(mc_circuit, o_lit, o_next, o_name);
-		aiger_add_latch(mc_circuit, mc_lit, orig_to_copy[o_next], o_name); // TODO: maybe name is _copy ?
+		aiger_add_latch(mc_circuit, mc_lit, orig_to_copy[o_next], o_name); // TODO: maybe name is copy_ ?
 
 	}
 	// -----------------------------------------------------------------------------------------
