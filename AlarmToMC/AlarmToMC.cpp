@@ -117,6 +117,7 @@ unsigned add_f_c_multiplexer_circuit(aiger* mc_circuit, unsigned latch_lit, unsi
 {
 	unsigned f_mux_out = add_multiplexer(mc_circuit, f, aiger_not(latch_lit), latch_lit);
 	unsigned c_mux_out = add_multiplexer(mc_circuit, c, f_mux_out, latch_lit);
+	return c_mux_out;
 }
 
 // -------------------------------------------------------------------------------------------
