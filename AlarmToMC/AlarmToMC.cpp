@@ -32,10 +32,10 @@ vector<int> ci_variables;
 
 // -------------------------------------------------------------------------------------------
 // @brief creates an XOR Gate:
-//											___
-//			input1---------|   \
+//											____
+//			input1---------|    |
 //							       | +  |----- output = input1 xor input2 (returned)
-//			input2 --------|___/
+//			input2 --------|____|
 //
 unsigned aiger_add_xor(aiger* circuit, unsigned int input1, unsigned int input2)
 {
@@ -61,9 +61,9 @@ unsigned aiger_add_xor(aiger* circuit, unsigned int input1, unsigned int input2)
 // -------------------------------------------------------------------------------------------
 // @brief creates an OR gate:
 //											___
-//			input1---------|   \
+//			input1---------|   \                                                                 .
 //							       |OR |----- output = input1 OR input2 (returned)
-//			input2 --------|___/
+//			input2 --------|___/                                                                 .
 //
 unsigned aiger_add_or(aiger* circuit, unsigned int input1, unsigned int input2)
 {
@@ -78,9 +78,9 @@ unsigned aiger_add_or(aiger* circuit, unsigned int input1, unsigned int input2)
 // this function returns the literal for the multiplexer-output, which has the value of
 // in_active, if the select output is true, and in_not_active otherwise
 //														 ___
-//			in_active-------------| 1 \
+//			in_active-------------| 1 \                                                          .
 //														|    |----- output (returned)
-//			in_not_active --------|_0_/
+//			in_not_active --------|_0_/                                                          .
 //                              |
 //                            select
 //
@@ -106,9 +106,9 @@ unsigned add_multiplexer(aiger* circuit, unsigned select, unsigned in_active,
 // @brief creates a circuit which flips the given latch_lit iff f and c are both true
 //
 //                    +──────────────|      ___
-//										|				 ___   +─────| 0 \
+//										|				 ___   +─────| 0 \                                             .
 //			latch_lit ────+──|>o──| 1 \        |    |── real_latch_lit
-//										|				|    |───────|_1_/
+//										|				|    |───────|_1_/                                             .
 //			              +───────|_0_/          |
 //                              |            c
 //                              f
@@ -203,14 +203,29 @@ unsigned create_f_signal(aiger* mc_circuit)
 	return f_real_sig;
 }
 
+unsigned read_orig_to_copy(unsigned orig_lit)
+{
+	if(orig_to_copy.find(orig_lit) != orig_to_copy.end()) // TODO efficiency: reuse iterator
+		return orig_to_copy[orig_lit];
+
+	unsigned not_negated_lit = (orig_lit & 1) ? aiger_not(orig_lit) : orig_lit;
+	unsigned copy_lit = next_free_aig_lit;
+	next_free_aig_lit += 2;
+	orig_to_copy[not_negated_lit] = copy_lit;
+	orig_to_copy[not_negated_lit + 1] = copy_lit +1;
+
+	return (orig_lit & 1) ? aiger_not(copy_lit) : copy_lit;
+
+}
+
 // -------------------------------------------------------------------------------------------
 // @brief creates 2 copies of original_circuit to translate it to a MC problem:
-// error if the outputs of the 2 circuites are different, but alarm is set to false
+// error if the outputs of the 2 circuits are different, but alarm is set to false
 //
 //					                   +---------+ outputs1:
-//					i1  +--------------+         +-------+
-//					i2  |--------------| circuit |       |
-//					i3  +----- --------+         +----+  |    +-------+
+//					i1  +-----+--------+         +-------+
+//					i2  |-----|--+-----| circuit |       |
+//					i3  +-----|--|---+-+         +----+  |    +-------+
 //				           	|  |   | +---------+    |  +----+       |
 //          					|  |   |                +-------+       |          +----+
 //	          				|  |   |             outputs2:  |       +----------+    |
@@ -283,7 +298,7 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 		}
 
 		aiger_add_latch(mc_circuit, o_lit, o_next, o_name);
-		aiger_add_latch(mc_circuit, mc_lit, orig_to_copy[o_next], o_name); // TODO: maybe name is copy_ ?
+		aiger_add_latch(mc_circuit, mc_lit, read_orig_to_copy(o_next), o_name); // TODO: maybe name is copy_ ?
 
 	}
 	// -----------------------------------------------------------------------------------------
@@ -293,16 +308,14 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 	{
 		unsigned o_rhs0_lit = original_circuit->ands[i].rhs0;
 		unsigned o_rhs1_lit = original_circuit->ands[i].rhs1;
-
 		unsigned o_lhs_lit = original_circuit->ands[i].lhs;
-		unsigned mc_lhs_lit = next_free_aig_lit;
-		next_free_aig_lit += 2;
 
-		orig_to_copy[o_lhs_lit] = mc_lhs_lit;
-		orig_to_copy[o_lhs_lit + 1] = mc_lhs_lit + 1;
+		unsigned mc_rhs0_lit = read_orig_to_copy(o_rhs0_lit);
+		unsigned mc_rhs1_lit = read_orig_to_copy(o_rhs1_lit);
+		unsigned mc_lhs_lit = read_orig_to_copy(o_lhs_lit);
 
 		aiger_add_and(mc_circuit, o_lhs_lit, o_rhs0_lit, o_rhs1_lit);
-		aiger_add_and(mc_circuit, mc_lhs_lit, orig_to_copy[o_rhs0_lit], orig_to_copy[o_rhs1_lit]);
+		aiger_add_and(mc_circuit, mc_lhs_lit, mc_rhs0_lit, mc_rhs1_lit);
 	}
 
 	// -----------------------------------------------------------------------------------------
@@ -425,6 +438,7 @@ int main(int argc, char *argv[])
 
 	//------------------------------------------------------------------------------------------
 	// write output file
+	aiger_reencode(aig_mc);
 	int write_err = aiger_open_and_write_to_file(aig_mc, argv[2]);
 	if (write_err == 0)
 	{
