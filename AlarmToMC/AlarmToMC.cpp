@@ -281,15 +281,17 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 		unsigned o_next = original_circuit->latches[i].next;
 		char* o_name = original_circuit->latches[i].name;
 
-		unsigned mc_lit = next_free_aig_lit;
-		next_free_aig_lit += 2;
+		unsigned mc_lit = read_orig_to_copy(o_lit);
 
-		if (i < num_err_latches_) // ci signal for each latch (except error latches)
+		if (i < num_orig_latches) // ci signal for each latch (except error latches)
 		{
 			unsigned ci = ci_variables[i];
 			unsigned replaced_latch_lit = add_f_c_multiplexer_circuit(mc_circuit, mc_lit, f, ci);
-			orig_to_copy[o_lit] = replaced_latch_lit;
-			orig_to_copy[o_lit + 1] = replaced_latch_lit + 1;
+
+			unsigned not_negated_replacement = (replaced_latch_lit & 1) ? aiger_not(replaced_latch_lit) : replaced_latch_lit;
+			orig_to_copy[o_lit] = not_negated_replacement;
+			cout << "replace :" << o_lit << " with " << not_negated_replacement << endl;
+			orig_to_copy[o_lit + 1] = not_negated_replacement + 1;
 		}
 		else // no ci signal for the error_latches
 		{
