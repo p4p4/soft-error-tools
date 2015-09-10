@@ -18,6 +18,12 @@ extern "C"
 #include "aiger.h"
 }
 
+// set this to TRUE to add additional debug-outputs in the circuit
+// this can be useful for debugging.
+// set this to FALLSE if you want to use the resulting circuit with a MC, because these only
+// allow exactly ONE output (the bad signal).
+bool DEBUG_OUT = false;
+
 using namespace std;
 static const int RET_OK = 0;
 static const int RET_WRONG_PARAMS = -1;
@@ -73,6 +79,24 @@ unsigned aiger_add_or(aiger* circuit, unsigned int input1, unsigned int input2)
 	return aiger_not(output);
 }
 
+unsigned aiger_add_eq(aiger* circuit, unsigned int input1, unsigned int input2)
+{
+
+	// L = A and B
+	unsigned int and_1 = next_free_aig_lit;
+	next_free_aig_lit += 2;
+	aiger_add_and(circuit, and_1, input1, input2);
+
+	// R = notA and notB
+	unsigned int and_2 = next_free_aig_lit;
+	next_free_aig_lit += 2;
+	aiger_add_and(circuit, and_2, aiger_not(input1), aiger_not(input2));
+
+	// A xor B = notL and notR
+	return aiger_add_or(circuit, and_1, and_2);
+
+}
+
 // -------------------------------------------------------------------------------------------
 // @brief creates a multiplexer
 // this function returns the literal for the multiplexer-output, which has the value of
@@ -121,7 +145,9 @@ unsigned add_f_c_multiplexer_circuit(aiger* mc_circuit, unsigned latch_lit, unsi
 }
 
 // -------------------------------------------------------------------------------------------
-// @brief creates the ci signals. ci'= true iff only ci=true AND all other are false
+// @brief creates thf_ine ci signals. ci'= true iff only ci=true AND all cj (j<i) are false
+// there can be at most one ci' set to true: the one corresponding to the first (smallest i)
+// ci signal which is set to true
 //
 //			c1 +---+-----------------+  c1'
 //						 |
@@ -168,7 +194,7 @@ void create_ci_signals(aiger* circuit, unsigned num_orig_latches)
 }
 
 // -------------------------------------------------------------------------------------------
-// @brief creates the f_ral_sig, which is true when f_in is set to true the first time
+// @brief creates t0001he f_ral_sig, which is true when f_in is set to true the first time
 //
 //					+---------------------------+
 //					|                           | f_latch_lit
@@ -200,19 +226,26 @@ unsigned create_f_signal(aiger* mc_circuit)
 	next_free_aig_lit += 2;
 	aiger_add_and(mc_circuit, f_real_sig, aiger_not(f_latch_lit), or_output);
 
+	//DEBUG
+	if (DEBUG_OUT)
+	{
+		aiger_add_output(mc_circuit, f_real_sig, "f_real_signal");
+	}
+	// DEBUG
+
 	return f_real_sig;
 }
 
 unsigned read_orig_to_copy(unsigned orig_lit)
 {
-	if(orig_to_copy.find(orig_lit) != orig_to_copy.end()) // TODO efficiency: reuse iterator
+	if (orig_to_copy.find(orig_lit) != orig_to_copy.end()) // TODO efficiency: reuse iterator
 		return orig_to_copy[orig_lit];
 
 	unsigned not_negated_lit = (orig_lit & 1) ? aiger_not(orig_lit) : orig_lit;
 	unsigned copy_lit = next_free_aig_lit;
 	next_free_aig_lit += 2;
 	orig_to_copy[not_negated_lit] = copy_lit;
-	orig_to_copy[not_negated_lit + 1] = copy_lit +1;
+	orig_to_copy[not_negated_lit + 1] = copy_lit + 1;
 
 	return (orig_lit & 1) ? aiger_not(copy_lit) : copy_lit;
 
@@ -244,7 +277,6 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 	orig_to_copy[0] = 0; // FALSE stays FALSE
 	orig_to_copy[1] = 1; // TRUE stays TRUE
 	aiger* mc_circuit = aiger_init();
-
 
 	// -----------------------------------------------------------------------------------------
 	// copy inputs:
@@ -288,10 +320,22 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 			unsigned ci = ci_variables[i];
 			unsigned replaced_latch_lit = add_f_c_multiplexer_circuit(mc_circuit, mc_lit, f, ci);
 
-			unsigned not_negated_replacement = (replaced_latch_lit & 1) ? aiger_not(replaced_latch_lit) : replaced_latch_lit;
+			unsigned not_negated_replacement = replaced_latch_lit;
+//			not_negated_replacement =
+//					(replaced_latch_lit & 1) ? aiger_not(replaced_latch_lit) : replaced_latch_lit; // <- i guess here happens something weird
+
 			orig_to_copy[o_lit] = not_negated_replacement;
 			cout << "replace :" << o_lit << " with " << not_negated_replacement << endl;
-			orig_to_copy[o_lit + 1] = not_negated_replacement + 1;
+			orig_to_copy[o_lit + 1] = aiger_not(not_negated_replacement);
+
+			//DEBUG
+			if (DEBUG_OUT)
+			{
+				aiger_add_output(mc_circuit, o_lit, "original_lit");
+				aiger_add_output(mc_circuit, mc_lit, "latch_out");
+				aiger_add_output(mc_circuit, replaced_latch_lit, "latch-flip-out");
+			}
+			// ENDL
 		}
 		else // no ci signal for the error_latches
 		{
@@ -324,7 +368,12 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 	// create BAD signal:
 	// the BAD signal is true when the outputs of the two circuits are different AND the alarm
 	// in the second circuit is set to false
-	unsigned alarm2_sig = orig_to_copy[original_circuit->outputs[original_circuit->num_outputs-1].lit];
+	cout << "alarm output = " << original_circuit->outputs[original_circuit->num_outputs - 1].lit
+			<< endl;
+	unsigned alarm2_sig = read_orig_to_copy(
+			original_circuit->outputs[original_circuit->num_outputs - 1].lit);
+	cout << "renamed out = " << alarm2_sig << endl;
+
 	//--
 	// if alarm2_sig is true, alarm_existed stays true for ever
 	//					+---------------------------+
@@ -348,16 +397,34 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 	aiger_add_and(mc_circuit, alarm2_existed, aiger_not(alarm_latch_lit), aiger_not(alarm2_sig));
 	alarm2_existed = aiger_not(alarm2_existed);
 
-	aiger_add_latch(mc_circuit, alarm_latch_lit, alarm2_existed, "f_latch");
+	aiger_add_latch(mc_circuit, alarm_latch_lit, alarm2_existed, "alarm_latch");
 
+	// debug
+	if (DEBUG_OUT)
+	{
+		aiger_add_output(mc_circuit, alarm2_sig, "old_alarm_signal");
+		aiger_add_output(mc_circuit, alarm2_existed, "alarm2_existed");
+	}
+	// debug
 
 	//--
 	unsigned output_is_different = 0; // initially FALSE
-	for (unsigned i = 0; i < original_circuit->num_outputs -1; i++) // all outs  except alarm
+	for (unsigned i = 0; i < original_circuit->num_outputs - 1; i++) // all outs  except alarm
 	{
 		unsigned output1 = original_circuit->outputs[i].lit; // original output
-		unsigned output2 = orig_to_copy[output1]; // same output of copy
+		unsigned output2 = read_orig_to_copy(output1); // same output of copy
 		unsigned curr_out_is_diff = aiger_add_xor(mc_circuit, output1, output2);
+
+//
+		if (DEBUG_OUT)
+		{
+			aiger_add_output(mc_circuit, output1, "out1");
+			aiger_add_output(mc_circuit, output2, "out2");
+			aiger_add_output(mc_circuit, curr_out_is_diff, "curr_out_diff");
+		}
+
+		cout << "curr_out_is_diff: " << curr_out_is_diff << " = " << output1 << " xor " << output2
+				<< endl;
 
 		if (output_is_different == 0) // for the first output
 		{
@@ -367,6 +434,11 @@ aiger* aiger_create_MC_copy(aiger* original_circuit)
 		{
 			output_is_different = aiger_add_or(mc_circuit, output_is_different, curr_out_is_diff);
 		}
+	}
+
+	if (DEBUG_OUT)
+	{
+		aiger_add_output(mc_circuit, output_is_different, "out_is_diff");
 	}
 
 	unsigned bad_signal = next_free_aig_lit;
@@ -402,8 +474,10 @@ void compute_num_or_err_latches(aiger* aig_original)
 void print_help(int argc, char* argv[])
 {
 	cout << "USAGE: " << argv[0] << "<input-aiger-file> <output-aiger-file>" << endl;
-	cout << "     <input-aiger-file> ..... path to the aiger circuit with protection logic" << endl;
-	cout << "     <output-aiger-file> .... path to the resulting MC-compatible aiger circuit" << endl;
+	cout << "     <input-aiger-file> ..... path to the aiger circuit with protection logic"
+			<< endl;
+	cout << "     <output-aiger-file> .... path to the resulting MC-compatible aiger circuit"
+			<< endl;
 }
 
 // -------------------------------------------------------------------------------------------
