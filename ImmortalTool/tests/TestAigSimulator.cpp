@@ -66,8 +66,7 @@ aiger* TestAigSimulator::readAigerFile(string path)
 }
 
 // -------------------------------------------------------------------------------------------
-void TestAigSimulator::compareOutputVector(int* c_array,
-		std::vector<int> c_vector)
+void TestAigSimulator::compareOutputVector(int* c_array, std::vector<int> c_vector)
 {
 	for (unsigned int out_ctr = 0; out_ctr < c_vector.size(); out_ctr++)
 	{
@@ -257,14 +256,11 @@ void TestAigSimulator::test4_reuse_aigsim_object()
 
 	AigSimDiff(sim, "inputs/5_bit_input", "inputs/minmax2_orig.aig.diff1");
 
-	AigSimDiff(sim, "inputs/5_bit_input_shuffle1",
-			"inputs/minmax2_orig.out.shuffle1");
+	AigSimDiff(sim, "inputs/5_bit_input_shuffle1", "inputs/minmax2_orig.out.shuffle1");
 
-	AigSimDiff(sim, "inputs/5_bit_input_shuffle2",
-			"inputs/minmax2_orig.out.shuffle2");
+	AigSimDiff(sim, "inputs/5_bit_input_shuffle2", "inputs/minmax2_orig.out.shuffle2");
 
-	AigSimDiff(sim, "inputs/5_bit_input_shuffle3",
-			"inputs/minmax2_orig.out.shuffle3");
+	AigSimDiff(sim, "inputs/5_bit_input_shuffle3", "inputs/minmax2_orig.out.shuffle3");
 }
 
 void TestAigSimulator::test5_simulate_with_provided_state()
@@ -325,4 +321,56 @@ void TestAigSimulator::test6()
 
 	shouldbe = "1111 100 01110 1001";
 	CPPUNIT_ASSERT_EQUAL(shouldbe, sim.getStateString());
+}
+
+void TestAigSimulator::test7()
+{
+//	aiger* circuit = readAigerFile("../../AlarmToMC/toggle.perfect.mc5.aag");
+//	AigSimulator sim(circuit);
+//
+//	vector<int> inputs;
+//	inputs.push_back(1);
+//	inputs.push_back(1);
+//	inputs.push_back(1);
+//	inputs.push_back(0);
+//	inputs.push_back(0);
+//	inputs.push_back(0);
+//	inputs.push_back(0);
+//
+//	cout << endl;
+//
+//	sim.simulateOneTimeStep(inputs);
+//
+//	cout << sim.getStateString() << endl;
+//	cout << sim.getVerboseStateString() << endl;
+//
+//	sim.switchToNextState();
+//
+//	cout << sim.getStateString() << endl;
+//	cout << sim.getVerboseStateString() << endl;
+
+	//-------------------------------------------------
+
+
+
+	aiger* circuit = readAigerFile("inputs/c.orig.aag");
+	AigSimulator sim(circuit);
+
+	vector<int> inputs; // no inputs (empty input vector)
+
+	// expected simulation output:
+	string shouldbe[4] =
+	{ "0 00 1", "1 11 0", "0 00 1", "1 11 0" };
+
+	for (unsigned i = 0; i < 4; i++)
+	{
+		sim.simulateOneTimeStep(inputs);
+
+//		cout << sim.getStateString() << endl;
+		CPPUNIT_ASSERT_EQUAL(shouldbe[i], sim.getStateString());
+//		cout << sim.getVerboseStateString() << endl;
+
+		sim.switchToNextState();
+	}
+
 }

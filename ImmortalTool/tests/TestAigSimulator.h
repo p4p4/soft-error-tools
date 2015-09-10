@@ -50,6 +50,7 @@ class TestAigSimulator : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test4_reuse_aigsim_object);
   CPPUNIT_TEST(test5_simulate_with_provided_state);
   CPPUNIT_TEST(test6);
+  CPPUNIT_TEST(test7);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -100,6 +101,16 @@ protected:
   void test5_simulate_with_provided_state();
 
   void test6();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief latches as output bug
+///
+/// the aigsim tool from the AIGER library has a bug with the tested circuit.
+/// This test executes the circuit-simulation with our own AigSimulator class, which
+/// should not have this bug.
+  void test7();
+
 
 };
 
