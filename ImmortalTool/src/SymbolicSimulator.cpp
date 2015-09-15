@@ -15,10 +15,6 @@
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
 //
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
-// or email the authors directly.
-//
 // ----------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------
@@ -112,8 +108,6 @@ void SymbolicSimulator::simulateOneTimeStep()
 				results_[(circuit_->ands[b].lhs >> 1)] = cache_map_->addAndGate(rhs0_cnf_value,
 						rhs1_cnf_value, next_free_cnf_var_);
 
-//				if(results_[(circuit_->ands[b].lhs >> 1)] == 815 || rhs0_cnf_value == 815 || rhs1_cnf_value == 815)
-//					cout << "insert.. " << "(aig="<<circuit_->ands[b].lhs << ") " << results_[(circuit_->ands[b].lhs >> 1)] << "= " << rhs0_cnf_value << " and " << rhs1_cnf_value << endl;
 			}
 			else if(cache_2sim_ != 0 )
 			{
@@ -347,8 +341,6 @@ void SymbolicSimulator::setInputValues(const vector<int>& input_values)
 		{
 			open_input_vars_.push_back(next_free_cnf_var_);
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = next_free_cnf_var_++;
-//			cout << "value for input " << cnt_i << ": "
-//					<< results_[(circuit_->inputs[cnt_i].lit >> 1)] << endl;
 		}
 	}
 
@@ -384,29 +376,33 @@ void SymbolicSimulator::initLatches()
 	time_index_ = 0;
 }
 
+// -------------------------------------------------------------------------------------------
 int SymbolicSimulator::getAlarmValue()
 {
 	return Utils::readCnfValue(results_, circuit_->outputs[circuit_->num_outputs - 1].lit);
 }
 
-
+// -------------------------------------------------------------------------------------------
 void SymbolicSimulator::setCache(AndCacheMap* cache)
 {
 	cache_map_ = cache;
 	cache_2sim_ = 0;
 }
 
+// -------------------------------------------------------------------------------------------
 void SymbolicSimulator::setCache(AndCacheFor2Simulators* cache)
 {
 	cache_2sim_ = cache;
 	cache_map_ = 0;
 }
 
+// -------------------------------------------------------------------------------------------
 vector<int>& SymbolicSimulator::getResults()
 {
 	return results_;
 }
 
+// -------------------------------------------------------------------------------------------
 const vector<int>& SymbolicSimulator::getOpenInputVars() const
 {
 	return open_input_vars_;

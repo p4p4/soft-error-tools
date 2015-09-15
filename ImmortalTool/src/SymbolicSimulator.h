@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,10 +14,6 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
-//
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
-// or email the authors directly.
 //
 // ----------------------------------------------------------------------------
 
@@ -40,9 +35,11 @@ struct aiger;
 // -------------------------------------------------------------------------------------------
 ///
 /// @class SymbolicSimulator
-/// @brief TODO
+/// @brief This class can simulate aiger circuits. during the simulation, the circuit
+/// is being converted to an unrolled transition-relation on the fly and added to an
+/// incremental SAT-Solver session.
 ///
-/// @author TODO
+/// @author Patrick Klampfl
 /// @version 1.2.0
 class SymbolicSimulator
 {
@@ -199,19 +196,48 @@ class SymbolicSimulator
 /// @brief (re)sets the latch values to Zero
 ///
 	void initLatches();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief allows to use a cache (which is shared with other SymbolicSimulator instance(s)
+///
 	void setCache(AndCacheMap* cache);
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief allows to use a cache (which is shared with other SymbolicSimulator instance(s)
+///
 	void setCache(AndCacheFor2Simulators* cache);
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief returns the full results-array which stores all the (intermediate) values for all
+/// aiger literals of the current simulation step.
+///
 	vector<int>& getResults();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief returns a list of newly created literals representing the free inputs
+/// (free inputs are input values to a given time-step and input which has no given concrete
+/// input value like 0,1. the SAT-Solver can choose the value instead).
+///
 	const vector<int>& getOpenInputVars() const;
 
 	protected:
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief contains a list of newly created literals representing the free inputs
+/// (free inputs are input values to a given time-step and input which has no given concrete
+/// input value like 0,1. the SAT-Solver can choose the value instead).
+	vector<int> open_input_vars_;
+
+	// used for the getters. vectors are only re-computed if they have changed and get accessed
 	vector<int> input_values_;
 	vector<int> output_values_;		// TODO: check if they have the latest results in the getters
 	vector<int> latch_values_;
 	vector<int> next_values_;
-
-	vector<int> open_input_vars_;
 
 	//TODO input bool
 	bool output_values_is_latest_;
@@ -224,11 +250,24 @@ class SymbolicSimulator
 ///
 	aiger* circuit_;
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief The incremental SAT-solver session where the transition relation gets unrolled
 	SatSolver* solver_;
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief reference to the next free cnf-var. this is used for open input-values in TestCases
 	int& next_free_cnf_var_;
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief If there is more than one SymbolicSimulator, an AndCache can be used
 	AndCacheMap* cache_map_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief If there is more than one SymbolicSimulator, an AndCache can be used
 	AndCacheFor2Simulators* cache_2sim_;
 
 // -------------------------------------------------------------------------------------------

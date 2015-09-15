@@ -15,10 +15,6 @@
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
 //
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
-// or email the authors directly.
-//
 // ----------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------
@@ -47,6 +43,7 @@ class SimulationBasedAnalysis : public BackEnd
 {
 public:
 
+	// for the linker: also use the inherited method(s) with the name findVulnerabilities
 	using BackEnd::findVulnerabilities;
 
 // -------------------------------------------------------------------------------------------
