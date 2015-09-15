@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology
+// Copyright (c) 2015 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -425,7 +425,7 @@ void Options::printHelp() const
   cout << "                 written as text-file to that location, otherwise it is "<< endl;
   cout << "                 printed to stdout."                                     << endl;
   cout << "  -b BACKEND, --backend=BACKEND"                                         << endl;
-  cout << "                 The back-end to be used for detecting vulnerabilities."  << endl;
+  cout << "                 The back-end to be used for detecting vulnerabilities." << endl;
   cout << "                 Different back-ends implement different algorithms."    << endl;
   cout << "                 The following back-ends are available:"                 << endl;
   cout << "                 sim:  The simulation-bases analysis "                   << endl;
