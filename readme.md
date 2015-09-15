@@ -1,11 +1,23 @@
-# TOC
 
-# AddParityTool
+# -------------------------------------------------------------------------------------------------
+# TOC:
+  1. AddParityTool
+  2. openSEA
+     - how to install
+  3. AlarmToMC
+# -------------------------------------------------------------------------------------------------
+
+
+
+# -------------------------------------------------------------------------------------------------#
+# 1 AddParityTool                                                                                  #
+# -------------------------------------------------------------------------------------------------#
 in AddParityTool/
 
 adds some protection-logic with the additional alarm output to a given circuit. The protection logic
 simply compares the parity-sum of the latch-inputs from the previous state with the parity sum of the
-latch-outputs from the current state.
+latch-outputs from the current state. The tool has the ability to specify how many latches should be
+protected and how many additional latches should be used therefore.
 
 USAGE: ./addParityTool <aiger-input> <percentage> <avg-latches> <aiger-output>
   WHERE
@@ -16,12 +28,20 @@ USAGE: ./addParityTool <aiger-input> <percentage> <avg-latches> <aiger-output>
 	 <aiger-output>......path to the aiger input file. The mode used is ASCII for a '.aag'
 	                     suffix and binary mode otherwise.
 
-# ImmortalTool  TODO rename to openSEA
-in ImmortalTool/
+
+
+# -------------------------------------------------------------------------------------------------#
+# 2 openSEA                                                                                        #
+# -------------------------------------------------------------------------------------------------#
+in ImmortalTool/    # TODO: rename!
 
 
 
-# AlarmToMC 
+
+
+# -------------------------------------------------------------------------------------------------#
+# 3 AlarmToMC                                                                                      #
+# -------------------------------------------------------------------------------------------------#
 in AlarmToMC/
 
 converts a circuit with protection logic to a model-checking problem. The bad-signal of the resulting
