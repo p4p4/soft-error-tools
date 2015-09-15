@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -46,9 +45,9 @@ class ErrorTrace
 // -------------------------------------------------------------------------------------------
 ///
 /// @class ErrorTraceManager
-/// @brief TODO
+/// @brief Singleton Class to store and pretty-print error-traces to reproduce undetected soft-errors.
 ///
-/// @author TODO
+/// @author Patrick Klampfl
 /// @version 1.2.0
 class ErrorTraceManager
 {
