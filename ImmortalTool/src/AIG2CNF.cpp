@@ -76,31 +76,6 @@ void AIG2CNF::initFromAig(aiger *aig)
   	next_state_vars_.push_back(cnf_latch_next_state);
   }
 
-
-  // Step 3b:
-  // For trans_, we add clauses saying that the inputs to the latches form the
-  // next states:
-//  const vector<int> &next_state_vars; = ...;
-//
-//
-//
-//
-//  // we also create equality constraints for the other state bits:
-//  for(unsigned cnt = 0; cnt < aig->num_latches; ++cnt)
-//  {
-//    int next_state_lit = aigLitToCnfLit(aig->latches[cnt].next);
-//    int x_prime_lit = next_state_vars[cnt+1];
-//    trans_.add2LitClause(-next_state_lit, x_prime_lit);
-//    trans_.add2LitClause(next_state_lit, -x_prime_lit);
-//  }
-
-
-  // Step 4:
-  // Initialize the CNFs characterizing the good/bad/initial states:
-//  const vector<int> &state_vars = VM.getVarsOfType(VarInfo::PRES_STATE);
-//  for(size_t cnt = 0; cnt < state_vars.size(); ++cnt)
-//    initial_.add1LitClause(-state_vars[cnt]);
-
 }
 
 // -------------------------------------------------------------------------------------------
@@ -117,10 +92,6 @@ void AIG2CNF::clear()
 // -------------------------------------------------------------------------------------------
 int AIG2CNF::aigLitToCnfLit(unsigned aig_lit)
 {
-//	if(aig_lit==0)
-//		return 0;
-//	if(aig_lit==1)
-//		return 1;
 
 	int cnf_lit = (aig_lit >> 1) + 1;
 	return (aig_lit & 1) ? -cnf_lit : cnf_lit;
