@@ -32,5 +32,28 @@ USAGE: ./alarmToMC <input-aiger-file> <output-aiger-file>
      <input-aiger-file> ..... path to the aiger circuit with protection logic
      <output-aiger-file> .... path to the resulting MC-compatible aiger circuit
 
+// @brief creates 2 copies of original_circuit to translate it to a MC problem:
+// error if the outputs of the 2 circuits are different, but alarm is set to false
+//
+//					                   +---------+ outputs1:
+//					i1  +-----+--------+         +-------+
+//					i2  |-----|--+-----| circuit |       |
+//					i3  +-----|--|---+-+         +----+  |    +-------+
+//				           	  |  |   | +---------+    |  +----+       |
+//          				  |  |   |                +-------+       |          +----+
+//	          				  |  |   |             outputs2:  |       +----------+    |
+//				          	  |  |   | +---------+    +-------+  !=   |          |AND +-----+ bad
+//	           				  |  |   +-+         +----+       |       |     +---o|    |
+//		           			  |  +-----| circ_cpy|       +----+       |     |    |    |
+//		          			  +--------| (modif) +-------+    |       |     |    +----+
+//			 	   	f_in +----[magic]--+-+-------+-----+      +-------+     |
+//			   	                         |             |                    |
+//	  		       ci .. cn -------------+             +------------[magic]-+
+//													                       alarm_output
+//
+// f_in [magic] : the real f signal is only true when f_in is set to true the first time
+// alarm_output [magic] : once the alarm output is raised it stays true forever.
+
+
 The resulting circuit can be used as input for any model checker (e.g. BLIMC, IC3)
 
