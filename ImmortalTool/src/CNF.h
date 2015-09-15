@@ -248,31 +248,6 @@ public:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Replaces all current-state variables in the CNF with their next-state copy.
-///
-/// All other variables are kept as they are. In particular, auxiliary variables (e.g.,
-/// introduced in Tseitin transformations) will NOT be renamed.
-  void swapPresentToNext();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Renames all temporary variables that occur in this CNF with fresh ones.
-  void renameTmps();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Negates this CNF.
-///
-/// Be careful: this is an 'expensive' operation in the sense that the resulting CNF can be
-/// significantly larger. This method introduces fresh temporary variables (Tseitin variables)
-/// The freshly introduced variables are of type VarKind::TMP. Hence, this method also
-/// modifies the state of the VarManager.  If you call negate() twice you will end up with
-/// a formula that is equisatisfiable to the original formula, but potentially much much
-/// larger.
-  void negate();
-
-// -------------------------------------------------------------------------------------------
-///
 /// @brief Swaps the content of this CNF with the passed set of clauses.
 ///
 /// This is cheaper than copying or assigning.

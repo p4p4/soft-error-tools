@@ -16,10 +16,6 @@
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
 //
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/demiurge/>
-// or email the authors directly.
-//
 // ----------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------
@@ -28,13 +24,9 @@
 // -------------------------------------------------------------------------------------------
 
 #include "CNF.h"
-//#include "VarManager.h"
 #include "Logger.h"
 #include "Utils.h"
 
-//extern "C" {
-// #include "aiger.h"
-//}
 
 // -------------------------------------------------------------------------------------------
 CNF::CNF() : clauses_()
@@ -231,67 +223,6 @@ vector<int> CNF::removeSomeClause()
 void CNF::addCNF(const CNF& cnf)
 {
   clauses_.insert(clauses_.end(), cnf.clauses_.begin(), cnf.clauses_.end());
-}
-
-// -------------------------------------------------------------------------------------------
-void CNF::swapPresentToNext()
-{
-//  VarManager &VM = VarManager::instance();
-//  vector<int> olt_to_new_var_map(VM.getMaxCNFVar()+1, 0);
-//  const vector<int>& ps_vars = VM.getVarsOfType(VarInfo::PRES_STATE);
-//  const vector<int>& ns_vars = VM.getVarsOfType(VarInfo::NEXT_STATE);
-//  MASSERT(ps_vars.size() == ns_vars.size(), "Sizes do not match.");
-//
-//  for(size_t cnt = 0; cnt < olt_to_new_var_map.size(); ++cnt)
-//    olt_to_new_var_map[cnt] = cnt;
-//  for(size_t cnt = 0; cnt < ps_vars.size(); ++cnt)
-//    olt_to_new_var_map[ps_vars[cnt]] = ns_vars[cnt];
-//  renameVars(olt_to_new_var_map);
-	MASSERT(false, "TODO: implement me!"); // TODO: implement or remove function
-}
-
-// -------------------------------------------------------------------------------------------
-void CNF::renameTmps()
-{
-//  set<int> var_set;
-//  appendVarsTo(var_set);
-//  if(var_set.empty())
-//    return;
-//  int max_idx = *var_set.rbegin();
-//  vector<int> rename_map;
-//  rename_map.reserve(max_idx + 1);
-//  for(int cnt = 0; cnt < max_idx + 1; ++cnt)
-//    rename_map.push_back(cnt);
-//  for(set<int>::const_iterator it = var_set.begin(); it != var_set.end(); ++it)
-//  {
-//    if(VarManager::instance().getInfo(*it).getKind() == VarInfo::TMP)
-//      rename_map[*it] = VarManager::instance().createFreshTmpVar();
-//  }
-//  renameVars(rename_map);
-	MASSERT(false, "TODO: implement me!"); // TODO: implement or remove function
-}
-
-// -------------------------------------------------------------------------------------------
-void CNF::negate()
-{
-//  list<vector<int> > original;
-//  clauses_.swap(original);
-//  vector<int> one_clause_false;
-//  one_clause_false.reserve(original.size() + 1);
-//  for(ClauseConstIter it = original.begin(); it != original.end(); ++it)
-//  {
-//    if(it->size() == 1)
-//      one_clause_false.push_back(-(*it)[0]);
-//    else
-//    {
-//      int clause_false_lit = VarManager::instance().createFreshTmpVar("tmpNegClauseTrue");
-//      one_clause_false.push_back(clause_false_lit);
-//      for(size_t lit_cnt = 0; lit_cnt < it->size(); ++lit_cnt)
-//        add2LitClause(-clause_false_lit, -((*it)[lit_cnt]));
-//    }
-//  }
-//  clauses_.push_back(one_clause_false);
-	MASSERT(false, "TODO: implement me!"); // TODO: implement or remove function
 }
 
 // -------------------------------------------------------------------------------------------
