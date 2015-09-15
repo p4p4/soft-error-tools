@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,10 +14,6 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
-//
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
-// or email the authors directly.
 //
 // ----------------------------------------------------------------------------
 
@@ -38,9 +33,9 @@
 // -------------------------------------------------------------------------------------------
 ///
 /// @class AndCacheMap
-/// @brief TODO
+/// @brief A simple AND Cache for two or more simulators running (almost) the same circuit
 ///
-/// @author TODO
+/// @author Patrick Klampfl
 /// @version 1.2.0
 class AndCacheMap
 {
@@ -56,12 +51,25 @@ public:
 /// @brief Destructor.
   virtual ~AndCacheMap();
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief adds an AND gate (if not already in cache)
   int addAndGate(int left, int right, int& next_free_cnf_var);
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief clears the cache
   void clearCache();
 
 protected:
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the actual cache mapping from the two input literals of an and gate to the output
   map<uint64_t, int> cache_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the SAT-Solver instance where new AND gates are added as CNF-clauses
   SatSolver* solver_;
 
 private:

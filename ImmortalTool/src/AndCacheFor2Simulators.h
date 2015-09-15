@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,10 +14,6 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
-//
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
-// or email the authors directly.
 //
 // ----------------------------------------------------------------------------
 
@@ -36,9 +31,9 @@
 // -------------------------------------------------------------------------------------------
 ///
 /// @class AndCacheFor2Simulators
-/// @brief TODO
+/// @brief A simple cache for two simulators running (almost) the same circuit.
 ///
-/// @author TODO
+/// @author Patrick Klampfl
 /// @version 1.2.0
 class AndCacheFor2Simulators
 {
@@ -54,7 +49,9 @@ public:
 /// @brief Destructor.
   virtual ~AndCacheFor2Simulators();
 
-
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Adds a new AND-Gate, if it is not already in the cache.
   void addAndGate(int lhs_aig_lit, int rhs0_aig_lit, int rhs1_aig_lit);
 
 protected:
