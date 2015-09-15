@@ -393,8 +393,99 @@ SatSolver* Options::getSATSolver(bool rand_models, bool min_cores) const
 // -------------------------------------------------------------------------------------------
 void Options::printHelp() const
 {
-	cout << "Usage: TODO.................." << endl;
-	cout << "Have fun!" << endl;
+  cout << "Usage: immortal-bin [options]"                                           << endl;
+  cout                                                                              << endl;
+  cout << "Options:"                                                                << endl;
+  cout << "  -h, --help"                                                            << endl;
+  cout << "                 Show this help message and exit."                       << endl;
+  cout << "  -v, --version"                                                         << endl;
+  cout << "                 Print version information and exit."                    << endl;
+  cout << "  -i INPUT_FILE, --in=INPUT_FILE"                                        << endl;
+  cout << "                 The AIGER file with additional alarm output"         		<< endl;
+  cout << "                 It can be:"                                             << endl;
+  cout << "                  - a binary AIGER file (header starts with 'aig'),"     << endl;
+  cout << "                  - an ASCII AIGER file (header starts with 'aag'),"     << endl;
+  cout << "                  - a compressed file (INPUT_FILE ends with '.gz')."     << endl;
+  cout << "  -tc TESTCASE_FILE(s)"                                                  << endl;
+  cout << "                The TestCase(s) to use. A TESTCASE_FILE contains a list "<< endl;
+  cout << "                of input-vectors. One input-vector contains values for " << endl;
+  cout << "                each input to a given time-step."                        << endl;
+  cout << "                One line of such a file represents one time-step,"       << endl;
+  cout << "                containing '0's or '1's as input values. Some modes also"<< endl;
+  cout << "                allow to leave inputs open(use '?' instead of constants)"<< endl;
+  cout << "  -tcr NUM_TCs NUM_TIMESTEPS"                                            << endl;
+  cout << "                can be used instead of -tc."                             << endl;
+  cout << "                randomly generates NUM_TCs test-cases, each of them have"<< endl;
+  cout << "                a length of NUM_TIMESTEPS time-steps"                    << endl;
+  cout << "  -d [PATH] "                                                            << endl;
+  cout << "                 Creates a diagnostic output, called ErrorTraces,"       << endl;
+  cout << "                 which contains detailed information on how to reproduce"<< endl;
+  cout << "                 an undetected soft-error."                              << endl;
+  cout << "                 If -d is followed by a PATH, the diagnostic output gets"<< endl;
+  cout << "                 written as text-file to that location, otherwise it is "<< endl;
+  cout << "                 printed to stdout."                                     << endl;
+  cout << "  -b BACKEND, --backend=BACKEND"                                         << endl;
+  cout << "                 The back-end to be used for detecting vulnerabilites."  << endl;
+  cout << "                 Different back-ends implement different algorithms."    << endl;
+  cout << "                 The following back-ends are available:"                 << endl;
+  cout << "                 sim:  The simulation-bases analysis "                   << endl;
+  cout << "                         Can only handle concrete TestCase values "      << endl;
+  cout << "                 sta:  The symbolic-time analysis" 											<< endl;
+  cout << "                         SAT-Solver based algorithm. The point in time"  << endl;
+  cout << "                         when to introduce a flip is symbolic, but the"  << endl;
+  cout << "                         location (the latch) is fixed. "                << endl;
+  cout << "                 stla: The symbolic-time-location analysis" 							<< endl;
+  cout << "                         SAT-Solver based algorithm. The point in time"  << endl;
+  cout << "                         when to introduce a flip is symbolic, the    "  << endl;
+  cout << "                         location (the latch to flip) is  also "         << endl;
+  cout << "                         symbolic.  "                                    << endl;
+  cout << "                 The default is 'sim'."                                  << endl;
+  cout << "  -m MODE , --mode=MODE"                                                 << endl;
+  cout << "                 Some back-ends can be used in several modes (certain"   << endl;
+  cout << "                 optimizations enabled or disabled, etc.)."              << endl;
+  cout << "                 MODE is an integer number to select one such mode. "    << endl;
+  cout << "                 The following modes are supported: "                    << endl;
+  cout << "                 Back-end 'sim': "                                       << endl;
+  cout << "                   0: standard mode"                                     << endl;
+  cout << "                 Back-end 'sta': " 			                                << endl;
+  cout << "                   0: NAIVE mode - always copy whole transition relation"<< endl;
+  cout << "                      wehen unrolling it."																<< endl;
+  cout << "                   1: SYMBOLIC_SIMULATION - perform symbolic simulation" << endl;
+  cout << "                      and generate the unrolled transition relation "    << endl;
+  cout << "                      on the fly "                                       << endl;
+  cout << "                   2: FREE_INPUTS - as the previous method, but allows"  << endl;
+  cout << "                      to leave some or all values in the given TestCase" << endl;
+  cout << "                      to be left open (write '?' instead of '0' or '1')" << endl;
+  cout << "                 Back-end 'stla': "                                      << endl;
+  cout << "                   0: STANDARD - perform symbolic simulation"            << endl;
+  cout << "                      and generate the unrolled transition relation "    << endl;
+  cout << "                      on the fly "                                       << endl;
+  cout << "                   1: FREE_INPUTS - as the previous method, but allows"  << endl;
+  cout << "                      to leave some or all values in the given TestCase" << endl;
+  cout << "                      to be left open (write '?' instead of '0' or '1')" << endl;
+  cout << "                 The default is 0."                                      << endl;
+  cout << "  -p PRINT, --print=PRINT"                                               << endl;
+  cout << "                 A string indicating which messages to print. Every"     << endl;
+  cout << "                 character activates a certain type of message. The"     << endl;
+  cout << "                 order and case of the characters does not matter."      << endl;
+  cout << "                 Possible characters are:"                               << endl;
+  cout << "                 E:      Enables the printing of error messages."        << endl;
+  cout << "                 W:      Enables the printing of warnings."              << endl;
+  cout << "                 R:      Enables the printing of results."               << endl;
+  cout << "                 D:      Enables the printing of debugging messages."    << endl;
+  cout << "                 I:      Enables the printing of extra information"      << endl;
+  cout << "                         (such as progress information)."                << endl;
+  cout << "                 L:      Enables the printing of statistics"             << endl;
+  cout << "                         (such as performance measures)."                << endl;
+  cout << "                 The default is 'EWRI'."                                 << endl;
+  cout << "  -s SAT_SOLVER, --sat_sv=SAT_SOLVER"                                    << endl;
+  cout << "                 The SAT solver to use."                                 << endl;
+  cout << "                 The following SAT solvers are available:"               << endl;
+  cout << "                 lin_api: Uses the Lingeling solver via its API."        << endl;
+  cout << "                 min_api: Uses the MiniSat solver via its API."          << endl;
+  cout << "                 pic_api: Uses the PicoSat solver via its API."          << endl;
+  cout << "                 The default is 'min_api'."                              << endl;
+  cout << "Have fun!"                                                               << endl;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -458,7 +549,7 @@ void Options::initInputCircuit()
 // -------------------------------------------------------------------------------------------
 Options::Options() :
 		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), print_string_(
-				"ERWILD"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
+				"ERWI"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0), seed_(
 				0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
 				false), diagnostic_output_path_("")
