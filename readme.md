@@ -35,6 +35,23 @@ USAGE: ./addParityTool <aiger-input> <percentage> <avg-latches> <aiger-output>
 # -------------------------------------------------------------------------------------------------#
 in ImmortalTool/    # TODO: rename!
 
+# how to install:
+1. create a folder where you want to install the third-party libraries and set the path to it in 
+   the environment variable IMMORTALTP
+2. run ImmortalTool/ext_tools/install_all.sh
+3. run "make" command in ImmortalTool/ to compile the program.
+
+* NOTE: if you have installed DEMIURGE on your computer, it suffices to set the environmentvariable
+IMMORTALTP to the same path as DEMIURGETPD instead of re-installing the libraries instead of 1. and 2.
+
+the *executable* can is located here: ImmortalTool/build/src/immortal-bin
+
+# how to use openSEA:
+* this is basically the sam information as the output of ./immortal-bin -h :
+
+TODO
+
+
 
 
 

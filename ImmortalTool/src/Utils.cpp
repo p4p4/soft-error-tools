@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
+// Copyright (c) 2013-2015 by Graz University of Technology and
 //                            Johannes Kepler University Linz
 //
 // This is free software; you can redistribute it and/or

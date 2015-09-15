@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2015 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,10 +14,6 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
-//
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
-// or email the authors directly.
 //
 // ----------------------------------------------------------------------------
 
@@ -38,9 +33,9 @@
 // -------------------------------------------------------------------------------------------
 ///
 /// @class SymbTimeAnalysis
-/// @brief TODO
+/// @brief BackEnd that analyzes circuits for soft-errors. SAT based. point in time is symbolic
 ///
-/// @author TODO
+/// @author Patrick Klampfl
 /// @version 1.2.0
 class SymbTimeAnalysis: public BackEnd
 {
