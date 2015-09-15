@@ -473,7 +473,7 @@ void compute_num_or_err_latches(aiger* aig_original)
 // @ brief prints Help to stdout
 void print_help(int argc, char* argv[])
 {
-	cout << "USAGE: " << argv[0] << "<input-aiger-file> <output-aiger-file>" << endl;
+	cout << "USAGE: " << argv[0] << " <input-aiger-file> <output-aiger-file>" << endl;
 	cout << "     <input-aiger-file> ..... path to the aiger circuit with protection logic"
 			<< endl;
 	cout << "     <output-aiger-file> .... path to the resulting MC-compatible aiger circuit"
