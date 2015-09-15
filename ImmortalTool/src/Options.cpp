@@ -425,7 +425,7 @@ void Options::printHelp() const
   cout << "                 written as text-file to that location, otherwise it is "<< endl;
   cout << "                 printed to stdout."                                     << endl;
   cout << "  -b BACKEND, --backend=BACKEND"                                         << endl;
-  cout << "                 The back-end to be used for detecting vulnerabilites."  << endl;
+  cout << "                 The back-end to be used for detecting vulnerabilities."  << endl;
   cout << "                 Different back-ends implement different algorithms."    << endl;
   cout << "                 The following back-ends are available:"                 << endl;
   cout << "                 sim:  The simulation-bases analysis "                   << endl;
@@ -449,7 +449,7 @@ void Options::printHelp() const
   cout << "                   0: standard mode"                                     << endl;
   cout << "                 Back-end 'sta': " 			                                << endl;
   cout << "                   0: NAIVE mode - always copy whole transition relation"<< endl;
-  cout << "                      wehen unrolling it."																<< endl;
+  cout << "                      when unrolling it."																<< endl;
   cout << "                   1: SYMBOLIC_SIMULATION - perform symbolic simulation" << endl;
   cout << "                      and generate the unrolled transition relation "    << endl;
   cout << "                      on the fly "                                       << endl;

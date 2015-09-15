@@ -83,7 +83,7 @@ Options:
                  written as text-file to that location, otherwise it is 
                  printed to stdout.
   -b BACKEND, --backend=BACKEND
-                 The back-end to be used for detecting vulnerabilites.
+                 The back-end to be used for detecting vulnerabilities.
                  Different back-ends implement different algorithms.
                  The following back-ends are available:
                  sim:  The simulation-bases analysis 
@@ -107,7 +107,7 @@ Options:
                    0: standard mode
                  Back-end 'sta': 
                    0: NAIVE mode - always copy whole transition relation
-                      wehen unrolling it.
+                      when unrolling it.
                    1: SYMBOLIC_SIMULATION - perform symbolic simulation
                       and generate the unrolled transition relation 
                       on the fly 
