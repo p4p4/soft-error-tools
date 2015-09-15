@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,10 +15,6 @@
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
 //
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/demiurge/>
-// or email the authors directly.
-//
 // ----------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------
@@ -32,10 +27,8 @@
 
 #include "defines.h"
 
-class QBFSolver;
 class SatSolver;
 class BackEnd;
-class CNFImplExtractor;
 
 typedef pair<clock_t, time_t> PointInTime;
 
@@ -55,29 +48,28 @@ struct aiger;
 /// obtain the one and only instance of this class. This is done for convenience. Every
 /// back-end can easily access this object without passing it around.
 ///
-/// @author Robert Koenighofer (robert.koenighofer@iaik.tugraz.at)
+/// @author Patrick Klampfl
 /// @version 1.2.0
 class Options
 {
-public:
+	public:
 
-	enum TestCaseMode {
-	TC_UNDEFINED = 0,
-	TC_RANDOM = 1,
-	TC_FILES = 2
+	enum TestCaseMode
+	{
+		TC_UNDEFINED = 0, TC_RANDOM = 1, TC_FILES = 2
 	};
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The version of the tool as string.
-  static const string VERSION;
+	static const string VERSION;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The environment variable with the directory containing all third-party software.
 ///
 /// The third-party software includes SAT-solvers, QBF-solvers, etc.
-  static const string TP_VAR;
+	static const string TP_VAR;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -88,7 +80,7 @@ public:
 /// this class.
 ///
 /// @return The one and only instance of this class.
-  static Options& instance();
+	static Options& instance();
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -98,31 +90,28 @@ public:
 /// @param argv The arguments passed to main. argv_[0] is the name of the process, the real
 ///        arguments start with argv_[1].
 /// @return True if the tool should quit, false otherwise.
-  bool parse(int argc, char **argv);
+	bool parse(int argc, char **argv);
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Returns the name (including the path) of the AIGER input file.
 ///
 /// @return The name (including the path) of the AIGER input file.
-  const string& getAigInFileName() const;
-
-
+	const string& getAigInFileName() const;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Returns the name of the input file without path and extension.
 ///
 /// @return The name of the input file without path and extension.
-    const string getAigInFileNameOnly() const;
-
+	const string getAigInFileNameOnly() const;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Returns the name of the back-end selected by the user.
 ///
 /// @return The name of the back-end selected by the user.
-  const string& getBackEndName() const;
+	const string& getBackEndName() const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -133,7 +122,7 @@ public:
 ///
 /// @note The returned object has to be deleted by the caller.
 /// @return The back-end selected by the user with commend-line options.
-  BackEnd* getBackEnd();
+	BackEnd* getBackEnd();
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -143,9 +132,7 @@ public:
 /// or disabled, etc.). This integer number selects a mode.
 ///
 /// @return The mode of the back-end selected by the user.
-  int getBackEndMode() const;
-
-
+	int getBackEndMode() const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -159,7 +146,7 @@ public:
 /// created by this method.
 ///
 /// @return The mode of the back-end selected by the user.
-  string getTmpDirName() const;
+	string getTmpDirName() const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -171,7 +158,7 @@ public:
 /// the name of this directory (where the environment variable is already resolved).
 ///
 /// @return The name (and path) of the directory containing the thirdparty tools.
-  string getTPDirName() const;
+	string getTPDirName() const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -179,8 +166,7 @@ public:
 ///
 /// @param start An optional prefix for the file name.
 /// @return A unique name of a temporary file in the directory of temporary files.
-  string getUniqueTmpFileName(string start = "") const;
-
+	string getUniqueTmpFileName(string start = "") const;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -198,7 +184,7 @@ public:
 ///        calls slower but produces potentially smaller cubes. If this parameter is skipped,
 ///        then cores will be further minimized.
 /// @return A fresh instance of the SAT-solver selected by the user.
-  SatSolver* getSATSolver(bool rand_models = false, bool min_cores = true) const;
+	SatSolver* getSATSolver(bool rand_models = false, bool min_cores = true) const;
 
 	int getLenRandTestcases() const
 	{
@@ -249,31 +235,31 @@ public:
 		return diagnostic_output_to_file_;
 	}
 
-protected:
+	protected:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Prints a help text to stdout.
-  void printHelp() const;
+	void printHelp() const;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Initializes the Logger by enabling the selected message kinds.
-  void initLogger() const;
+	void initLogger() const;
 
-  void initInputCircuit();
+	void initInputCircuit();
 
-  int testcase_mode_;
+	int testcase_mode_;
 
-  int num_testcases_; // only used for random testcases
-  int len_rand_testcases_; // only used for random testcases
+	int num_testcases_; // only used for random testcases
+	int len_rand_testcases_; // only used for random testcases
 
-  vector<string> paths_to_testcases_;
+	vector<string> paths_to_testcases_;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The name (including the path) of the AIGER input file.
-  string aig_in_file_name_;
+	string aig_in_file_name_;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -290,19 +276,19 @@ protected:
 ///  <li> L enables log messages.
 ///  <li> D enables debug messages.
 /// </ul>
-  string print_string_;
+	string print_string_;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The name of a directory for temporary files.
-  string tmp_dir_;
+	string tmp_dir_;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The name of the selected back-end.
-  string back_end_;
+	string back_end_;
 
-  BackEnd* back_end_instance_;
+	BackEnd* back_end_instance_;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -310,15 +296,12 @@ protected:
 ///
 /// Some back-ends can be used in several modes (certain optimizations or heuristics enabled
 /// or disabled, etc.). This integer number selects a mode.
-  int mode_;
-
-
+	int mode_;
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The name of the selected SAT-solver.
-  string sat_solver_;
-
+	string sat_solver_;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -326,20 +309,46 @@ protected:
 ///
 /// It will be used to estimate how close the timeout is. It may also be used for logging
 /// statistics.
-  PointInTime tool_started_;
+	PointInTime tool_started_;
 
-  aiger* circuit_;
+// -------------------------------------------------------------------------------------------
+///
+/// @brief The input-circuit with protection logic to analyze for undetected soft-errors
+	aiger* circuit_;
 
-  unsigned num_err_latches_;
+// -------------------------------------------------------------------------------------------
+///
+/// @brief The number of error-latches (added via the protection logic).
+	unsigned num_err_latches_;
 
-  unsigned seed_;
+// -------------------------------------------------------------------------------------------
+///
+/// @brief The seed, used for random TestCase generation
+	unsigned seed_;
 
-  unsigned unsat_core_interval_;
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the SAT-based BackEnsds allow to compute unsatisfiable cores in order to reduce
+/// the number of f-variables to consider. this interval defines how often the computation
+/// should be performed.
+	unsigned unsat_core_interval_;
 
-  bool use_diagnostic_output_;
-  bool diagnostic_output_to_file_;
-  string diagnostic_output_path_;
-private:
+// -------------------------------------------------------------------------------------------
+///
+/// @brief if enabled, the tool stores some information from the used BackEnd to generate
+/// diagnostic information (aka Error-Traces) on how to reproduce undetected soft-errors
+	bool use_diagnostic_output_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief if enabled, the Error-Traces are written to a file, else to stdout
+	bool diagnostic_output_to_file_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief the path where the ErrorTraces get written to, if diagnostic_output_to_file_ is true
+	string diagnostic_output_path_;
+	private:
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -348,7 +357,7 @@ private:
 /// The constructor is disabled (set private) as this method is implemented as a Singleton.
 /// Use the method @link #instance instance @endlink to obtain the one and only instance of
 /// this class.
-  Options();
+	Options();
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -357,7 +366,7 @@ private:
 /// The destructor is disabled (set private) as this method is implemented as a Singleton.
 /// One cannot instantiate objects of this class, so there is no need to be able to delete
 /// them.
-  virtual ~Options();
+	virtual ~Options();
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -366,7 +375,7 @@ private:
 /// The copy constructor is disabled (set private) and not implemented.
 ///
 /// @param other The source for creating the copy.
-  Options(const Options &other);
+	Options(const Options &other);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -376,12 +385,12 @@ private:
 ///
 /// @param other The source for creating the copy.
 /// @return The result of the assignment, i.e, *this.
-  Options &operator= (const Options &other);
+	Options &operator=(const Options &other);
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief The one and only instance of this class.
-  static Options *instance_;
+	static Options *instance_;
 };
 
 #endif // Options_H__

@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,10 +14,6 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
-//
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/demiurge/>
-// or email the authors directly.
 //
 // ----------------------------------------------------------------------------
 
@@ -259,7 +254,7 @@ bool Options::parse(int argc, char **argv)
 		else if (arg == "-d")
 		{
 			use_diagnostic_output_ = true;
-			if (arg_count + 1 < argc && argv[arg_count+1][0] != '-')
+			if (arg_count + 1 < argc && argv[arg_count + 1][0] != '-')
 			{
 				arg_count++;
 				string diagnostic_output_path(argv[arg_count]);
@@ -465,8 +460,8 @@ Options::Options() :
 		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), print_string_(
 				"ERWILD"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0), seed_(
-				0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(false),
-				diagnostic_output_path_("")
+				0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
+				false), diagnostic_output_path_("")
 {
 	// nothing to be done
 }
