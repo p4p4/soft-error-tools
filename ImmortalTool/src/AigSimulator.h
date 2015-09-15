@@ -1,6 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2014 by Graz University of Technology and
-//                            Johannes Kepler University Linz
+// Copyright (c) 2013-2014 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,10 +14,6 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
-//
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
-// or email the authors directly.
 //
 // ----------------------------------------------------------------------------
 
@@ -37,9 +32,9 @@ struct aiger;
 // -------------------------------------------------------------------------------------------
 ///
 /// @class AigSimulator
-/// @brief TODO
+/// @brief Simulates an AIGER circuit with concrete input-values
 ///
-/// @author TODO
+/// @author Patrick Klampfl
 /// @version 1.2.0
 class AigSimulator
 {
@@ -147,14 +142,24 @@ class AigSimulator
 ///
 /// @brief Returns a vector of all the output-values
 ///
-///
-/// @return vector containing the values of the outputs
 	vector<int> getOutputs();
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Returns a vector of all the latch-values
+///
 	vector<int> getLatchValues();
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Returns a vector of all the next-state latch-values
+///
 	vector<int> getNextLatchValues();
 
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Returns a reference to the provided test-case
+///
 	const TestCase& getTestcase() const
 	{
 		return testcase_;

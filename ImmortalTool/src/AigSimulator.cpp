@@ -15,10 +15,6 @@
 // License along with this library; if not, see
 // <http://www.gnu.org/licenses/>.
 //
-// For more information about this software see
-//   <http://www.iaik.tugraz.at/content/research/design_verification/others/>
-// or email the authors directly.
-//
 // ----------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------
@@ -286,19 +282,8 @@ vector<int> AigSimulator::getLatchValues()
 	vector<int> latches(circuit_->num_latches);
 
 	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
-	{
-
-		// TODO: check if a latch output can really be inverted
-//		if (circuit_->latches[cnt].lit % 2 == 1)
-//		{
-//			latches[cnt] = aiger_not(
-//					results_[aiger_lit2var(circuit_->latches[cnt].lit)]);
-//		}
-//		else
-//		{
 		latches[cnt] = results_[aiger_lit2var(circuit_->latches[cnt].lit)];
-//		}
-	}
+
 	return latches;
 }
 
@@ -309,7 +294,6 @@ vector<int> AigSimulator::getNextLatchValues()
 
 	for (size_t cnt = 0; cnt < circuit_->num_latches; ++cnt)
 	{
-		// TODO: check if a latch output can really be inverted
 		if (circuit_->latches[cnt].next & 1)
 		{
 			latches[cnt] = aiger_not(
@@ -334,6 +318,7 @@ void AigSimulator::initLatches()
 	}
 }
 
+// -------------------------------------------------------------------------------------------
 void AigSimulator::flipValue(unsigned aiger_lit)
 {
 	results_[aiger_lit2var(aiger_lit)] = aiger_not(results_[aiger_lit2var(aiger_lit)]);
