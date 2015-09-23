@@ -477,7 +477,7 @@ void Options::printHelp() const
   cout << "                         (such as progress information)."                << endl;
   cout << "                 L:      Enables the printing of statistics"             << endl;
   cout << "                         (such as performance measures)."                << endl;
-  cout << "                 The default is 'EWRI'."                                 << endl;
+  cout << "                 The default is 'EWRIL'."                                 << endl;
   cout << "  -s SAT_SOLVER, --sat_sv=SAT_SOLVER"                                    << endl;
   cout << "                 The SAT solver to use."                                 << endl;
   cout << "                 The following SAT solvers are available:"               << endl;
@@ -549,7 +549,7 @@ void Options::initInputCircuit()
 // -------------------------------------------------------------------------------------------
 Options::Options() :
 		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), print_string_(
-				"ERWI"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
+				"ERWIL"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), num_err_latches_(0), seed_(
 				0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
 				false), diagnostic_output_path_("")
