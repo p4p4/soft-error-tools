@@ -4,15 +4,16 @@
      - How to install
      - How to use
   3. AlarmToMC
+  4. other Folders
 
 
 
-# 1 AddParityTool                                                                                  #
+# 1 AddParityTool
 in AddParityTool/
 
-adds some protection-logic with the additional alarm output to a given circuit. The protection logic  
-simply compares the parity-sum of the latch-inputs from the previous state with the parity sum of the  
-latch-outputs from the current state. The tool has the ability to specify how many latches should be  
+adds some protection-logic with the additional alarm output to a given circuit. The protection logic
+simply compares the parity-sum of the latch-inputs from the previous state with the parity sum of the
+latch-outputs from the current state. The tool has the ability to specify how many latches should be
 protected and how many additional latches should be used therefore.
 
         USAGE: ./addParityTool <aiger-input> <percentage> <avg-latches> <aiger-output>
@@ -26,8 +27,8 @@ protected and how many additional latches should be used therefore.
 
 
 
-# 2 openSEA                                                                                        #
-in ImmortalTool/    # TODO: rename!
+# 2 openSEA
+in ImmortalTool/    # TODO: rename folder name!
 
 ## 2.1 How to install:
 1. create a folder where you want to install the third-party libraries and set the path to it in 
@@ -38,12 +39,12 @@ in ImmortalTool/    # TODO: rename!
 * NOTE: if you have installed DEMIURGE on your computer, it suffices to set the environment variable
 IMMORTALTP to the same path as DEMIURGETPD instead of re-installing the libraries as in 1. and 2.
 
-the *executable* can is located here: ImmortalTool/build/src/immortal-bin
+the *executable* is located here: ImmortalTool/build/src/immortal-bin
 
 
 
 ## 2.2 How to use openSEA:
-openSEA tries to find soft-error vulnerabilities to a given circuit
+openSEA tries to find soft-error vulnerabilities in a given circuit
 
  * this is basically the same information as the output of ./immortal-bin -h :
 
@@ -150,9 +151,9 @@ openSEA tries to find soft-error vulnerabilities to a given circuit
 # 3 AlarmToMC 
 in AlarmToMC/
 
-    converts a circuit with protection logic to a model-checking problem. The bad-signal of the resulting
-    circuit is raised whenever it is possible to flip some latch-output which changes the outputs of the
-    orignal circuit but without raising the alarm-output.
+converts a circuit with protection logic to a model-checking problem. The bad-signal of the resulting
+circuit is raised whenever it is possible to flip some latch-output which changes the outputs of the
+orignal circuit but without raising the alarm-output.
 
     USAGE: ./alarmToMC <input-aiger-file> <output-aiger-file>
          <input-aiger-file> ..... path to the aiger circuit with protection logic
@@ -182,4 +183,15 @@ in AlarmToMC/
 
 
     The resulting circuit can be used as input for any model checker (e.g. BLIMC, IC3)
+
+# 4 other Folders
+
+## benchmark_files/ 
+- contains two scripts to download benchmarks and convert them to AIGER
+- these resulting circuits don't have any protection logic, you may use AddParityTool from 1.)
+- the script to convert the benchmarks needs abc installed, set the path accordingly
+
+## presentation/
+- A presentation on soft-error-analysis which explains some principles of the tools within this repository
+- held in September 2015 by Patrick Klampfl
 
