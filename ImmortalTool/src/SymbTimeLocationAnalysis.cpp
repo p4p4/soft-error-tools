@@ -354,8 +354,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			//------------------------------------------------------------------------------------
 			// Optimization2: compute unsat core
 
-			if (f.size() > 1 && (unsat_core_interval_ != 0)
-					&& (f.size() % unsat_core_interval_ == 0))
+			if (f.size() > 1 && (unsat_core_interval_ != 0) && (f.size() % unsat_core_interval_ == 0)
+					&& (testcase.size() - i > unsat_core_interval_))
 			{
 
 				vector<int> core_assumptions;
@@ -648,7 +648,8 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				{
 					TestCase &real_input_values = trace->input_trace_;
 					real_input_values.reserve(real_cnf_inputs.size());
-					for (TestCase::const_iterator in = real_cnf_inputs.begin(); in != real_cnf_inputs.end(); ++in)
+					for (TestCase::const_iterator in = real_cnf_inputs.begin();
+							in != real_cnf_inputs.end(); ++in)
 					{
 
 						vector<int> real_input_vector;
@@ -748,8 +749,8 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			//------------------------------------------------------------------------------------
 			// Optimization2: compute unsat core
 
-			if (f.size() > 1 && (unsat_core_interval_ != 0)
-					&& (f.size() % unsat_core_interval_ == 0))
+			if (f.size() > 1 && (unsat_core_interval_ != 0) && (f.size() % unsat_core_interval_ == 0)
+					&& (testcase.size() - i > unsat_core_interval_))
 			{
 
 				vector<int> core_assumptions;
