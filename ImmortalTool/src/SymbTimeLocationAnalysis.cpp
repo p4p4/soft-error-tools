@@ -374,8 +374,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 				// TODO: not sure if there could be a more efficient way to do this
 				// (e.g. under the assumption that results of core have same order as f):
-				Utils::logPrint(core, "core: ");
-				Utils::logPrint(f, "f: ");
+				Utils::debugPrint(core, "core: ");
+				Utils::debugPrint(f, "f: ");
 				set<int> useless(f.begin(), f.end());
 				for (vector<int>::iterator it = core.begin(); it != core.end(); ++it)
 				{
