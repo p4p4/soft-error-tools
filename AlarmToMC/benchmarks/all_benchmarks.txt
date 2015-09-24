@@ -1,0 +1,16 @@
+IWLS_2002_AIG/texas/minmax10_orig.aig
+IWLS_2002_AIG/texas/minmax10_sweep.aig
+IWLS_2002_AIG/texas/minmax10_synth.aig
+IWLS_2002_AIG/texas/minmax12_orig.aig
+IWLS_2002_AIG/texas/minmax12_sweep.aig
+IWLS_2002_AIG/texas/minmax12_synth.aig
+IWLS_2002_AIG/texas/minmax20_orig.aig
+IWLS_2002_AIG/texas/minmax20_sweep.aig
+IWLS_2002_AIG/texas/tbk-retime_orig.aig
+IWLS_2002_AIG/texas/tbk-retime_sweep.aig
+IWLS_2002_AIG/texas/tbk-retime_synth.aig
+IWLS_2002_AIG/texas/cbp_32_4_orig.aig
+IWLS_2002_AIG/texas/cbp_32_4_sweep.aig
+IWLS_2002_AIG/texas/cbp_32_4_synth.aig
+IWLS_2002_AIG/iscas89/s838.1_orig.aig
+IWLS_2002_AIG/iscas89/s838.1_sweep.aig
