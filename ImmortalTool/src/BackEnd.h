@@ -94,6 +94,17 @@ public:
 
 // -------------------------------------------------------------------------------------------
 ///
+/// @brief tries to find vulnerabilities using open input vectors (model-checking approach)
+///
+/// tries to find vulnerabilities within num_of_timesteps open input vectors
+/// Attention: This method can only be used with modes which suppurt free inputs!
+///
+/// @param num_of_timesteps the number of timesteps to search for vulnerabilities
+/// @return TRUE if vulnerabilities were found.
+	bool findVulnerabilitiesMC(unsigned num_of_timesteps);
+
+// -------------------------------------------------------------------------------------------
+///
 /// @brief randomly generates 0 or 1
 ///
 	struct gen_rand {

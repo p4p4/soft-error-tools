@@ -11,7 +11,7 @@
 # 1 AddParityTool
 in AddParityTool/
 
-adds some protection-logic with the additional alarm output to a given circuit. The protection logic
+adds a protection-logic with the additional alarm output to a given circuit. The protection logic
 simply compares the parity-sum of the latch-inputs from the previous state with the parity sum of the
 latch-outputs from the current state. The tool has the ability to specify how many latches should be
 protected and how many additional latches should be used therefore.

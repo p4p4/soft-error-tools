@@ -67,6 +67,11 @@ int main(int argc, char *argv[])
 		error_analysis->findVulnerabilities(Options::instance().getPathsToTestcases());
 		break;
 	}
+	case Options::TC_MC:
+	{
+		error_analysis->findVulnerabilitiesMC(Options::instance().getLenRandTestcases());
+		break;
+	}
 	default:
 		MASSERT(false, "wrong/no testcase-mode provided")
 		;

@@ -25,7 +25,6 @@
 
 #include "BackEnd.h"
 
-
 extern "C"
 {
 #include "aiger.h"
@@ -51,8 +50,7 @@ const set<unsigned>& BackEnd::getVulnerableElements() const
 }
 
 // -------------------------------------------------------------------------------------------
-bool BackEnd::findVulnerabilities(unsigned num_of_TCs,
-		unsigned num_of_timesteps)
+bool BackEnd::findVulnerabilities(unsigned num_of_TCs, unsigned num_of_timesteps)
 {
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
@@ -60,11 +58,11 @@ bool BackEnd::findVulnerabilities(unsigned num_of_TCs,
 	// 1. generate random testcases
 	vector<TestCase> testcases;
 	testcases.reserve(num_of_TCs);
-	for(unsigned tc_i=0; tc_i < num_of_TCs; tc_i++)
+	for (unsigned tc_i = 0; tc_i < num_of_TCs; tc_i++)
 	{
 		TestCase tc;
 		tc.reserve(num_of_timesteps);
-		for(unsigned timestep=0;timestep< num_of_timesteps;timestep++)
+		for (unsigned timestep = 0; timestep < num_of_timesteps; timestep++)
 		{
 			vector<int> inputs;
 			inputs.reserve(circuit_->num_inputs);
@@ -74,8 +72,34 @@ bool BackEnd::findVulnerabilities(unsigned num_of_TCs,
 		testcases.push_back(tc);
 	}
 
-
 	// 2. run testcases:
 	return findVulnerabilities(testcases);
 
+}
+
+bool BackEnd::findVulnerabilitiesMC(unsigned num_of_timesteps)
+{
+	//	vulnerable_latches = empty_set/list
+	vulnerable_elements_.clear();
+
+	// 1. generate testcase
+	vector<TestCase> testcases;
+	testcases.reserve(1);
+
+	TestCase tc;
+	tc.reserve(num_of_timesteps);
+
+	vector<int> inputs;
+	inputs.reserve(circuit_->num_inputs);
+	for(unsigned input=0; input < circuit_->num_inputs; input++)
+		inputs.push_back(LIT_FREE);
+
+	for (unsigned timestep = 0; timestep < num_of_timesteps; timestep++)
+	{
+		tc.push_back(inputs);
+	}
+	testcases.push_back(tc);
+
+	// 2. run testcases:
+	return findVulnerabilities(testcases);
 }

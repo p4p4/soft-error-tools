@@ -251,6 +251,32 @@ bool Options::parse(int argc, char **argv)
 			}
 			testcase_mode_ = TC_RANDOM;
 		}
+		else if (arg == "-mc")
+		{
+			if (testcase_mode_ != TC_UNDEFINED)
+			{
+				cerr << "Error: More than one TestCase-Mode given. Which to use?" << endl;
+				return true;
+			}
+
+			if (arg_count + 1 >= argc)
+			{
+				cerr << "Option -mc must be followed by a positive integer number." << endl;
+				return true;
+			}
+
+			istringstream iss2(argv[++arg_count]);
+			iss2 >> len_rand_testcases_;
+
+			if (len_rand_testcases_ <= 0)
+			{
+				cerr << "Option -mc must be followed by a positive integer number." << endl;
+				return true;
+			}
+
+
+			testcase_mode_ = TC_MC;
+		}
 		else if (arg == "-d")
 		{
 			use_diagnostic_output_ = true;

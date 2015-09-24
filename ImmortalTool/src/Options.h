@@ -56,7 +56,7 @@ class Options
 
 	enum TestCaseMode
 	{
-		TC_UNDEFINED = 0, TC_RANDOM = 1, TC_FILES = 2
+		TC_UNDEFINED = 0, TC_RANDOM = 1, TC_FILES = 2, TC_MC = 3
 	};
 
 // -------------------------------------------------------------------------------------------
