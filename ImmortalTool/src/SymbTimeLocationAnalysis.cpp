@@ -289,6 +289,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			// the previous o_is_diff_clausefor the next iterations
 			odiff_enable_literals.back() = -odiff_enable_literals.back();
 
+			continue; // TODO remove this or the following "optimizations"
+
 			//--------------------------------------------------------------------------------------
 			// Optimization: next state does not change,no matter if we flip or not -> remove fi's
 
