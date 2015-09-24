@@ -443,6 +443,10 @@ void Options::printHelp() const
   cout << "                can be used instead of -tc."                             << endl;
   cout << "                randomly generates NUM_TCs test-cases, each of them have"<< endl;
   cout << "                a length of NUM_TIMESTEPS time-steps"                    << endl;
+  cout << "  -mc NUM_TIMESTEPS"                                                     << endl;
+  cout << "                can be used instead of -tc for modes, which support free"<< endl;
+  cout << "                input values. Generates a TestCase for the given length" << endl;
+  cout << "                with all input values open. (similar to model-checking)" << endl;
   cout << "  -d [PATH] "                                                            << endl;
   cout << "                 Creates a diagnostic output, called ErrorTraces,"       << endl;
   cout << "                 which contains detailed information on how to reproduce"<< endl;

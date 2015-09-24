@@ -72,6 +72,10 @@ openSEA tries to find soft-error vulnerabilities in a given circuit
                     can be used instead of -tc.
                     randomly generates NUM_TCs test-cases, each of them have
                     a length of NUM_TIMESTEPS time-steps
+        -mc NUM_TIMESTEPS
+                    can be used instead of -tc for modes, which support free
+                    input values. Generates a TestCase for the given length 
+                    with all input values open. (similar to model-checking) 
         -d [PATH] 
                      Creates a diagnostic output, called ErrorTraces,
                      which contains detailed information on how to reproduce
@@ -132,7 +136,7 @@ openSEA tries to find soft-error vulnerabilities in a given circuit
                              (such as progress information).
                      L:      Enables the printing of statistics
                              (such as performance measures).
-                     The default is 'EWRI'.
+                     The default is 'EWRIL'.
         -s SAT_SOLVER, --sat_sv=SAT_SOLVER
                      The SAT solver to use.
                      The following SAT solvers are available:
