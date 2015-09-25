@@ -1,0 +1,3670 @@
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk15_orig
+[LOG] Inputs: 3, Latches: 2, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.04092 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk15_sweep
+[LOG] Inputs: 3, Latches: 2, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.038444 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk15_synth
+[LOG] Inputs: 3, Latches: 2, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.0389 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_lion_orig
+[LOG] Inputs: 2, Latches: 2, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.009183 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_lion_sweep
+[LOG] Inputs: 2, Latches: 2, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.009223 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_lion_synth
+[LOG] Inputs: 2, Latches: 2, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.00568 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mc_orig
+[LOG] Inputs: 3, Latches: 2, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.019429 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mc_sweep
+[LOG] Inputs: 3, Latches: 2, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.019483 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mc_synth
+[LOG] Inputs: 3, Latches: 2, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.015297 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tav_orig
+[LOG] Inputs: 4, Latches: 2, Error Latches: 0, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.002883 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tav_sweep
+[LOG] Inputs: 4, Latches: 2, Error Latches: 0, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.002936 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tav_synth
+[LOG] Inputs: 4, Latches: 2, Error Latches: 0, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.002535 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_train4_orig
+[LOG] Inputs: 2, Latches: 2, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.006587 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_train4_sweep
+[LOG] Inputs: 2, Latches: 2, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.006563 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_train4_synth
+[LOG] Inputs: 2, Latches: 2, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 2
+[LOG] Overall execution time: 0.005935 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s27_orig
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.004483 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s27_sweep
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.004218 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s27_synth
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.004156 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s27_orig
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.004525 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s27_sweep
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.004068 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s27_synth
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.004173 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbtas_orig
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.018513 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbtas_sweep
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.018408 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbtas_synth
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.016277 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_beecount_orig
+[LOG] Inputs: 3, Latches: 3, Error Latches: 0, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.034592 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_beecount_sweep
+[LOG] Inputs: 3, Latches: 3, Error Latches: 0, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.026033 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_beecount_synth
+[LOG] Inputs: 3, Latches: 3, Error Latches: 0, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.030619 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk14_orig
+[LOG] Inputs: 3, Latches: 3, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.127944 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk14_sweep
+[LOG] Inputs: 3, Latches: 3, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.125769 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk14_synth
+[LOG] Inputs: 3, Latches: 3, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.150067 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk17_orig
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.127374 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk17_sweep
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.126892 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk17_synth
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.161488 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk27_orig
+[LOG] Inputs: 1, Latches: 3, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.01158 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk27_sweep
+[LOG] Inputs: 1, Latches: 3, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.011424 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk27_synth
+[LOG] Inputs: 1, Latches: 3, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.013491 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex5_sweep
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.120765 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex5_synth
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.149097 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex6_orig
+[LOG] Inputs: 5, Latches: 3, Error Latches: 0, Outputs: 8
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.328056 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex6_sweep
+[LOG] Inputs: 5, Latches: 3, Error Latches: 0, Outputs: 8
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.336701 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex6_synth
+[LOG] Inputs: 5, Latches: 3, Error Latches: 0, Outputs: 8
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.180468 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_lion9_sweep
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.010421 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_lion9_synth
+[LOG] Inputs: 2, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.006761 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s8_orig
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.002044 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s27_orig
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.004384 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s27_sweep
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.003872 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s27_synth
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.003984 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_shiftreg_orig
+[LOG] Inputs: 1, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.000934 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_shiftreg_sweep
+[LOG] Inputs: 1, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.000924 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_shiftreg_synth
+[LOG] Inputs: 1, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.000943 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s27
+[LOG] Inputs: 4, Latches: 3, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.004026 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_a_orig
+[LOG] Inputs: 1, Latches: 4, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.001347 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbara_orig
+[LOG] Inputs: 4, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.16656 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbara_sweep
+[LOG] Inputs: 4, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.163853 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbara_synth
+[LOG] Inputs: 4, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.284711 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbsse_orig
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.335053 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbsse_sweep
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.30414 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_bbsse_synth
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.244876 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cse_orig
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 1.94205 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cse_sweep
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 1.95696 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cse_synth
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 1.76899 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk512_orig
+[LOG] Inputs: 1, Latches: 4, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.100456 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk512_sweep
+[LOG] Inputs: 1, Latches: 4, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.100444 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_dk512_synth
+[LOG] Inputs: 1, Latches: 4, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.134165 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex3_orig
+[LOG] Inputs: 2, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.345226 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex3_sweep
+[LOG] Inputs: 2, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.34514 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex3_synth
+[LOG] Inputs: 2, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.554389 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex4_orig
+[LOG] Inputs: 6, Latches: 4, Error Latches: 0, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.031298 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex4_sweep
+[LOG] Inputs: 6, Latches: 4, Error Latches: 0, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.030868 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex4_synth
+[LOG] Inputs: 6, Latches: 4, Error Latches: 0, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.018469 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex5_orig
+[LOG] Inputs: 2, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.11937 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex7_orig
+[LOG] Inputs: 2, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.222057 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex7_sweep
+[LOG] Inputs: 2, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.236109 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex7_synth
+[LOG] Inputs: 2, Latches: 4, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.40302 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_kirkman_orig
+[LOG] Inputs: 12, Latches: 4, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.212354 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_kirkman_sweep
+[LOG] Inputs: 12, Latches: 4, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.211804 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_kirkman_synth
+[LOG] Inputs: 12, Latches: 4, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.480062 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_lion9_orig
+[LOG] Inputs: 2, Latches: 4, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.010858 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mark1_orig
+[LOG] Inputs: 5, Latches: 4, Error Latches: 0, Outputs: 16
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.076653 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mark1_sweep
+[LOG] Inputs: 5, Latches: 4, Error Latches: 0, Outputs: 16
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.077278 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mark1_synth
+[LOG] Inputs: 5, Latches: 4, Error Latches: 0, Outputs: 16
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.082642 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_modulo12_orig
+[LOG] Inputs: 1, Latches: 4, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.002609 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_opus_orig
+[LOG] Inputs: 5, Latches: 4, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.204149 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_opus_sweep
+[LOG] Inputs: 5, Latches: 4, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.192741 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_opus_synth
+[LOG] Inputs: 5, Latches: 4, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.156282 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sse_orig
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.338572 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sse_sweep
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.309987 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sse_synth
+[LOG] Inputs: 7, Latches: 4, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 4
+[LOG] Overall execution time: 0.251427 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s820_orig
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.03119 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s820_sweep
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.8916 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s820_synth
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.18585 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s832_orig
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.17822 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s832_sweep
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.82014 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s832_synth
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.00488 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s820_orig
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.99409 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s820_sweep
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.96194 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s820_synth
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.19739 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s832_orig
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.10884 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s832_sweep
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.85285 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s832_synth
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.0052 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_donfile_orig
+[LOG] Inputs: 2, Latches: 5, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.01304 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex1_orig
+[LOG] Inputs: 9, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 3.128 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex1_sweep
+[LOG] Inputs: 9, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 3.2074 sec CPU time, 4 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex1_synth
+[LOG] Inputs: 9, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 3.07855 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex2_orig
+[LOG] Inputs: 2, Latches: 5, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.38259 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex2_sweep
+[LOG] Inputs: 2, Latches: 5, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.34451 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_ex2_synth
+[LOG] Inputs: 2, Latches: 5, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.47502 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_keyb_orig
+[LOG] Inputs: 7, Latches: 5, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.65985 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_keyb_sweep
+[LOG] Inputs: 7, Latches: 5, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.60367 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_keyb_synth
+[LOG] Inputs: 7, Latches: 5, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.64231 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1a_orig
+[LOG] Inputs: 8, Latches: 5, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.032878 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1_orig
+[LOG] Inputs: 8, Latches: 5, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 8.84294 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1_sweep
+[LOG] Inputs: 8, Latches: 5, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 9.83526 sec CPU time, 10 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1_synth
+[LOG] Inputs: 8, Latches: 5, Error Latches: 0, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 6.59268 sec CPU time, 7 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s820_orig
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.05223 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s820_sweep
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.02974 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s820_synth
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.12699 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s832_orig
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.17797 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s832_sweep
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 1.72665 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s832_synth
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.04971 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sand_orig
+[LOG] Inputs: 11, Latches: 5, Error Latches: 0, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 22.2247 sec CPU time, 22 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sand_sweep
+[LOG] Inputs: 11, Latches: 5, Error Latches: 0, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 18.9198 sec CPU time, 19 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sand_synth
+[LOG] Inputs: 11, Latches: 5, Error Latches: 0, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 15.9621 sec CPU time, 16 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_styr_orig
+[LOG] Inputs: 9, Latches: 5, Error Latches: 0, Outputs: 10
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 8.4113 sec CPU time, 8 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_styr_sweep
+[LOG] Inputs: 9, Latches: 5, Error Latches: 0, Outputs: 10
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 8.6503 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_styr_synth
+[LOG] Inputs: 9, Latches: 5, Error Latches: 0, Outputs: 10
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 12.077 sec CPU time, 12 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tbk_orig
+[LOG] Inputs: 6, Latches: 5, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 20.5679 sec CPU time, 21 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tbk_sweep
+[LOG] Inputs: 6, Latches: 5, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 19.8885 sec CPU time, 20 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tbk_synth
+[LOG] Inputs: 6, Latches: 5, Error Latches: 0, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 49.861 sec CPU time, 50 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s820
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.00159 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s832
+[LOG] Inputs: 18, Latches: 5, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 5
+[LOG] Overall execution time: 2.34998 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s386_orig
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.386811 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s386_sweep
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.257532 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s386_synth
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.296533 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s510_orig
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.282342 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s510_sweep
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.290168 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s510_synth
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.317042 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1488_orig
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.56582 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1488_sweep
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.94749 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1488_synth
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.58379 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1494_orig
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.04117 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1494_sweep
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.02807 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1494_synth
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.15275 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s386_orig
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.349131 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s386_sweep
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.221294 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s386_synth
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.25455 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s510_orig
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.247019 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s510_sweep
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.263826 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s510_synth
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.287842 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1488_orig
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.65094 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1488_sweep
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.30199 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1488_synth
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.70745 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1494_orig
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.29339 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1494_sweep
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.53856 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1494_synth
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.65442 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax2_orig
+[LOG] Inputs: 5, Latches: 6, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.06921 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax2_sweep
+[LOG] Inputs: 5, Latches: 6, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.069049 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax2_synth
+[LOG] Inputs: 5, Latches: 6, Error Latches: 0, Outputs: 2
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.04599 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_planet1_orig
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.37536 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_planet1_sweep
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.75134 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_planet1_synth
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.8401 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_planet_orig
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.42496 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_planet_sweep
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.65835 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_planet_synth
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.79882 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s386_orig
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.375301 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s386_sweep
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.251845 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s386_synth
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.284161 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s510_orig
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.267192 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s510_sweep
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.286265 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s510_synth
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.314694 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s953n_orig
+[LOG] Inputs: 16, Latches: 6, Error Latches: 0, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.09345 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s953n_sweep
+[LOG] Inputs: 16, Latches: 6, Error Latches: 0, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.21995 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s953n_synth
+[LOG] Inputs: 16, Latches: 6, Error Latches: 0, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.37476 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1488_orig
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 1.88771 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1488_sweep
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.38163 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1488_synth
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.63513 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1494_orig
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.61554 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1494_sweep
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.43615 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1494_synth
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.55408 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s386
+[LOG] Inputs: 7, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.261697 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s510
+[LOG] Inputs: 19, Latches: 6, Error Latches: 0, Outputs: 7
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 0.25265 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s1488
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.00732 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s1494
+[LOG] Inputs: 8, Latches: 6, Error Latches: 0, Outputs: 19
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 6
+[LOG] Overall execution time: 2.16447 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_scf_orig
+[LOG] Inputs: 27, Latches: 7, Error Latches: 0, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 7
+[LOG] Overall execution time: 6.15632 sec CPU time, 6 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_scf_sweep
+[LOG] Inputs: 27, Latches: 7, Error Latches: 0, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 7
+[LOG] Overall execution time: 6.42849 sec CPU time, 6 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_scf_synth
+[LOG] Inputs: 27, Latches: 7, Error Latches: 0, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 7
+[LOG] Overall execution time: 5.41192 sec CPU time, 6 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s208.1_orig
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.082929 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s208.1_sweep
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.068233 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s208.1_synth
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.04859 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s208.1_orig
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.083304 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s208.1_sweep
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.068851 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s208.1_synth
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.04963 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s208.1_orig
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.086138 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s208.1_sweep
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.069452 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s208.1_synth
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.048571 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s208
+[LOG] Inputs: 10, Latches: 8, Error Latches: 0, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.079716 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_traffic_sweep
+[LOG] Inputs: 3, Latches: 9, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.955521 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_traffic_synth
+[LOG] Inputs: 3, Latches: 9, Error Latches: 0, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.542016 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_traffic_orig
+[LOG] Inputs: 3, Latches: 10, Error Latches: 1, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.573449 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mclc_orig
+[LOG] Inputs: 11, Latches: 11, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.549682 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mclc_sweep
+[LOG] Inputs: 11, Latches: 11, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.518739 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mclc_synth
+[LOG] Inputs: 11, Latches: 11, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.164797 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm4a_orig
+[LOG] Inputs: 7, Latches: 12, Error Latches: 1, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 11
+[LOG] Overall execution time: 21.4148 sec CPU time, 22 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm4a_sweep
+[LOG] Inputs: 7, Latches: 12, Error Latches: 1, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 11
+[LOG] Overall execution time: 23.3314 sec CPU time, 23 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm4a_synth
+[LOG] Inputs: 7, Latches: 12, Error Latches: 1, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 11
+[LOG] Overall execution time: 9.68878 sec CPU time, 10 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm4a_orig
+[LOG] Inputs: 7, Latches: 12, Error Latches: 1, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 11
+[LOG] Overall execution time: 21.281 sec CPU time, 21 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm4a_sweep
+[LOG] Inputs: 7, Latches: 12, Error Latches: 1, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 11
+[LOG] Overall execution time: 20.862 sec CPU time, 21 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm4a_synth
+[LOG] Inputs: 7, Latches: 12, Error Latches: 1, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 11
+[LOG] Overall execution time: 9.10552 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s298_orig
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.113474 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s298_sweep
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.128834 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s298_synth
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.171066 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s298_orig
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.113803 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s298_sweep
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.129507 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s298_synth
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.172537 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s298_orig
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.112994 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s298_sweep
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.129791 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s298_synth
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.172294 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s713s_orig
+[LOG] Inputs: 35, Latches: 14, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 5.8757 sec CPU time, 6 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s713s_sweep
+[LOG] Inputs: 35, Latches: 14, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 5.89608 sec CPU time, 6 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s713s_synth
+[LOG] Inputs: 35, Latches: 14, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 6.18183 sec CPU time, 6 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s298
+[LOG] Inputs: 3, Latches: 14, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 0.116868 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s344_orig
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.78407 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s344_sweep
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.7033 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s344_synth
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 2.10872 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s349_orig
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.81637 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s349_sweep
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.73427 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s349_synth
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.90649 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s344_orig
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.63478 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s344_sweep
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.57499 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s344_synth
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.96436 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s349_orig
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.97861 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s349_sweep
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.89196 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s349_synth
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 2.07695 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax5_orig
+[LOG] Inputs: 8, Latches: 15, Error Latches: 1, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 3.18026 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax5_sweep
+[LOG] Inputs: 8, Latches: 15, Error Latches: 1, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 2.71545 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax5_synth
+[LOG] Inputs: 8, Latches: 15, Error Latches: 1, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 4.20345 sec CPU time, 4 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s344_orig
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.79719 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s344_sweep
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.70771 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s344_synth
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 2.12259 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s349_orig
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.92685 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s349_sweep
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.88762 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s349_synth
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 2.0559 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s344
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.78265 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s349
+[LOG] Inputs: 9, Latches: 15, Error Latches: 1, Outputs: 11
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 1.93242 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s420.1_orig
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.07001 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s420.1_sweep
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.083675 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s420.1_synth
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.049884 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult16a_orig
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 8.66446 sec CPU time, 8 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult16a_sweep
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 15.0971 sec CPU time, 15 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult16a_synth
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 24.0331 sec CPU time, 25 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s420.1_orig
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.07031 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s420.1_sweep
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.082602 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s420.1_synth
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.048854 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cbp_16_4_orig
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 17
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 3.39719 sec CPU time, 3 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cbp_16_4_sweep
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 17
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 3.40404 sec CPU time, 4 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cbp_16_4_synth
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 17
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 4.67382 sec CPU time, 4 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult16a_orig
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 8.9127 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult16a_sweep
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 16.1523 sec CPU time, 17 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult16a_synth
+[LOG] Inputs: 17, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 14
+[LOG] Overall execution time: 22.7164 sec CPU time, 22 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s420.1_orig
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.069056 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s420.1_sweep
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.083885 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s420.1_synth
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.049825 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s420
+[LOG] Inputs: 18, Latches: 16, Error Latches: 1, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 15
+[LOG] Overall execution time: 0.104249 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s641_synth
+[LOG] Inputs: 35, Latches: 17, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 16
+[LOG] Overall execution time: 3.89501 sec CPU time, 4 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s713_synth
+[LOG] Inputs: 35, Latches: 17, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 16
+[LOG] Overall execution time: 13.1928 sec CPU time, 13 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s641_synth
+[LOG] Inputs: 35, Latches: 17, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 16
+[LOG] Overall execution time: 3.86366 sec CPU time, 4 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s713_synth
+[LOG] Inputs: 35, Latches: 17, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 16
+[LOG] Overall execution time: 12.873 sec CPU time, 13 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641_synth
+[LOG] Inputs: 35, Latches: 17, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 16
+[LOG] Overall execution time: 3.56896 sec CPU time, 4 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s713_synth
+[LOG] Inputs: 35, Latches: 17, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 16
+[LOG] Overall execution time: 13.234 sec CPU time, 13 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1196_orig
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.129051 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1196_sweep
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.049679 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1196_synth
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.0597 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1196_orig
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.129764 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1196_sweep
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.048953 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1196_synth
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.055743 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641-retime_orig
+[LOG] Inputs: 35, Latches: 18, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 2.10652 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641-retime_sweep
+[LOG] Inputs: 35, Latches: 18, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 2.15609 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641-retime_synth
+[LOG] Inputs: 35, Latches: 18, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 6.05498 sec CPU time, 6 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641-r_orig
+[LOG] Inputs: 35, Latches: 18, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 5.64542 sec CPU time, 6 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641-r_sweep
+[LOG] Inputs: 35, Latches: 18, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 5.57752 sec CPU time, 5 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641-r_synth
+[LOG] Inputs: 35, Latches: 18, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 7.91403 sec CPU time, 8 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1196_orig
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.111538 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1196_sweep
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.045225 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1196_synth
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.053206 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1238_orig
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.121646 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1238_sweep
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.046321 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1238_synth
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.191163 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s1196
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.049259 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s1238
+[LOG] Inputs: 14, Latches: 18, Error Latches: 1, Outputs: 14
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 17
+[LOG] Overall execution time: 0.053269 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s641_orig
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 9.57194 sec CPU time, 10 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s641_sweep
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 12.4704 sec CPU time, 12 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s713_orig
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 8.11846 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s713_sweep
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 15.122 sec CPU time, 15 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s641_orig
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 9.18139 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s641_sweep
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 12.8056 sec CPU time, 13 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s713_orig
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 8.70735 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s713_sweep
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 16.3328 sec CPU time, 16 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526n-simp_orig
+[LOG] Inputs: 3, Latches: 19, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.023286 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526n-simp_sweep
+[LOG] Inputs: 3, Latches: 19, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.022775 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526n-simp_synth
+[LOG] Inputs: 3, Latches: 19, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.021461 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526ns_orig
+[LOG] Inputs: 3, Latches: 19, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.022388 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526ns_sweep
+[LOG] Inputs: 3, Latches: 19, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.022496 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526ns_synth
+[LOG] Inputs: 3, Latches: 19, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.026603 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641_orig
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 8.97453 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s641_sweep
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 12.8262 sec CPU time, 13 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s713_orig
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 8.69596 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s713_sweep
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 15.3707 sec CPU time, 16 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s641
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 9.26091 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s713
+[LOG] Inputs: 35, Latches: 19, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 18
+[LOG] Overall execution time: 12.3066 sec CPU time, 12 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s382_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.03092 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s382_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.02848 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s382_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.020937 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s400_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.036172 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s400_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.035987 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s400_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.030754 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s444_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.038309 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s444_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.032515 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s444_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.039869 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s526n_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.045411 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s526n_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.054806 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s526n_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.0486 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s526_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.046242 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s526_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.060534 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s526_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.046365 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s382_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.032245 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s382_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.0299 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s382_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.021783 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s400_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.037496 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s400_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.036475 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s400_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.030084 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s444_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.036034 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s444_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.030393 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s444_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.036893 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s526n_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.041876 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s526n_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.050749 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s526n_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.044867 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s526_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.042797 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s526_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.055354 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s526_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.042788 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s382_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.029514 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s382_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.027703 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s382_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.020317 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s400_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.03487 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s400_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.034456 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s400_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.02933 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s444_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.035661 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s444_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.032429 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s444_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.03685 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526n_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.042411 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526n_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.051126 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526n_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.045086 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526_orig
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.04294 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526_sweep
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.055045 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s526_synth
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.042658 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s382
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.030826 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s400
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 8
+[LOG] Overall execution time: 0.031003 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s444
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 9
+[LOG] Overall execution time: 0.032694 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s526
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.044548 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s526n
+[LOG] Inputs: 3, Latches: 21, Error Latches: 1, Outputs: 6
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 10
+[LOG] Overall execution time: 0.052701 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_steppermotordrive
+[LOG] Inputs: 4, Latches: 25, Error Latches: 1, Outputs: 4
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 3
+[LOG] Overall execution time: 0.018675 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm9b_orig
+[LOG] Inputs: 12, Latches: 26, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 24
+[LOG] Overall execution time: 21.1475 sec CPU time, 21 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm9b_sweep
+[LOG] Inputs: 12, Latches: 26, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 24
+[LOG] Overall execution time: 23.2575 sec CPU time, 23 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm9b_synth
+[LOG] Inputs: 12, Latches: 26, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 24
+[LOG] Overall execution time: 16.3516 sec CPU time, 17 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm9b_orig
+[LOG] Inputs: 12, Latches: 26, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 24
+[LOG] Overall execution time: 22.1506 sec CPU time, 22 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm9b_sweep
+[LOG] Inputs: 12, Latches: 26, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 24
+[LOG] Overall execution time: 24.5102 sec CPU time, 25 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm9b_synth
+[LOG] Inputs: 12, Latches: 26, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 24
+[LOG] Overall execution time: 15.6908 sec CPU time, 15 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_sbc_sweep
+[LOG] Inputs: 40, Latches: 27, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 132.162 sec CPU time, 133 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_sbc_synth
+[LOG] Inputs: 40, Latches: 27, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 281.727 sec CPU time, 282 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm9a_orig
+[LOG] Inputs: 12, Latches: 27, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 22.8321 sec CPU time, 23 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm9a_sweep
+[LOG] Inputs: 12, Latches: 27, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 16.0384 sec CPU time, 16 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm9a_synth
+[LOG] Inputs: 12, Latches: 27, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 17.4686 sec CPU time, 18 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_sbc_sweep
+[LOG] Inputs: 40, Latches: 27, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 136.02 sec CPU time, 136 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_sbc_synth
+[LOG] Inputs: 40, Latches: 27, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 285.459 sec CPU time, 287 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm9a_orig
+[LOG] Inputs: 12, Latches: 27, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 20.945 sec CPU time, 21 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm9a_sweep
+[LOG] Inputs: 12, Latches: 27, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 13.1981 sec CPU time, 13 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm9a_synth
+[LOG] Inputs: 12, Latches: 27, Error Latches: 1, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 17.9815 sec CPU time, 18 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sbc_sweep
+[LOG] Inputs: 40, Latches: 27, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 131.065 sec CPU time, 132 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sbc_synth
+[LOG] Inputs: 40, Latches: 27, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 25
+[LOG] Overall execution time: 275.298 sec CPU time, 276 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_sbc_orig
+[LOG] Inputs: 40, Latches: 28, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 26
+[LOG] Overall execution time: 153.767 sec CPU time, 154 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_sbc_orig
+[LOG] Inputs: 40, Latches: 28, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 26
+[LOG] Overall execution time: 156.217 sec CPU time, 156 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_sbc_orig
+[LOG] Inputs: 40, Latches: 28, Error Latches: 1, Outputs: 56
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 26
+[LOG] Overall execution time: 157.906 sec CPU time, 159 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s953_orig
+[LOG] Inputs: 16, Latches: 29, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.029042 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s953_orig
+[LOG] Inputs: 16, Latches: 29, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.02932 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s953_orig
+[LOG] Inputs: 16, Latches: 29, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.028743 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s953
+[LOG] Inputs: 16, Latches: 29, Error Latches: 1, Outputs: 23
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 0.027574 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult16b_orig
+[LOG] Inputs: 17, Latches: 30, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 0.373233 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult16b_sweep
+[LOG] Inputs: 17, Latches: 30, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 0.27698 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult16b_synth
+[LOG] Inputs: 17, Latches: 30, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 0.179806 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax10_orig
+[LOG] Inputs: 13, Latches: 30, Error Latches: 2, Outputs: 10
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 20.1119 sec CPU time, 21 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax10_sweep
+[LOG] Inputs: 13, Latches: 30, Error Latches: 2, Outputs: 10
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 28.2749 sec CPU time, 28 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax10_synth
+[LOG] Inputs: 13, Latches: 30, Error Latches: 2, Outputs: 10
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 20.1489 sec CPU time, 20 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult16b_orig
+[LOG] Inputs: 17, Latches: 30, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 0.375605 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult16b_sweep
+[LOG] Inputs: 17, Latches: 30, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 0.274054 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult16b_synth
+[LOG] Inputs: 17, Latches: 30, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 27
+[LOG] Overall execution time: 0.17944 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s838.1_orig
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.113458 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s838.1_sweep
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.084703 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s838.1_synth
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.088506 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult32a_orig
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 9.19186 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult32a_sweep
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 9.36106 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult32a_synth
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 12.3392 sec CPU time, 13 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s838.1_orig
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.113797 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s838.1_sweep
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.085094 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s838.1_synth
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.088692 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cbp_32_4_orig
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 33
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 13.1967 sec CPU time, 13 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cbp_32_4_sweep
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 33
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 13.8012 sec CPU time, 14 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_cbp_32_4_synth
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 33
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 11.5276 sec CPU time, 12 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32a_orig
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 9.21481 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32a_sweep
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 9.24679 sec CPU time, 9 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32a_synth
+[LOG] Inputs: 33, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 11.3475 sec CPU time, 12 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32_orig
+[LOG] Inputs: 32, Latches: 32, Error Latches: 2, Outputs: 64
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 599.775 sec CPU time, 600 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32_sweep
+[LOG] Inputs: 32, Latches: 32, Error Latches: 2, Outputs: 64
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 599.288 sec CPU time, 600 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32_synth
+[LOG] Inputs: 32, Latches: 32, Error Latches: 2, Outputs: 64
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 175.435 sec CPU time, 176 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s838.1_orig
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.102193 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s838.1_sweep
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.076398 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s838.1_synth
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.078983 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s838
+[LOG] Inputs: 34, Latches: 32, Error Latches: 2, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 0.099599 sec CPU time, 0 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_clma_orig
+[LOG] Inputs: 382, Latches: 33, Error Latches: 2, Outputs: 82
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 274.901 sec CPU time, 276 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_clma_sweep
+[LOG] Inputs: 382, Latches: 33, Error Latches: 2, Outputs: 82
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 257.582 sec CPU time, 258 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_clmb_orig
+[LOG] Inputs: 382, Latches: 33, Error Latches: 2, Outputs: 369
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 20.6799 sec CPU time, 21 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_clma_orig
+[LOG] Inputs: 382, Latches: 33, Error Latches: 2, Outputs: 82
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 286.863 sec CPU time, 287 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_clma_sweep
+[LOG] Inputs: 382, Latches: 33, Error Latches: 2, Outputs: 82
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 29
+[LOG] Overall execution time: 262.702 sec CPU time, 263 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_clmb_orig
+[LOG] Inputs: 382, Latches: 33, Error Latches: 2, Outputs: 369
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 0
+[LOG] Overall execution time: 20.6479 sec CPU time, 21 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax12_orig
+[LOG] Inputs: 15, Latches: 36, Error Latches: 2, Outputs: 12
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 33
+[LOG] Overall execution time: 38.0989 sec CPU time, 38 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax12_sweep
+[LOG] Inputs: 15, Latches: 36, Error Latches: 2, Outputs: 12
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 33
+[LOG] Overall execution time: 35.9117 sec CPU time, 36 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax12_synth
+[LOG] Inputs: 15, Latches: 36, Error Latches: 2, Outputs: 12
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 33
+[LOG] Overall execution time: 43.1926 sec CPU time, 44 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tbk-retime_orig
+[LOG] Inputs: 6, Latches: 49, Error Latches: 2, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 45
+[LOG] Overall execution time: 10.6514 sec CPU time, 10 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tbk-retime_sweep
+[LOG] Inputs: 6, Latches: 49, Error Latches: 2, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 45
+[LOG] Overall execution time: 11.957 sec CPU time, 12 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_tbk-retime_synth
+[LOG] Inputs: 6, Latches: 49, Error Latches: 2, Outputs: 3
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 45
+[LOG] Overall execution time: 13.4264 sec CPU time, 14 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax20_orig
+[LOG] Inputs: 23, Latches: 60, Error Latches: 3, Outputs: 20
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 54
+[LOG] Overall execution time: 240.54 sec CPU time, 241 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax20_sweep
+[LOG] Inputs: 23, Latches: 60, Error Latches: 3, Outputs: 20
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 54
+[LOG] Overall execution time: 183.473 sec CPU time, 184 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax20_synth
+[LOG] Inputs: 23, Latches: 60, Error Latches: 3, Outputs: 20
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 54
+[LOG] Overall execution time: 211.064 sec CPU time, 211 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_pci_spoci_ctrl
+[LOG] Inputs: 25, Latches: 60, Error Latches: 3, Outputs: 13
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 13
+[LOG] Overall execution time: 1.20992 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult32b_sweep
+[LOG] Inputs: 32, Latches: 61, Error Latches: 3, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 52
+[LOG] Overall execution time: 0.8917 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult32b_synth
+[LOG] Inputs: 32, Latches: 61, Error Latches: 3, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 52
+[LOG] Overall execution time: 1.49276 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32b_sweep
+[LOG] Inputs: 32, Latches: 61, Error Latches: 3, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 52
+[LOG] Overall execution time: 0.931056 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32b_synth
+[LOG] Inputs: 32, Latches: 61, Error Latches: 3, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 52
+[LOG] Overall execution time: 1.44834 sec CPU time, 2 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mult32b_orig
+[LOG] Inputs: 32, Latches: 62, Error Latches: 3, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 52
+[LOG] Overall execution time: 1.02376 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mult32b_orig
+[LOG] Inputs: 32, Latches: 62, Error Latches: 3, Outputs: 1
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 52
+[LOG] Overall execution time: 1.01907 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1423_orig
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 5330.14 sec CPU time, 5341 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1423_sweep
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 3105.4 sec CPU time, 3113 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_iscas89_s1423_synth
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 3943.75 sec CPU time, 3953 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1423_orig
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 5049.35 sec CPU time, 5060 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1423_sweep
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 3055.81 sec CPU time, 3062 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_s1423_synth
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 3963.29 sec CPU time, 3973 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1423_orig
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 5048.54 sec CPU time, 5060 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1423_sweep
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 3091.41 sec CPU time, 3098 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_s1423_synth
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 3906.32 sec CPU time, 3915 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_s1423
+[LOG] Inputs: 17, Latches: 74, Error Latches: 4, Outputs: 5
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 59
+[LOG] Overall execution time: 5433.01 sec CPU time, 5446 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_ss_pcm
+[LOG] Inputs: 19, Latches: 87, Error Latches: 4, Outputs: 9
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 58
+[LOG] Overall execution time: 1.02168 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm30a_orig
+[LOG] Inputs: 33, Latches: 90, Error Latches: 5, Outputs: 30
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 81
+[LOG] Overall execution time: 466.216 sec CPU time, 467 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_LGSynth91_smlexamples_mm30a_sweep
+[LOG] Inputs: 33, Latches: 90, Error Latches: 5, Outputs: 30
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 81
+[LOG] Overall execution time: 506.668 sec CPU time, 508 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm30a_orig
+[LOG] Inputs: 33, Latches: 90, Error Latches: 5, Outputs: 30
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 81
+[LOG] Overall execution time: 468.85 sec CPU time, 470 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_mm30a_sweep
+[LOG] Inputs: 33, Latches: 90, Error Latches: 5, Outputs: 30
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 81
+[LOG] Overall execution time: 504.745 sec CPU time, 506 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax32_orig
+[LOG] Inputs: 35, Latches: 96, Error Latches: 5, Outputs: 32
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 87
+[LOG] Overall execution time: 546.013 sec CPU time, 547 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2002_AIG_texas_minmax32_sweep
+[LOG] Inputs: 35, Latches: 96, Error Latches: 5, Outputs: 32
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 87
+[LOG] Overall execution time: 656.194 sec CPU time, 658 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_usb_phy
+[LOG] Inputs: 15, Latches: 98, Error Latches: 5, Outputs: 18
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 56
+[LOG] Overall execution time: 0.441929 sec CPU time, 1 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_sasc
+[LOG] Inputs: 16, Latches: 117, Error Latches: 6, Outputs: 12
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 105
+[LOG] Overall execution time: 837.296 sec CPU time, 838 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_des_area
+[LOG] Inputs: 240, Latches: 128, Error Latches: 6, Outputs: 64
+[LOG] Back-End: stla, mode = 1
+[LOG] #Vulnerabilities found: 116
+[LOG] Overall execution time: 7349.64 sec CPU time, 7367 sec real time.
+
+================================================================================
+[LOG] Tool has been started
+[LOG] Input-File: stla110protected_IWLS_2005_AIG_i2c
+[LOG] Inputs: 19, Latches: 128, Error Latches: 6, Outputs: 14
+[LOG] Back-End: stla, mode = 1
