@@ -31,8 +31,9 @@ extern "C"
 }
 
 // -------------------------------------------------------------------------------------------
-BackEnd::BackEnd(aiger* circuit, int num_err_latches, int mode) :
-		circuit_(circuit), mode_(mode), current_TC_(empty_), num_err_latches_(num_err_latches)
+BackEnd::BackEnd(aiger* circuit, int num_err_latches, int mode, aiger* environment_model) :
+		circuit_(circuit), environment_model_(environment_model), mode_(mode),
+		current_TC_(empty_TC_), num_err_latches_(num_err_latches)
 {
 	// nothing to be done
 }

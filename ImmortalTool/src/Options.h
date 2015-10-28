@@ -235,6 +235,8 @@ class Options
 		return diagnostic_output_to_file_;
 	}
 
+	const string& getAigEnvFileName() const;
+
 	protected:
 
 // -------------------------------------------------------------------------------------------
@@ -260,6 +262,12 @@ class Options
 ///
 /// @brief The name (including the path) of the AIGER input file.
 	string aig_in_file_name_;
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief The name (including the path) of the AIGER environment file.
+	string aig_env_file_name_;
+
 
 // -------------------------------------------------------------------------------------------
 ///

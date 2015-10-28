@@ -46,7 +46,7 @@ public:
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-	BackEnd(aiger* circuit, int num_err_latches, int mode);
+	BackEnd(aiger* circuit, int num_err_latches, int mode, aiger* environment_model = 0);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -120,6 +120,8 @@ protected:
 /// @brief the circuit to analyze
 	aiger* circuit_;
 
+	aiger* environment_model_;
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief the mode (if there are more than one version and/or optimizations to enable)
@@ -134,7 +136,7 @@ protected:
 ///
 /// @brief the current Test-Case
 	TestCase &current_TC_;
-	TestCase empty_; // DUMMY TC
+	TestCase empty_TC_; // DUMMY TC
 
 // -------------------------------------------------------------------------------------------
 ///
