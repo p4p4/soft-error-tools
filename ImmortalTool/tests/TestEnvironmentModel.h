@@ -36,7 +36,8 @@
 class TestEnvironmentModel : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestEnvironmentModel);
-  CPPUNIT_TEST(test1);
+  CPPUNIT_TEST(test1_sim_basic_1);
+  CPPUNIT_TEST(test2_sim_basic_2);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -56,7 +57,13 @@ protected:
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Give brief description of test here.
-  void test1();
+  void test1_sim_basic_1();
+
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Give brief description of test here.
+  void test2_sim_basic_2();
 
 };
 
