@@ -78,17 +78,31 @@ bool SimulationBasedAnalysis::findVulnerabilities(vector<string> paths_to_TC_fil
 // -------------------------------------------------------------------------------------------
 void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 {
-	vector<vector<int> > outputs;
-	vector<vector<int> > states;
-	outputs.reserve(current_TC_.size());
-	states.reserve(current_TC_.size());
+	vector<vector<int> > outputs_ok;
+	vector<vector<int> > states_ok;
+	outputs_ok.reserve(current_TC_.size());
+	states_ok.reserve(current_TC_.size());
 
 	// simulate whole TestCase without error, store results
 	while (sim_->simulateOneTimeStep() == true)
 	{
-		outputs.push_back(sim_->getOutputs());
-		states.push_back(sim_->getLatchValues());
+		outputs_ok.push_back(sim_->getOutputs());
+		states_ok.push_back(sim_->getLatchValues());
 		sim_->switchToNextState();
+	}
+
+	// if environment-model: define which output is relevant at which point in time:
+	vector<vector<int> > output_is_relevant;
+	if(environment_model_)
+	{
+		output_is_relevant.reserve(current_TC_.size());
+
+		AigSimulator environment_sim(environment_model_);
+		environment_sim.setTestcase(current_TC_);
+		while (environment_sim.simulateOneTimeStep())
+		{
+			output_is_relevant.push_back(environment_sim.getOutputs());
+		}
 	}
 
 	//  for each latch
@@ -105,23 +119,23 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 		bool l_is_vulnerable = false;
 
 		// for all time steps i of t:
-		for (unsigned timestep = 0; timestep < states.size(); timestep++)
+		for (unsigned timestep = 0; timestep < states_ok.size(); timestep++)
 		{
 			if (l_is_vulnerable)
 				break;
 
 			// current state
-			vector<int> state = states[timestep];
+			vector<int> state = states_ok[timestep];
 
 			// flip latch
 			state[l_cnt] = aiger_not(state[l_cnt]); // don't forget to restore state again later
 			AigSimulator sim_w_flip(circuit_);
 
 			// for all j >= i:
-			for (unsigned j = timestep; j < states.size(); ++j)
+			for (unsigned later_timestep = timestep; later_timestep < states_ok.size(); ++later_timestep)
 			{
-				// next_state[], out[], alarm = simulate1step(state[], t[j])
-				sim_w_flip.simulateOneTimeStep(current_TC_[j], state);
+				// next_state[], out[], alarm = simulate1step(state[], t[later_timestep])
+				sim_w_flip.simulateOneTimeStep(current_TC_[later_timestep], state);
 
 				state = sim_w_flip.getNextLatchValues(); // state = next state
 				vector<int> outputs_w_flip = sim_w_flip.getOutputs();
@@ -133,8 +147,29 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 					break;
 				}
 
-				// else if: no alarm but different output values
-				if (outputs_w_flip != outputs[j])
+				// else if: no alarm but different output values ?
+				bool different_outputs = (outputs_w_flip != outputs_ok[later_timestep]);
+				bool wrong_outputs = different_outputs;
+				if(environment_model_ && different_outputs) // check if output is relevant
+				{
+					wrong_outputs = false;
+					for(unsigned out_idx=0; out_idx < environment_model_->num_outputs - 1; out_idx++)
+					{
+						// if output is relevant
+						if(output_is_relevant[later_timestep][out_idx] == AIG_TRUE)
+						{
+							// AND output value is different
+							if(outputs_w_flip[out_idx] != outputs_ok[later_timestep][out_idx])
+							{
+								wrong_outputs = true;
+								break;
+							}
+						}
+					}
+
+				}
+
+				if (wrong_outputs)
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					vulnerable_elements_.insert(circuit_->latches[l_cnt].lit);
@@ -142,7 +177,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 					if (Options::instance().isUseDiagnosticOutput())
 					{
 						ErrorTrace* trace = new ErrorTrace;
-						trace->error_timestep_ = j;
+						trace->error_timestep_ = later_timestep;
 						trace->flipped_timestep_ = timestep;
 						trace->latch_index_ = circuit_->latches[l_cnt].lit;
 						trace->input_trace_ = current_TC_;
@@ -153,8 +188,8 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 					break;
 				}
 
-				// else if (next_state[] == states[j+1][])
-				if (sim_w_flip.getLatchValues() == states[j + 1])
+				// else if (next_state[] == states[later_timestep+1][])
+				if (sim_w_flip.getLatchValues() == states_ok[later_timestep + 1])
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
 					break;

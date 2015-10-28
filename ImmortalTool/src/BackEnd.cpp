@@ -104,3 +104,8 @@ bool BackEnd::findVulnerabilitiesMC(unsigned num_of_timesteps)
 	// 2. run testcases:
 	return findVulnerabilities(testcases);
 }
+
+void BackEnd::setEnvironmentModel(aiger* environmentModel)
+{
+	environment_model_ = environmentModel;
+}

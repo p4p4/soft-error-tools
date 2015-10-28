@@ -360,21 +360,23 @@ BackEnd* Options::getBackEnd()
 	if (back_end_ == "sim")
 	{
 		back_end_instance_ = new SimulationBasedAnalysis(circuit_, num_err_latches_, mode_);
-		return back_end_instance_;
 	}
 	else if (back_end_ == "sta")
 	{
 		back_end_instance_ = new SymbTimeAnalysis(circuit_, num_err_latches_, mode_);
-		return back_end_instance_;
 	}
 	else if (back_end_ == "stla")
 	{
 		back_end_instance_ = new SymbTimeLocationAnalysis(circuit_, num_err_latches_, mode_);
-		return back_end_instance_;
+	}
+	else
+	{
+		L_ERR("Unknown back-end '" << back_end_ <<"'.");
+		exit(-1);
 	}
 
-	L_ERR("Unknown back-end '" << back_end_ <<"'.");
-	exit(-1);
+	back_end_instance_->setEnvironmentModel(env_model_);
+	return back_end_instance_;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -586,22 +588,27 @@ void Options::initInputCircuit()
 	L_LOG(
 			"Inputs: " << circuit_->num_inputs << ", Latches: " << circuit_->num_latches - num_err_latches_ << ", Error Latches: " << num_err_latches_ << ", Outputs: " << circuit_->num_outputs-1)
 
-
-	if(!aig_env_file_name_.empty())
+	if (!aig_env_file_name_.empty())
 	{
 		env_model_ = Utils::readAiger(aig_env_file_name_);
 		L_LOG("Environment-Model: " << aig_env_file_name_); // TODO getAigInFileNameOnly()
 		// TODO: assert number of inputs and outputs
+		if ((env_model_->num_inputs != circuit_->num_inputs)
+				|| (env_model_->num_outputs != circuit_->num_outputs)) // TODO: alarm output is irrelevant in env model
+		{
+			L_ERR("Error: incompatible environment-model");
+			exit(-1);
+		}
 	}
 }
 
 // -------------------------------------------------------------------------------------------
 Options::Options() :
-		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(),
-		aig_env_file_name_(), print_string_("ERWIL"), tmp_dir_("./tmp"), back_end_("sim"),
-		back_end_instance_(0), mode_(0), sat_solver_("min_api"), tool_started_(Stopwatch::start()),
-		circuit_(0), env_model_(0), num_err_latches_(0), seed_(0), unsat_core_interval_(0), use_diagnostic_output_(false),
-		diagnostic_output_to_file_(false), diagnostic_output_path_("")
+		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), aig_env_file_name_(), print_string_(
+				"ERWIL"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
+				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), env_model_(0), num_err_latches_(
+				0), seed_(0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
+				false), diagnostic_output_path_("")
 {
 	// nothing to be done
 }

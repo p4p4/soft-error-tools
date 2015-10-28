@@ -105,6 +105,16 @@ public:
 
 // -------------------------------------------------------------------------------------------
 ///
+/// @brief allows to set an environment-model
+///
+/// an environment-model is an aiger-circuit with the same number of inputs and outputs as the
+/// original circuit. These outputs define when an output of the original may be (ir)relevant.
+///
+/// @param environmentModel the environment-model
+	void setEnvironmentModel(aiger* environmentModel);
+
+// -------------------------------------------------------------------------------------------
+///
 /// @brief randomly generates 0 or 1
 ///
 	struct gen_rand {
