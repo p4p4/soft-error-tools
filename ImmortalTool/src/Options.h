@@ -326,6 +326,11 @@ class Options
 
 // -------------------------------------------------------------------------------------------
 ///
+/// @brief The circuit representing the environment-model
+	aiger* env_model_;
+
+// -------------------------------------------------------------------------------------------
+///
 /// @brief The number of error-latches (added via the protection logic).
 	unsigned num_err_latches_;
 

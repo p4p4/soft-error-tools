@@ -1,5 +1,5 @@
 #!/bin/bash          
-ABC=/home/pklampfl/immortal/abc/abc/abc
+ABC=$IMMORTALTP/abc/abc/abc
 SRC=./iwls_1.0/benchmarks/
 TARGET=IWLS_2002_AIG/
 
