@@ -22,6 +22,7 @@
 #include "../src/Logger.h"
 #include "../src/AigSimulator.h"
 #include "../src/SimulationBasedAnalysis.h"
+#include "../src/SymbTimeAnalysis.h"
 #include "../src/Utils.h"
 
 extern "C"
@@ -35,6 +36,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestEnvironmentModel);
 void TestEnvironmentModel::setUp()
 {
 	//setup for testcases
+	Logger::instance().enable(Logger::ERR);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -104,4 +106,66 @@ void TestEnvironmentModel::test2_sim_basic_2()
 	tcs.clear();
 	tcs.push_back(tc);
 	CPPUNIT_ASSERT(sba.findVulnerabilities(tcs));
+}
+
+void TestEnvironmentModel::test3_sta0_basic_1()
+{
+	aiger* circuit = Utils::readAiger("inputs/one_latch.unprotected.aag");
+	aiger* environment = Utils::readAiger("inputs/one_latch.unprotected.aag");
+
+	SymbTimeAnalysis sta(circuit, 0,SymbTimeAnalysis::NAIVE);
+	sta.findVulnerabilities(1, 5); // first without environment
+	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 1);
+
+	// in this test the output is always false, i.e. we don't care about the output
+	sta.setEnvironmentModel(environment);
+	sta.findVulnerabilities(1, 5);
+	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+}
+
+void TestEnvironmentModel::test4_sta0_basic_2()
+{
+	aiger* circuit = Utils::readAiger("inputs/1latch_1and.unprotected.aag");
+	aiger* environment;
+	SymbTimeAnalysis sta(circuit, 0, SymbTimeAnalysis::NAIVE);
+
+	TestCase tc;
+	vector<TestCase> tcs;
+
+
+	vector<int> one;
+	one.push_back(1);
+
+	vector<int> zero;
+	zero.push_back(0);
+
+	// 2a) env = inverter, inputs = 1 1
+	environment = Utils::readAiger("inputs/inverter.unprot.aag");
+	sta.setEnvironmentModel(environment);
+	tc.push_back(one);
+	tc.push_back(one);
+	tcs.push_back(tc);
+	CPPUNIT_ASSERT(!sta.findVulnerabilities(tcs));
+
+	// 2b) env = inverter, inputs = 1 1 0
+	tc.push_back(zero);
+	tcs.clear();
+	tcs.push_back(tc);
+	CPPUNIT_ASSERT(sta.findVulnerabilities(tcs));
+
+	// 2c) env = buffer, inputs = 0 0
+	environment = Utils::readAiger("inputs/buffer.unprot.aag");
+	sta.setEnvironmentModel(environment);
+	tc.clear();
+	tc.push_back(zero);
+	tc.push_back(zero);
+	tcs.clear();
+	tcs.push_back(tc);
+	CPPUNIT_ASSERT(!sta.findVulnerabilities(tcs));
+
+	// 2d) env = buffer, inputs = 0 0 1
+	tc.push_back(one);
+	tcs.clear();
+	tcs.push_back(tc);
+	CPPUNIT_ASSERT(sta.findVulnerabilities(tcs));
 }

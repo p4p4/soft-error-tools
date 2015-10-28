@@ -153,7 +153,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 				if(environment_model_ && different_outputs) // check if output is relevant
 				{
 					wrong_outputs = false;
-					for(unsigned out_idx=0; out_idx < environment_model_->num_outputs - 1; out_idx++)
+					for(unsigned out_idx=0; out_idx < outputs_ok.size(); out_idx++)
 					{
 						// if output is relevant
 						if(output_is_relevant[later_timestep][out_idx] == AIG_TRUE)

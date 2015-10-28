@@ -91,6 +91,9 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 // -------------------------------------------------------------------------------------------
 void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 {
+
+
+
 	sim_ = new AigSimulator(circuit_);
 
 	AIG2CNF::instance().initFromAig(circuit_);
@@ -151,11 +154,25 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 			int max_cnf_var_in_Terr = next_free_cnf_var;
 			TestCase& testcase = testcases[tci];
 
-			for (unsigned i = 0; i < testcase.size(); i++)
+			// if environment-model: define which output is relevant at which point in time:
+			vector<vector<int> > output_is_relevant;
+			if(environment_model_)
+			{
+				output_is_relevant.reserve(testcase.size());
+
+				AigSimulator environment_sim(environment_model_);
+				environment_sim.setTestcase(testcase);
+				while (environment_sim.simulateOneTimeStep())
+				{
+					output_is_relevant.push_back(environment_sim.getOutputs());
+				}
+			}
+
+			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{ // -------- BEGIN "for each timestep in testcase" -----------
 
 				// correct simulation
-				sim_->simulateOneTimeStep(testcase[i], concrete_state);
+				sim_->simulateOneTimeStep(testcase[timestep], concrete_state);
 				vector<int> outputs = sim_->getOutputs();
 				vector<int> next_state = sim_->getNextLatchValues();
 //				Utils::debugPrint(next_state, "next state");
@@ -165,17 +182,36 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				faulty_state[c_cnt] = (faulty_state[c_cnt] == 1) ? 0 : 1;
 
 				// faulty simulation with flipped bit
-				sim_->simulateOneTimeStep(testcase[i], faulty_state);
+				sim_->simulateOneTimeStep(testcase[timestep], faulty_state);
 				vector<int> outputs2 = sim_->getOutputs();
 				bool alarm = (outputs2[outputs2.size() - 1] == 1);
 
-//				Utils::debugPrint(testcase[i], "inputs");
+//				Utils::debugPrint(testcase[timestep], "inputs");
 //				Utils::debugPrint(outputs, "outputs");
 //				Utils::debugPrint(outputs2, "outputs2");
 
 				// check if vulnerablitiy already found
 				bool equal_outputs = (outputs == outputs2);
 				bool err_found_with_simulation = (!equal_outputs && !alarm);
+
+				if(err_found_with_simulation && environment_model_)
+				{
+					err_found_with_simulation = false;
+					for(unsigned out_idx=0; out_idx < outputs.size(); out_idx++)
+					{
+						// if output is relevant
+						if(output_is_relevant[timestep][out_idx] == AIG_TRUE)
+						{
+							// AND output value is different
+							if(outputs2[out_idx] != outputs[out_idx])
+							{
+								err_found_with_simulation = true;
+								break;
+							}
+						}
+					}
+				}
+
 				if (err_found_with_simulation)
 				{
 					vulnerable_elements_.insert(component_aig);
@@ -183,8 +219,8 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 					if (Options::instance().isUseDiagnosticOutput())
 					{
 						ErrorTrace* trace = new ErrorTrace;
-						trace->flipped_timestep_ = i;
-						trace->error_timestep_ = i;
+						trace->flipped_timestep_ = timestep;
+						trace->error_timestep_ = timestep;
 						trace->latch_index_ = component_aig;
 						trace->input_trace_ = testcase;
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
@@ -218,10 +254,10 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 				// rename: set inputs according to test case inputs
 				// (ALTERNATIVE: don't rename, set via T_err_copy.setVarValue())
-				for (unsigned cnt = 0; cnt < circuit_->num_inputs; ++cnt)
+				for (unsigned in_idx = 0; in_idx < circuit_->num_inputs; ++in_idx)
 				{
-					unsigned input_cnf = (circuit_->inputs[cnt].lit >> 1) + 1;
-					int input_bit_value = AIG2CNF::instance().aigLitToCnfLit(testcase[i][cnt]);
+					unsigned input_cnf = (circuit_->inputs[in_idx].lit >> 1) + 1;
+					int input_bit_value = AIG2CNF::instance().aigLitToCnfLit(testcase[timestep][in_idx]);
 					real_rename_map[input_cnf] = input_bit_value;
 				}
 
@@ -230,7 +266,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				if (!err_is_no_vulnerability)
 				{
 					f.push_back(fi);
-					fi_to_timestep[fi] = i;
+					fi_to_timestep[fi] = timestep;
 
 					real_rename_map[f_orig] = fi;
 					real_rename_map[poss_neg_state_cnf_var] = next_free_cnf_var++;
@@ -276,12 +312,16 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				// clause saying that the outputs o and o' are different
 				vector<int> o_is_diff_clause;
 				o_is_diff_clause.reserve(renamed_out_vars.size() + 1);
-				for (unsigned cnt = 0; cnt < renamed_out_vars.size(); ++cnt)
+				for (unsigned out_idx = 0; out_idx < renamed_out_vars.size(); ++out_idx)
 				{
-					if (outputs[cnt] == 1) // simulation result of output is true
-						o_is_diff_clause.push_back(-renamed_out_vars[cnt]); // add false to outputs
+					// skip if output is not relevant
+					if(environment_model_ && output_is_relevant[timestep][out_idx] == AIG_FALSE)
+						continue;
+
+					if (outputs[out_idx] == AIG_TRUE) // simulation result of output is true
+						o_is_diff_clause.push_back(-renamed_out_vars[out_idx]); // add false to outputs
 					else
-						o_is_diff_clause.push_back(renamed_out_vars[cnt]);
+						o_is_diff_clause.push_back(renamed_out_vars[out_idx]);
 				}
 				int o_is_diff_enable_literal = next_free_cnf_var++;
 				solver_->addVarToKeep(o_is_diff_enable_literal);
@@ -315,7 +355,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 					vulnerable_elements_.insert(component_aig);
 
 					if (Options::instance().isUseDiagnosticOutput())
-						addErrorTrace(component_aig, i, fi_to_timestep, model, testcase);
+						addErrorTrace(component_aig, timestep, fi_to_timestep, model, testcase);
 
 					break;
 				}

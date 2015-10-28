@@ -38,6 +38,8 @@ class TestEnvironmentModel : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE(TestEnvironmentModel);
   CPPUNIT_TEST(test1_sim_basic_1);
   CPPUNIT_TEST(test2_sim_basic_2);
+  CPPUNIT_TEST(test3_sta0_basic_1);
+  CPPUNIT_TEST(test4_sta0_basic_2);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -56,14 +58,25 @@ protected:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Give brief description of test here.
+/// @brief Basic env test 1, sim
   void test1_sim_basic_1();
 
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Give brief description of test here.
+/// @brief Basic env test 2, sim
   void test2_sim_basic_2();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Basic env test 1, sta0
+  void test3_sta0_basic_1();
+
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Basic env test 2, sta0
+  void test4_sta0_basic_2();
 
 };
 
