@@ -92,8 +92,6 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
 void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 {
 
-
-
 	sim_ = new AigSimulator(circuit_);
 
 	AIG2CNF::instance().initFromAig(circuit_);
@@ -149,24 +147,16 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				cnf_o_terr_orig[cnt] = Utils::applyRen(first_rename_map, cnf_o_terr_orig[cnt]);
 			vector<int> cnf_next_terr_orig = AIG2CNF::instance().getNextStateVars();
 			for (unsigned cnt = 0; cnt < cnf_next_terr_orig.size(); ++cnt)
-				cnf_next_terr_orig[cnt] = Utils::applyRen(first_rename_map, cnf_next_terr_orig[cnt]);
+				cnf_next_terr_orig[cnt] = Utils::applyRen(first_rename_map,
+						cnf_next_terr_orig[cnt]);
 
 			int max_cnf_var_in_Terr = next_free_cnf_var;
 			TestCase& testcase = testcases[tci];
 
 			// if environment-model: define which output is relevant at which point in time:
 			vector<vector<int> > output_is_relevant;
-			if(environment_model_)
-			{
-				output_is_relevant.reserve(testcase.size());
-
-				AigSimulator environment_sim(environment_model_);
-				environment_sim.setTestcase(testcase);
-				while (environment_sim.simulateOneTimeStep())
-				{
-					output_is_relevant.push_back(environment_sim.getOutputs());
-				}
-			}
+			if (environment_model_)
+				output_is_relevant = computeRelevantOutputs(testcase);
 
 			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{ // -------- BEGIN "for each timestep in testcase" -----------
@@ -194,22 +184,12 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				bool equal_outputs = (outputs == outputs2);
 				bool err_found_with_simulation = (!equal_outputs && !alarm);
 
-				if(err_found_with_simulation && environment_model_)
+				// if we have an environment-model and different outputs, check if output is
+				// really relevant
+				if (environment_model_ && err_found_with_simulation)
 				{
-					err_found_with_simulation = false;
-					for(unsigned out_idx=0; out_idx < outputs.size(); out_idx++)
-					{
-						// if output is relevant
-						if(output_is_relevant[timestep][out_idx] == AIG_TRUE)
-						{
-							// AND output value is different
-							if(outputs2[out_idx] != outputs[out_idx])
-							{
-								err_found_with_simulation = true;
-								break;
-							}
-						}
-					}
+					err_found_with_simulation = isARelevantOutputDifferent(outputs, outputs2,
+							output_is_relevant[timestep]);
 				}
 
 				if (err_found_with_simulation)
@@ -229,8 +209,11 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 				}
 
-				bool err_is_no_vulnerability = false
-						&& (alarm || (equal_outputs && (next_state == sim_->getNextLatchValues())));
+				bool err_is_no_vulnerability =
+						false
+								&& (alarm
+										|| (equal_outputs
+												&& (next_state == sim_->getNextLatchValues())));
 
 				vector<int> real_rename_map(max_cnf_var_in_Terr, 0);
 				for (unsigned cnt = 0; cnt < real_rename_map.size(); ++cnt)
@@ -253,11 +236,11 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				}
 
 				// rename: set inputs according to test case inputs
-				// (ALTERNATIVE: don't rename, set via T_err_copy.setVarValue())
 				for (unsigned in_idx = 0; in_idx < circuit_->num_inputs; ++in_idx)
 				{
 					unsigned input_cnf = (circuit_->inputs[in_idx].lit >> 1) + 1;
-					int input_bit_value = AIG2CNF::instance().aigLitToCnfLit(testcase[timestep][in_idx]);
+					int input_bit_value = AIG2CNF::instance().aigLitToCnfLit(
+							testcase[timestep][in_idx]);
 					real_rename_map[input_cnf] = input_bit_value;
 				}
 
@@ -315,7 +298,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				for (unsigned out_idx = 0; out_idx < renamed_out_vars.size(); ++out_idx)
 				{
 					// skip if output is not relevant
-					if(environment_model_ && output_is_relevant[timestep][out_idx] == AIG_FALSE)
+					if (environment_model_ && output_is_relevant[timestep][out_idx] == AIG_FALSE)
 						continue;
 
 					if (outputs[out_idx] == AIG_TRUE) // simulation result of output is true
@@ -337,7 +320,8 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				vector<int> renamed_next_state_vars;
 				renamed_next_state_vars.reserve(cnf_next.size());
 				for (unsigned cnt = 0; cnt < cnf_next.size(); ++cnt)
-					renamed_next_state_vars.push_back(Utils::applyRen(real_rename_map, cnf_next[cnt]));
+					renamed_next_state_vars.push_back(
+							Utils::applyRen(real_rename_map, cnf_next[cnt]));
 				solver_->addVarsToKeep(renamed_next_state_vars);
 
 				// call SAT-Solver
@@ -410,13 +394,19 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 			symbsim.initLatches(); // initialize latches to false
 
 			TestCase& testcase = testcases[tci];
-			for (unsigned i = 0; i < testcase.size(); i++)
+
+			// if environment-model: define which output is relevant at which point in time:
+			vector<vector<int> > output_is_relevant;
+			if (environment_model_)
+				output_is_relevant = computeRelevantOutputs(testcase);
+
+			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
 
 				//------------------------------------------------------------------------------------
 				// Concrete simulations:
 				// correct simulation
-				sim_->simulateOneTimeStep(testcase[i], concrete_state);
+				sim_->simulateOneTimeStep(testcase[timestep], concrete_state);
 				vector<int> outputs = sim_->getOutputs();
 				vector<int> next_state = sim_->getNextLatchValues();
 
@@ -425,12 +415,21 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				faulty_state[c_cnt] = (faulty_state[c_cnt] == AIG_TRUE) ? AIG_FALSE : AIG_TRUE;
 
 				// faulty simulation with flipped bit
-				sim_->simulateOneTimeStep(testcase[i], faulty_state);
+				sim_->simulateOneTimeStep(testcase[timestep], faulty_state);
 				vector<int> outputs2 = sim_->getOutputs();
 
 				bool alarm = (outputs2[outputs2.size() - 1] == AIG_TRUE);
 				bool equal_outputs = (outputs == outputs2);
 				bool err_found_with_simulation = (!equal_outputs && !alarm);
+
+				// if we have an environment-model and different outputs, check if output is
+				// really relevant
+				if (environment_model_ && err_found_with_simulation)
+				{
+					err_found_with_simulation = isARelevantOutputDifferent(outputs, outputs2,
+							output_is_relevant[timestep]);
+				}
+
 				if (err_found_with_simulation)
 				{
 					vulnerable_elements_.insert(component_aig);
@@ -438,8 +437,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					if (Options::instance().isUseDiagnosticOutput())
 					{
 						ErrorTrace* trace = new ErrorTrace;
-						trace->flipped_timestep_ = i;
-						trace->error_timestep_ = i;
+						trace->flipped_timestep_ = timestep;
+						trace->error_timestep_ = timestep;
 						trace->latch_index_ = component_aig;
 						trace->input_trace_ = testcase;
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
@@ -454,7 +453,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				//------------------------------------------------------------------------------------
 				// set input values according to TestCase to TRUE or FALSE:
-				symbsim.setInputValues(testcase[i]);
+				symbsim.setInputValues(testcase[timestep]);
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
@@ -488,7 +487,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 						solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 					f.push_back(fi);
-					fi_to_timestep[fi] = i;
+					fi_to_timestep[fi] = timestep;
 				}
 				//------------------------------------------------------------------------------------
 
@@ -510,12 +509,16 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				// clause saying that the outputs o and o' are different
 				vector<int> o_is_diff_clause;
 				o_is_diff_clause.reserve(out_cnf_values.size() + 1);
-				for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
+				for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
 				{
-					if (outputs[cnt] == AIG_TRUE) // simulation result of output is true
-						o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
+					// skip if output is not relevant
+					if (environment_model_ && output_is_relevant[timestep][out_idx] == AIG_FALSE)
+						continue;
+
+					if (outputs[out_idx] == AIG_TRUE) // simulation result of output is true
+						o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add false to outputs
 					else
-						o_is_diff_clause.push_back(out_cnf_values[cnt]);
+						o_is_diff_clause.push_back(out_cnf_values[out_idx]);
 				}
 				int o_is_diff_enable_literal = next_free_cnf_var++;
 				o_is_diff_clause.push_back(o_is_diff_enable_literal);
@@ -544,7 +547,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					vulnerable_elements_.insert(component_aig);
 
 					if (Options::instance().isUseDiagnosticOutput())
-						addErrorTrace(component_aig, i, fi_to_timestep, model, testcase);
+						addErrorTrace(component_aig, timestep, fi_to_timestep, model, testcase);
 
 					break;
 				}
@@ -609,8 +612,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					vector<int> more_assumptions;
 					more_assumptions.push_back(next_state_is_diff);
 					vector<int> core;
-					bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,
-							core);
+					bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions,
+							more_assumptions, f, core);
 					MASSERT(is_sat_2 == false, "must not be satisfiable")
 
 					// TODO: not sure if there could be a more efficient way to do this
@@ -634,7 +637,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					{
 						f.push_back(-*it);
 					}
-					L_LOG("step"<<i<<" reduced f variables: " << num_reduced_f_variables)
+					L_LOG("step"<<timestep<<" reduced f variables: " << num_reduced_f_variables)
 					// END TODO
 
 				}
@@ -803,7 +806,8 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 						solver_->incAdd3LitClause(-outputs[cnt], -out_cnf_values[cnt],
 								-o_is_different_var);
 						// both outputs are false --> o_is_different_var is false
-						solver_->incAdd3LitClause(outputs[cnt], out_cnf_values[cnt], -o_is_different_var);
+						solver_->incAdd3LitClause(outputs[cnt], out_cnf_values[cnt],
+								-o_is_different_var);
 						o_is_diff_clause.push_back(o_is_different_var);
 					}
 				}
@@ -822,8 +826,10 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				{
 					vector<int> vars_of_interest = f;
 					const vector<int> &open_in = sim_ok.getOpenInputVars();
-					vars_of_interest.insert(vars_of_interest.end(), open_in.begin(), open_in.end());
-					sat = solver_->incIsSatModelOrCore(odiff_enable_literals, vars_of_interest, model);
+					vars_of_interest.insert(vars_of_interest.end(), open_in.begin(),
+							open_in.end());
+					sat = solver_->incIsSatModelOrCore(odiff_enable_literals, vars_of_interest,
+							model);
 				}
 				else
 				{
@@ -838,7 +844,8 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 					vulnerable_elements_.insert(component_aig);
 					if (Options::instance().isUseDiagnosticOutput())
 					{
-						addErrorTrace(component_aig, i, fi_to_timestep, model, real_cnf_inputs, true);
+						addErrorTrace(component_aig, i, fi_to_timestep, model, real_cnf_inputs,
+								true);
 					}
 					break;
 				}
@@ -919,8 +926,8 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 					vector<int> more_assumptions;
 					more_assumptions.push_back(next_state_is_diff);
 					vector<int> core;
-					bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,
-							core);
+					bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions,
+							more_assumptions, f, core);
 					MASSERT(is_sat_2 == false, "must not be satisfiable")
 
 					// TODO: not sure if there could be a more efficient way to do this
@@ -955,7 +962,8 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 }
 
 void SymbTimeAnalysis::addErrorTrace(unsigned latch_aig, unsigned err_timestep,
-		map<int, unsigned>& f_to_i, const vector<int> &model, const TestCase& tc, bool open_inputs)
+		map<int, unsigned>& f_to_i, const vector<int> &model, const TestCase& tc,
+		bool open_inputs)
 {
 	ErrorTrace* trace = new ErrorTrace;
 	trace->error_timestep_ = err_timestep;
@@ -978,14 +986,14 @@ void SymbTimeAnalysis::addErrorTrace(unsigned latch_aig, unsigned err_timestep,
 		for (unsigned model_count = 0; model_count < model.size(); model_count++)
 		{
 			int lit = model[model_count];
-			map<int,unsigned>::iterator it = f_to_i.find(lit);
-			if(lit > 0 && it != f_to_i.end()) // we have found the fi variable which was set to TRUE
+			map<int, unsigned>::iterator it = f_to_i.find(lit);
+			if (lit > 0 && it != f_to_i.end()) // we have found the fi variable which was set to TRUE
 			{
 				trace->flipped_timestep_ = it->second; // store i
 			}
 			else if (it == f_to_i.end()) // if not in map, then it must be a free input literal
 			{
-				f_to_i[lit] = (lit>0) ? AIG_TRUE : AIG_FALSE;
+				f_to_i[lit] = (lit > 0) ? AIG_TRUE : AIG_FALSE;
 			}
 		}
 
@@ -994,12 +1002,12 @@ void SymbTimeAnalysis::addErrorTrace(unsigned latch_aig, unsigned err_timestep,
 
 		TestCase &real_input_values = trace->input_trace_;
 		real_input_values.reserve(tc.size());
-		for(TestCase::const_iterator in = tc.begin(); in != tc.end(); ++in)
+		for (TestCase::const_iterator in = tc.begin(); in != tc.end(); ++in)
 		{
 
 			vector<int> real_input_vector;
 			real_input_vector.reserve(in->size());
-			for(vector<int>::const_iterator iv = in->begin(); iv != in->end(); ++iv)
+			for (vector<int>::const_iterator iv = in->begin(); iv != in->end(); ++iv)
 			{
 				real_input_vector.push_back(f_to_i[*iv]);
 			}
@@ -1007,7 +1015,39 @@ void SymbTimeAnalysis::addErrorTrace(unsigned latch_aig, unsigned err_timestep,
 		}
 	}
 
-
-
 	ErrorTraceManager::instance().error_traces_.push_back(trace);
+}
+
+vector<vector<int> > SymbTimeAnalysis::computeRelevantOutputs(TestCase& testcase)
+{
+	// if environment-model: define which output is relevant at which point in time:
+	vector<vector<int> > output_is_relevant;
+
+	output_is_relevant.reserve(testcase.size());
+	AigSimulator environment_sim(environment_model_);
+	environment_sim.setTestcase(testcase);
+	while (environment_sim.simulateOneTimeStep())
+	{
+		output_is_relevant.push_back(environment_sim.getOutputs());
+	}
+
+	return output_is_relevant;
+}
+
+bool SymbTimeAnalysis::isARelevantOutputDifferent(vector<int>& out1, vector<int>& out2,
+		vector<int>& out_is_relevant)
+{
+	for (unsigned out_idx = 0; out_idx < out1.size(); out_idx++)
+	{
+		// if output is relevant
+		if (out_is_relevant[out_idx] == AIG_TRUE)
+		{
+			// AND output value is different
+			if (out2[out_idx] != out1[out_idx])
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }

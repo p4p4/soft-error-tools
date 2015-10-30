@@ -147,6 +147,10 @@ class SymbTimeAnalysis: public BackEnd
 /// @return The result of the assignment, i.e, *this.
 	SymbTimeAnalysis& operator=(const SymbTimeAnalysis &other);
 
+
+	vector<vector<int> > computeRelevantOutputs(TestCase& testcase);
+
+	bool isARelevantOutputDifferent(vector<int>& out1, vector<int>& out2, vector<int>& out_is_relevant);
 };
 
 #endif // SymbTimeAnalysis_H__

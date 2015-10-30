@@ -23,6 +23,7 @@
 #include "../src/AigSimulator.h"
 #include "../src/SimulationBasedAnalysis.h"
 #include "../src/SymbTimeAnalysis.h"
+#include "../src/SymbTimeLocationAnalysis.h"
 #include "../src/Utils.h"
 
 extern "C"
@@ -45,127 +46,122 @@ void TestEnvironmentModel::tearDown()
 	//define here post processing steps
 }
 
+BackEnd* TestEnvironmentModel::getBackend(const std::string& backend_name, int mode,
+		aiger* circuit)
+{
+	BackEnd* backend;
+	if (backend_name == "sim")
+	{
+		backend = new SimulationBasedAnalysis(circuit, 0, mode);
+	}
+	else if (backend_name == "sta")
+	{
+		backend = new SymbTimeAnalysis(circuit, 0, mode);
+	}
+	else if (backend_name == "stla")
+	{
+		backend = new SymbTimeLocationAnalysis(circuit, 0, mode);
+	}
+	else
+	{
+		CPPUNIT_ASSERT_MESSAGE("wrong backend", false);
+	}
+
+	return backend;
+}
+
+void TestEnvironmentModel::basic_test_1(std::string backend_name, int mode)
+{
+	aiger* circuit = Utils::readAiger("inputs/one_latch.unprotected.aag");
+	BackEnd* backend = getBackend(backend_name, mode, circuit);
+	backend->findVulnerabilities(1, 5); // first without environment
+	CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 1);
+	// in this test the output is always false, i.e. we don't care about the output
+	aiger* environment = Utils::readAiger("inputs/one_latch.unprotected.aag");
+	backend->setEnvironmentModel(environment);
+	backend->findVulnerabilities(1, 5);
+	CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 0);
+
+	delete backend;
+}
+
+void TestEnvironmentModel::basic_test_2(std::string backend_name, int mode)
+{
+	aiger* circuit = Utils::readAiger("inputs/1latch_1and.unprotected.aag");
+	aiger* environment;
+	BackEnd* backend = getBackend(backend_name, mode, circuit);
+	TestCase tc;
+	vector<TestCase> tcs;
+	vector<int> one;
+	one.push_back(1);
+	vector<int> zero;
+	zero.push_back(0);
+	// 2a) env = inverter, inputs = 1 1
+	environment = Utils::readAiger("inputs/inverter.unprot.aag");
+	backend->setEnvironmentModel(environment);
+	tc.push_back(one);
+	tc.push_back(one);
+	tcs.push_back(tc);
+	CPPUNIT_ASSERT(!backend->findVulnerabilities(tcs));
+	// 2b) env = inverter, inputs = 1 1 0
+	tc.push_back(zero);
+	tcs.clear();
+	tcs.push_back(tc);
+	CPPUNIT_ASSERT(backend->findVulnerabilities(tcs));
+	// 2c) env = buffer, inputs = 0 0
+	environment = Utils::readAiger("inputs/buffer.unprot.aag");
+	backend->setEnvironmentModel(environment);
+	tc.clear();
+	tc.push_back(zero);
+	tc.push_back(zero);
+	tcs.clear();
+	tcs.push_back(tc);
+	CPPUNIT_ASSERT(!backend->findVulnerabilities(tcs));
+	// 2d) env = buffer, inputs = 0 0 1
+	tc.push_back(one);
+	tcs.clear();
+	tcs.push_back(tc);
+	CPPUNIT_ASSERT(backend->findVulnerabilities(tcs));
+}
+
 // -------------------------------------------------------------------------------------------
 void TestEnvironmentModel::test1_sim_basic_1()
 {
-	aiger* circuit = Utils::readAiger("inputs/one_latch.unprotected.aag");
-	aiger* environment = Utils::readAiger("inputs/one_latch.unprotected.aag");
-
-	SimulationBasedAnalysis sba(circuit, 0);
-	sba.findVulnerabilities(1, 5); // first without environment
-	CPPUNIT_ASSERT(sba.getVulnerableElements().size() == 1);
-
-	// in this test the output is always false, i.e. we don't care about the output
-	sba.setEnvironmentModel(environment);
-	sba.findVulnerabilities(1, 5);
-	CPPUNIT_ASSERT(sba.getVulnerableElements().size() == 0);
+	basic_test_1("sim", 0);
 }
 
 void TestEnvironmentModel::test2_sim_basic_2()
 {
-	aiger* circuit = Utils::readAiger("inputs/1latch_1and.unprotected.aag");
-	aiger* environment;
-	SimulationBasedAnalysis sba(circuit, 0);
-
-	TestCase tc;
-	vector<TestCase> tcs;
-
-
-	vector<int> one;
-	one.push_back(1);
-
-	vector<int> zero;
-	zero.push_back(0);
-
-	// 2a) env = inverter, inputs = 1 1
-	environment = Utils::readAiger("inputs/inverter.unprot.aag");
-	sba.setEnvironmentModel(environment);
-	tc.push_back(one);
-	tc.push_back(one);
-	tcs.push_back(tc);
-	CPPUNIT_ASSERT(!sba.findVulnerabilities(tcs));
-
-	// 2b) env = inverter, inputs = 1 1 0
-	tc.push_back(zero);
-	tcs.clear();
-	tcs.push_back(tc);
-	CPPUNIT_ASSERT(sba.findVulnerabilities(tcs));
-
-	// 2c) env = buffer, inputs = 0 0
-	environment = Utils::readAiger("inputs/buffer.unprot.aag");
-	sba.setEnvironmentModel(environment);
-	tc.clear();
-	tc.push_back(zero);
-	tc.push_back(zero);
-	tcs.clear();
-	tcs.push_back(tc);
-	CPPUNIT_ASSERT(!sba.findVulnerabilities(tcs));
-
-	// 2d) env = buffer, inputs = 0 0 1
-	tc.push_back(one);
-	tcs.clear();
-	tcs.push_back(tc);
-	CPPUNIT_ASSERT(sba.findVulnerabilities(tcs));
+	basic_test_2("sim", 0);
 }
 
 void TestEnvironmentModel::test3_sta0_basic_1()
 {
-	aiger* circuit = Utils::readAiger("inputs/one_latch.unprotected.aag");
-	aiger* environment = Utils::readAiger("inputs/one_latch.unprotected.aag");
-
-	SymbTimeAnalysis sta(circuit, 0,SymbTimeAnalysis::NAIVE);
-	sta.findVulnerabilities(1, 5); // first without environment
-	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 1);
-
-	// in this test the output is always false, i.e. we don't care about the output
-	sta.setEnvironmentModel(environment);
-	sta.findVulnerabilities(1, 5);
-	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+	basic_test_1("sta", SymbTimeAnalysis::NAIVE);
 }
 
 void TestEnvironmentModel::test4_sta0_basic_2()
 {
-	aiger* circuit = Utils::readAiger("inputs/1latch_1and.unprotected.aag");
-	aiger* environment;
-	SymbTimeAnalysis sta(circuit, 0, SymbTimeAnalysis::NAIVE);
+	basic_test_2("sta", SymbTimeAnalysis::NAIVE);
+}
 
-	TestCase tc;
-	vector<TestCase> tcs;
+void TestEnvironmentModel::test5_sta1_basic_1()
+{
+	basic_test_1("sta", SymbTimeAnalysis::SYMBOLIC_SIMULATION);
+}
 
+void TestEnvironmentModel::test6_sta1_basic_2()
+{
+	basic_test_2("sta", SymbTimeAnalysis::SYMBOLIC_SIMULATION);
+}
 
-	vector<int> one;
-	one.push_back(1);
+void TestEnvironmentModel::test7_sta2_basic_1()
+{
+	basic_test_1("sta", SymbTimeAnalysis::FREE_INPUTS);
+}
 
-	vector<int> zero;
-	zero.push_back(0);
+void TestEnvironmentModel::test8_sta2_basic_2()
+{
+	basic_test_2("sta", SymbTimeAnalysis::FREE_INPUTS);
 
-	// 2a) env = inverter, inputs = 1 1
-	environment = Utils::readAiger("inputs/inverter.unprot.aag");
-	sta.setEnvironmentModel(environment);
-	tc.push_back(one);
-	tc.push_back(one);
-	tcs.push_back(tc);
-	CPPUNIT_ASSERT(!sta.findVulnerabilities(tcs));
-
-	// 2b) env = inverter, inputs = 1 1 0
-	tc.push_back(zero);
-	tcs.clear();
-	tcs.push_back(tc);
-	CPPUNIT_ASSERT(sta.findVulnerabilities(tcs));
-
-	// 2c) env = buffer, inputs = 0 0
-	environment = Utils::readAiger("inputs/buffer.unprot.aag");
-	sta.setEnvironmentModel(environment);
-	tc.clear();
-	tc.push_back(zero);
-	tc.push_back(zero);
-	tcs.clear();
-	tcs.push_back(tc);
-	CPPUNIT_ASSERT(!sta.findVulnerabilities(tcs));
-
-	// 2d) env = buffer, inputs = 0 0 1
-	tc.push_back(one);
-	tcs.clear();
-	tcs.push_back(tc);
-	CPPUNIT_ASSERT(sta.findVulnerabilities(tcs));
 }

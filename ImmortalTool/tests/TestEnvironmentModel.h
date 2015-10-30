@@ -21,10 +21,9 @@
 #ifndef CPP_UNIT_TestEnvironmentModel_H__
 #define CPP_UNIT_TestEnvironmentModel_H__
 
-
+#include "../src/BackEnd.h"
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -33,50 +32,80 @@
 ///
 /// @author TODO
 /// @version 1.2.0
-class TestEnvironmentModel : public CPPUNIT_NS::TestFixture
+class TestEnvironmentModel: public CPPUNIT_NS::TestFixture
 {
-  CPPUNIT_TEST_SUITE(TestEnvironmentModel);
-  CPPUNIT_TEST(test1_sim_basic_1);
-  CPPUNIT_TEST(test2_sim_basic_2);
-  CPPUNIT_TEST(test3_sta0_basic_1);
-  CPPUNIT_TEST(test4_sta0_basic_2);
-  CPPUNIT_TEST_SUITE_END();
+
+	void basic_test_1(std::string backend, int mode);
+
+	void basic_test_2(std::string backend, int mode);
+
+	BackEnd* getBackend(const std::string& backend_name, int mode, aiger* circuit);
+
+CPPUNIT_TEST_SUITE(TestEnvironmentModel);
+	CPPUNIT_TEST(test1_sim_basic_1);
+	CPPUNIT_TEST(test2_sim_basic_2);
+	CPPUNIT_TEST(test3_sta0_basic_1);
+	CPPUNIT_TEST(test4_sta0_basic_2);
+	CPPUNIT_TEST(test5_sta1_basic_1);
+	CPPUNIT_TEST(test6_sta1_basic_2);
+	CPPUNIT_TEST(test7_sta2_basic_1);
+	CPPUNIT_TEST(test8_sta2_basic_2);
+	CPPUNIT_TEST_SUITE_END()
+	;
 
 public:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Initializes the object under test.
-  void setUp();
+	void setUp();
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Shuts down the object under test.
-  void tearDown();
+	void tearDown();
 
 protected:
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Basic env test 1, sim
-  void test1_sim_basic_1();
-
+	void test1_sim_basic_1();
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Basic env test 2, sim
-  void test2_sim_basic_2();
+	void test2_sim_basic_2();
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Basic env test 1, sta0
-  void test3_sta0_basic_1();
-
+	void test3_sta0_basic_1();
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Basic env test 2, sta0
-  void test4_sta0_basic_2();
+	void test4_sta0_basic_2();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Basic env test 1, sta1
+	void test5_sta1_basic_1();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Basic env test 2, sta1
+	void test6_sta1_basic_2();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Basic env test 1, sta2
+	void test7_sta2_basic_1();
+
+// -------------------------------------------------------------------------------------------
+///
+/// @brief Basic env test 2, sta2
+	void test8_sta2_basic_2();
 
 };
 
