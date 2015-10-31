@@ -655,9 +655,9 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 
 	SymbolicSimulator sim_ok(circuit_, solver_, next_free_cnf_var);
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
-	SymbolicSimulator* environment_sim = 0;
+	SymbolicSimulator* sim_env = 0;
 	if (environment_model_)
-		environment_sim = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
+		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
 // ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
@@ -692,7 +692,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 			sim_ok.initLatches();
 			symbsim.initLatches(); // initialize latches to false
 			if (environment_model_)
-				environment_sim->initLatches();
+				sim_env->initLatches();
 
 			AndCacheMap cache(solver_);
 			sim_ok.setCache(&cache);
@@ -737,8 +737,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 				// set input values according to TestCase to TRUE/FALSE or same symb values as sim_ok:
 				symbsim.setCnfInputValues(sim_ok.getInputValues());
-				if (environment_model_)
-					environment_sim->setCnfInputValues(sim_ok.getInputValues());
+
 				if (Options::instance().isUseDiagnosticOutput())
 					real_cnf_inputs.push_back(sim_ok.getInputValues());
 				//------------------------------------------------------------------------------------
@@ -779,10 +778,17 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 				// Symbolic simulation of AND gates
 				symbsim.simulateOneTimeStep();
-				if (environment_model_)
-					environment_sim->simulateOneTimeStep();
-				//------------------------------------------------------------------------------------
 
+				//------------------------------------------------------------------------------------
+				vector<int> env_outputs;
+				if (environment_model_)
+				{
+
+					sim_env->setCnfInputValues(sim_ok.getInputValues());
+					sim_env->simulateOneTimeStep();
+					env_outputs = sim_env->getOutputValues();
+					sim_env->switchToNextState();
+				}
 				//------------------------------------------------------------------------------------
 				// get Outputs and next state values, swich to next state
 				solver_->incAddUnitClause(-symbsim.getAlarmValue());
@@ -797,25 +803,40 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				vector<int> o_is_diff_clause;
 
 				o_is_diff_clause.reserve(out_cnf_values.size() + 1);
-				for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
+				for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
 				{
-					if (outputs[cnt] == CNF_TRUE) // simulation result of output is true
-						o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
-					else if (outputs[cnt] == CNF_FALSE)
-						o_is_diff_clause.push_back(out_cnf_values[cnt]);
-					else if (out_cnf_values[cnt] == CNF_TRUE)
-						o_is_diff_clause.push_back(-outputs[cnt]);
-					else if (out_cnf_values[cnt] == CNF_FALSE)
-						o_is_diff_clause.push_back(-outputs[cnt]);
-					else if (out_cnf_values[cnt] != outputs[cnt]) // both are symbolic and not equal
+					if (!environment_model_ && outputs[out_idx] == CNF_TRUE) // simulation result of output is true
+						o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add negated output
+					else if (!environment_model_ && outputs[out_idx] == CNF_FALSE)
+						o_is_diff_clause.push_back(out_cnf_values[out_idx]);
+					else if (!environment_model_ && out_cnf_values[out_idx] == CNF_TRUE)
+						o_is_diff_clause.push_back(-outputs[out_idx]);
+					else if (!environment_model_ && out_cnf_values[out_idx] == CNF_FALSE)
+						o_is_diff_clause.push_back(-outputs[out_idx]);
+					else if (out_cnf_values[out_idx] != outputs[out_idx]) // both are symbolic and not equal
 					{
 						int o_is_different_var = next_free_cnf_var++;
 						// both outputs are true --> o_is_different_var is false
-						solver_->incAdd3LitClause(-outputs[cnt], -out_cnf_values[cnt],
+						solver_->incAdd3LitClause(-outputs[out_idx], -out_cnf_values[out_idx],
 								-o_is_different_var);
 						// both outputs are false --> o_is_different_var is false
-						solver_->incAdd3LitClause(outputs[cnt], out_cnf_values[cnt],
+						solver_->incAdd3LitClause(outputs[out_idx], out_cnf_values[out_idx],
 								-o_is_different_var);
+
+						if (environment_model_)
+						{
+							int output_is_relevant = env_outputs[out_idx];
+
+							// res = o_is_diff AND o_is_relevant
+							int res = next_free_cnf_var++;
+							solver_->incAdd2LitClause(o_is_different_var, -res);
+							solver_->incAdd2LitClause(output_is_relevant, -res);
+							solver_->incAdd3LitClause(-o_is_different_var, -output_is_relevant,
+									res);
+
+							o_is_different_var = res;
+
+						}
 						o_is_diff_clause.push_back(o_is_different_var);
 					}
 				}
@@ -968,8 +989,8 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
 
-	if (environment_sim)
-		delete environment_sim;
+	if (sim_env)
+		delete sim_env;
 }
 
 void SymbTimeAnalysis::addErrorTrace(unsigned latch_aig, unsigned err_timestep,
