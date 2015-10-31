@@ -157,12 +157,17 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 
 		TestCase& testcase = testcases[tc_number];
 
-		for (unsigned i = 0; i < testcase.size(); i++)
+		// if environment-model: define which output is relevant at which point in time:
+		vector<vector<int> > output_is_relevant;
+		if (environment_model_)
+			output_is_relevant = computeRelevantOutputs(testcase);
+
+		for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
 			//--------------------------------------------------------------------------------------
 			// Concrete simulations:
-			sim_->simulateOneTimeStep(testcase[i], concrete_state);
+			sim_->simulateOneTimeStep(testcase[timestep], concrete_state);
 			vector<int> outputs = sim_->getOutputs();
 			vector<int> next_state = sim_->getNextLatchValues();
 
@@ -171,7 +176,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			//--------------------------------------------------------------------------------------
 
 			// set input values according to TestCase to TRUE or FALSE:
-			symbsim.setInputValues(testcase[i]);
+			symbsim.setInputValues(testcase[timestep]);
 
 			//--------------------------------------------------------------------------------------
 			// cj is a variable that indicatest whether the corresponding latch is flipped
@@ -207,7 +212,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 			f.push_back(fi);
-			fi_to_timestep[fi] = i;
+			fi_to_timestep[fi] = timestep;
 			//--------------------------------------------------------------------------------------
 
 			// Symbolic simulation of AND gates
@@ -223,12 +228,16 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			// clause saying that the outputs o and o' are different
 			vector<int> o_is_diff_clause;
 			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
-			for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
+			for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
 			{
-				if (outputs[cnt] == AIG_TRUE) // simulation result of output is true
-					o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
-				else if (outputs[cnt] == AIG_FALSE)
-					o_is_diff_clause.push_back(out_cnf_values[cnt]);
+				// skip if output is not relevant
+				if (environment_model_ && output_is_relevant[timestep][out_idx] == AIG_FALSE)
+					continue;
+
+				if (outputs[out_idx] == AIG_TRUE) // simulation result of output is true
+					o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add negated output
+				else if (outputs[out_idx] == AIG_FALSE)
+					o_is_diff_clause.push_back(out_cnf_values[out_idx]);
 			}
 			int o_is_diff_enable_literal = next_free_cnf_var++;
 			o_is_diff_clause.push_back(o_is_diff_enable_literal);
@@ -258,7 +267,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				{
 					trace = new ErrorTrace;
 
-					trace->error_timestep_ = i;
+					trace->error_timestep_ = timestep;
 					trace->input_trace_ = testcase;
 					ErrorTraceManager::instance().error_traces_.push_back(trace);
 				}
@@ -321,12 +330,14 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				// single fault assumption: there might be at most one flipped component
 				set<int>::iterator l1_it;
 				set<int>::iterator l2_it;
-				for (l1_it = latches_to_check_.begin(); l1_it != latches_to_check_.end(); l1_it++)
+				for (l1_it = latches_to_check_.begin(); l1_it != latches_to_check_.end();
+						l1_it++)
 				{
 					l2_it = l1_it;
 					l2_it++;
 					for (; l2_it != latches_to_check_.end(); l2_it++)
-						solver_->incAdd2LitClause(-latch_to_cj[*l1_it >> 1], -latch_to_cj[*l2_it >> 1]);
+						solver_->incAdd2LitClause(-latch_to_cj[*l1_it >> 1],
+								-latch_to_cj[*l2_it >> 1]);
 				}
 				//------------------------------------------------------------------------------------
 
@@ -356,8 +367,9 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			//------------------------------------------------------------------------------------
 			// Optimization2: compute unsat core
 
-			if (f.size() > 1 && (unsat_core_interval_ != 0) && (f.size() % unsat_core_interval_ == 0)
-					&& (testcase.size() - i > unsat_core_interval_))
+			if (f.size() > 1 && (unsat_core_interval_ != 0)
+					&& (f.size() % unsat_core_interval_ == 0)
+					&& (testcase.size() - timestep > unsat_core_interval_))
 			{
 
 				vector<int> core_assumptions;
@@ -370,8 +382,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				vector<int> more_assumptions;
 				more_assumptions.push_back(next_state_is_diff);
 				vector<int> core;
-				bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,
-						core);
+				bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions,
+						f, core);
 				MASSERT(is_sat_2 == false, "must not be satisfiable")
 
 				// TODO: not sure if there could be a more efficient way to do this
@@ -395,7 +407,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				{
 					f.push_back(-*it);
 				}
-				L_DBG("step"<<i<<" reduced f variables: " << num_reduced_f_variables)
+				L_DBG("step"<<timestep<<" reduced f variables: " << num_reduced_f_variables)
 				// END TODO
 
 			}
@@ -431,6 +443,9 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	//------------------------------------------------------------------------------------------
 	SymbolicSimulator sim_ok(circuit_, solver_, next_free_cnf_var);
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
+	SymbolicSimulator* sim_env = 0;
+	if (environment_model_)
+		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
 	// for each testcase-step
 	for (unsigned tc_number = 0; tc_number < testcases.size(); tc_number++)
@@ -471,22 +486,25 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 		symbsim.initLatches();
 		sim_ok.initLatches();
+		if (environment_model_)
+			sim_env->initLatches();
 
 //		AndCacheFor2Simulators cache(sim_ok.getResults(), symbsim.getResults(), solver_,
 //				next_free_cnf_var);
 		AndCacheMap cache(solver_);
 		symbsim.setCache(&cache);
 		sim_ok.setCache(&cache);
+		// TODO ENV set cache?
 
 		TestCase& testcase = testcases[tc_number];
 		TestCase real_cnf_inputs;
-		for (unsigned i = 0; i < testcase.size(); i++)
+		for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
 //			cache.clearCache();
 			//--------------------------------------------------------------------------------------
 			// Correct simulation:
-			sim_ok.simulateOneTimeStep(testcase[i]);
+			sim_ok.simulateOneTimeStep(testcase[timestep]);
 			const vector<int> &correct_outputs = sim_ok.getOutputValues();
 //
 //			const vector<int> &correct_next_state = sim_ok.getLatchValues();
@@ -495,8 +513,8 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// cj is a variable that indicatest whether the corresponding latch is flipped
-			// fi is a variable that indicates whether the component is flipped in step i or not
-			// there can only be a flip at timestep i if both cj and fi are true.
+			// fi is a variable that indicates whether the component is flipped in step timestep or not
+			// there can only be a flip at timestep timestep if both cj and fi are true.
 			int fi = next_free_cnf_var++;
 			solver_->addVarToKeep(fi);
 
@@ -530,7 +548,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 			if (Options::instance().isUseDiagnosticOutput())
 			{
-				fi_to_timestep[fi] = i;
+				fi_to_timestep[fi] = timestep;
 				real_cnf_inputs.push_back(sim_ok.getInputValues());
 			}
 
@@ -538,6 +556,16 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			// Symbolic simulation of AND gates
 			symbsim.setCnfInputValues(sim_ok.getInputValues());
 			symbsim.simulateOneTimeStep();
+
+			vector<int> env_outputs;
+			if (environment_model_)
+			{
+
+				sim_env->setCnfInputValues(sim_ok.getInputValues());
+				sim_env->simulateOneTimeStep();
+				env_outputs = sim_env->getOutputValues();
+				sim_env->switchToNextState();
+			}
 			// get Outputs and next state values, switch to next state
 			solver_->incAddUnitClause(-symbsim.getAlarmValue()); // set alarm to false
 			const vector<int> &out_cnf_values = symbsim.getOutputValues();
@@ -552,27 +580,40 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			vector<int> o_is_diff_clause;
 
 			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
-			for (unsigned cnt = 0; cnt < out_cnf_values.size(); ++cnt)
+			for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
 			{
-				if (correct_outputs[cnt] == CNF_TRUE) // simulation result of output is true
-					o_is_diff_clause.push_back(-out_cnf_values[cnt]); // add negated output
-				else if (correct_outputs[cnt] == CNF_FALSE)
-					o_is_diff_clause.push_back(out_cnf_values[cnt]);
-				else if (out_cnf_values[cnt] == CNF_TRUE)
-					o_is_diff_clause.push_back(-correct_outputs[cnt]);
-				else if (out_cnf_values[cnt] == CNF_FALSE)
-					o_is_diff_clause.push_back(-correct_outputs[cnt]);
-//				else if (out_cnf_values[cnt] == -correct_outputs[cnt])	// TODO: try this later
-//					;
-				else if (out_cnf_values[cnt] != correct_outputs[cnt]) // both are symbolic and not equal
+				if (!environment_model_ && correct_outputs[out_idx] == CNF_TRUE) // simulation result of output is true
+					o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add negated output
+				else if (!environment_model_ && correct_outputs[out_idx] == CNF_FALSE)
+					o_is_diff_clause.push_back(out_cnf_values[out_idx]);
+				else if (!environment_model_ && out_cnf_values[out_idx] == CNF_TRUE)
+					o_is_diff_clause.push_back(-correct_outputs[out_idx]);
+				else if (!environment_model_ && out_cnf_values[out_idx] == CNF_FALSE)
+					o_is_diff_clause.push_back(-correct_outputs[out_idx]);
+				else if (out_cnf_values[out_idx] != correct_outputs[out_idx]) // both are symbolic and not equal
 				{
 					int o_is_different_var = next_free_cnf_var++;
 					// both outputs are true --> o_is_different_var is false
-					solver_->incAdd3LitClause(-correct_outputs[cnt], -out_cnf_values[cnt],
-							-o_is_different_var);
+					solver_->incAdd3LitClause(-correct_outputs[out_idx],
+							-out_cnf_values[out_idx], -o_is_different_var);
 					// both outputs are false --> o_is_different_var is false
-					solver_->incAdd3LitClause(correct_outputs[cnt], out_cnf_values[cnt],
+					solver_->incAdd3LitClause(correct_outputs[out_idx], out_cnf_values[out_idx],
 							-o_is_different_var);
+
+					if (environment_model_)
+					{
+						int output_is_relevant = env_outputs[out_idx];
+
+						// res = o_is_diff AND o_is_relevant
+						int res = next_free_cnf_var++;
+						solver_->incAdd2LitClause(o_is_different_var, -res);
+						solver_->incAdd2LitClause(output_is_relevant, -res);
+						solver_->incAdd3LitClause(-o_is_different_var, -output_is_relevant,
+								res);
+
+						o_is_different_var = res;
+
+					}
 					o_is_diff_clause.push_back(o_is_different_var);
 				}
 			}
@@ -593,7 +634,8 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			if (useDiagnostic)
 			{
 				vector<int> cj_f_openinputs = f;
-				cj_f_openinputs.insert(cj_f_openinputs.end(), cj_literals.begin(), cj_literals.end());
+				cj_f_openinputs.insert(cj_f_openinputs.end(), cj_literals.begin(),
+						cj_literals.end());
 				const vector<int> &open_in = sim_ok.getOpenInputVars();
 				cj_f_openinputs.insert(cj_f_openinputs.end(), open_in.begin(), open_in.end());
 
@@ -606,7 +648,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				{
 					trace = new ErrorTrace;
 
-					trace->error_timestep_ = i;
+					trace->error_timestep_ = timestep;
 					ErrorTraceManager::instance().error_traces_.push_back(trace);
 				}
 
@@ -636,11 +678,12 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 						map<int, unsigned>::iterator it = fi_to_timestep.find(lit);
 						if (lit > 0 && it != fi_to_timestep.end()) // we have found the fi variable which was set to TRUE
 						{
-							trace->flipped_timestep_ = it->second; // store i
+							trace->flipped_timestep_ = it->second; // store timestep
 						}
 						else if (it == fi_to_timestep.end()) // if not in map, then it must be a free input literal
 						{
-							cnf_input_var_to_aig_truth_lit[lit] = (lit > 0) ? AIG_TRUE : AIG_FALSE;
+							cnf_input_var_to_aig_truth_lit[lit] =
+									(lit > 0) ? AIG_TRUE : AIG_FALSE;
 						}
 
 					}
@@ -656,7 +699,8 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 						vector<int> real_input_vector;
 						real_input_vector.reserve(in->size());
-						for (vector<int>::const_iterator iv = in->begin(); iv != in->end(); ++iv)
+						for (vector<int>::const_iterator iv = in->begin(); iv != in->end();
+								++iv)
 						{
 							real_input_vector.push_back(cnf_input_var_to_aig_truth_lit[*iv]);
 						}
@@ -692,11 +736,11 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				{
 					lit_to_add = next_free_cnf_var++;
 					// both outputs are true --> o_is_different_var is false
-					solver_->incAdd3LitClause(-correct_next_state[cnt], -next_state_cnf_values[cnt],
-							-lit_to_add);
+					solver_->incAdd3LitClause(-correct_next_state[cnt],
+							-next_state_cnf_values[cnt], -lit_to_add);
 					// both outputs are false --> o_is_different_var is false
-					solver_->incAdd3LitClause(correct_next_state[cnt], next_state_cnf_values[cnt],
-							-lit_to_add);
+					solver_->incAdd3LitClause(correct_next_state[cnt],
+							next_state_cnf_values[cnt], -lit_to_add);
 				}
 
 				if (lit_to_add != CNF_FALSE)
@@ -716,12 +760,14 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				// single fault assumption: there might be at most one flipped component
 				set<int>::iterator l1_it;
 				set<int>::iterator l2_it;
-				for (l1_it = latches_to_check_.begin(); l1_it != latches_to_check_.end(); l1_it++)
+				for (l1_it = latches_to_check_.begin(); l1_it != latches_to_check_.end();
+						l1_it++)
 				{
 					l2_it = l1_it;
 					l2_it++;
 					for (; l2_it != latches_to_check_.end(); l2_it++)
-						solver_->incAdd2LitClause(-latch_to_cj[*l1_it >> 1], -latch_to_cj[*l2_it >> 1]);
+						solver_->incAdd2LitClause(-latch_to_cj[*l1_it >> 1],
+								-latch_to_cj[*l2_it >> 1]);
 				}
 				//------------------------------------------------------------------------------------
 
@@ -751,8 +797,9 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			//------------------------------------------------------------------------------------
 			// Optimization2: compute unsat core
 
-			if (f.size() > 1 && (unsat_core_interval_ != 0) && (f.size() % unsat_core_interval_ == 0)
-					&& (testcase.size() - i > unsat_core_interval_))
+			if (f.size() > 1 && (unsat_core_interval_ != 0)
+					&& (f.size() % unsat_core_interval_ == 0)
+					&& (testcase.size() - timestep > unsat_core_interval_))
 			{
 
 				vector<int> core_assumptions;
@@ -765,8 +812,8 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				vector<int> more_assumptions;
 				more_assumptions.push_back(next_state_is_diff);
 				vector<int> core;
-				bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions, f,
-						core);
+				bool is_sat_2 = solver_->incIsSatModelOrCore(core_assumptions, more_assumptions,
+						f, core);
 				MASSERT(is_sat_2 == false, "must not be satisfiable")
 
 				// TODO: not sure if there could be a more efficient way to do this
@@ -790,11 +837,45 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				{
 					f.push_back(-*it);
 				}
-				L_LOG("step"<<i<<" reduced f variables: " << num_reduced_f_variables)
+				L_LOG("step"<<timestep<<" reduced f variables: " << num_reduced_f_variables)
 				// END TODO
 
 			}
 
 		} // -- END "for each timestep in testcase" --
 	} // ------ END 'for each latch' ---------------
+}
+
+vector<vector<int> > SymbTimeLocationAnalysis::computeRelevantOutputs(TestCase& testcase)
+{
+	// if environment-model: define which output is relevant at which point in time:
+	vector<vector<int> > output_is_relevant;
+
+	output_is_relevant.reserve(testcase.size());
+	AigSimulator environment_sim(environment_model_);
+	environment_sim.setTestcase(testcase);
+	while (environment_sim.simulateOneTimeStep())
+	{
+		output_is_relevant.push_back(environment_sim.getOutputs());
+	}
+
+	return output_is_relevant;
+}
+
+bool SymbTimeLocationAnalysis::isARelevantOutputDifferent(vector<int>& out1, vector<int>& out2,
+		vector<int>& out_is_relevant)
+{
+	for (unsigned out_idx = 0; out_idx < out1.size(); out_idx++)
+	{
+		// if output is relevant
+		if (out_is_relevant[out_idx] == AIG_TRUE)
+		{
+			// AND output value is different
+			if (out2[out_idx] != out1[out_idx])
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }

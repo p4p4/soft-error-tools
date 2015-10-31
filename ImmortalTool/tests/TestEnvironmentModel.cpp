@@ -163,5 +163,24 @@ void TestEnvironmentModel::test7_sta2_basic_1()
 void TestEnvironmentModel::test8_sta2_basic_2()
 {
 	basic_test_2("sta", SymbTimeAnalysis::FREE_INPUTS);
+}
 
+void TestEnvironmentModel::test9_stla0_basic_1()
+{
+	basic_test_1("stla", SymbTimeLocationAnalysis::STANDARD);
+}
+
+void TestEnvironmentModel::test10_stla0_basic_2()
+{
+	basic_test_2("stla", SymbTimeLocationAnalysis::STANDARD);
+}
+
+void TestEnvironmentModel::test11_stla1_basic_1()
+{
+	basic_test_1("stla", SymbTimeLocationAnalysis::FREE_INPUTS);
+}
+
+void TestEnvironmentModel::test12_stla1_basic_2()
+{
+	basic_test_2("stla", SymbTimeLocationAnalysis::FREE_INPUTS);
 }

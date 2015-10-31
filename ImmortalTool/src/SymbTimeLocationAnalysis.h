@@ -139,6 +139,10 @@ unsigned unsat_core_interval_;
 /// @return The result of the assignment, i.e, *this.
 	SymbTimeLocationAnalysis& operator=(const SymbTimeLocationAnalysis &other);
 
+	vector<vector<int> > computeRelevantOutputs(TestCase& testcase);
+
+	bool isARelevantOutputDifferent(vector<int>& out1, vector<int>& out2, vector<int>& out_is_relevant);
+
 };
 
 #endif // SymbTimeLocationAnalysis_H__

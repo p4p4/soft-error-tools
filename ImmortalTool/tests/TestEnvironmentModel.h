@@ -50,6 +50,10 @@ CPPUNIT_TEST_SUITE(TestEnvironmentModel);
 	CPPUNIT_TEST(test6_sta1_basic_2);
 	CPPUNIT_TEST(test7_sta2_basic_1);
 	CPPUNIT_TEST(test8_sta2_basic_2);
+	CPPUNIT_TEST(test9_stla0_basic_1);
+	CPPUNIT_TEST(test10_stla0_basic_2);
+	CPPUNIT_TEST(test11_stla1_basic_1);
+	CPPUNIT_TEST(test12_stla1_basic_2);
 	CPPUNIT_TEST_SUITE_END()
 	;
 
@@ -67,45 +71,19 @@ public:
 
 protected:
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Basic env test 1, sim
+	// basic tests 1 and 2 for all BackEnd-Modes:
 	void test1_sim_basic_1();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Basic env test 2, sim
 	void test2_sim_basic_2();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Basic env test 1, sta0
 	void test3_sta0_basic_1();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Basic env test 2, sta0
 	void test4_sta0_basic_2();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Basic env test 1, sta1
 	void test5_sta1_basic_1();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Basic env test 2, sta1
 	void test6_sta1_basic_2();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Basic env test 1, sta2
 	void test7_sta2_basic_1();
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Basic env test 2, sta2
 	void test8_sta2_basic_2();
+	void test9_stla0_basic_1();
+	void test10_stla0_basic_2();
+	void test11_stla1_basic_1();
+	void test12_stla1_basic_2();
 
 };
 
