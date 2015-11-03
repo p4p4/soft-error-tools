@@ -154,16 +154,17 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 			TestCase& testcase = testcases[tci];
 
 			// if environment-model: define which output is relevant at which point in time:
-			vector<vector<int> > output_is_relevant;
+			AigSimulator* environment_sim = 0;
 			if (environment_model_)
-				output_is_relevant = computeRelevantOutputs(testcase);
+				environment_sim = new AigSimulator(environment_model_);
+
 
 			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{ // -------- BEGIN "for each timestep in testcase" -----------
 
 				// correct simulation
 				sim_->simulateOneTimeStep(testcase[timestep], concrete_state);
-				vector<int> outputs = sim_->getOutputs();
+				vector<int> outputs_ok = sim_->getOutputs();
 				vector<int> next_state = sim_->getNextLatchValues();
 //				Utils::debugPrint(next_state, "next state");
 
@@ -181,15 +182,28 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 //				Utils::debugPrint(outputs2, "outputs2");
 
 				// check if vulnerablitiy already found
-				bool equal_outputs = (outputs == outputs2);
+				bool equal_outputs = (outputs_ok == outputs2);
 				bool err_found_with_simulation = (!equal_outputs && !alarm);
 
 				// if we have an environment-model and different outputs, check if output is
 				// really relevant
+				vector<int> output_is_relevant;
+				if(environment_model_)
+				{
+					vector<int> env_input;
+					env_input.reserve(testcase[timestep].size() + outputs_ok.size());
+					env_input.insert(env_input.end(),
+							testcase[timestep].begin(), testcase[timestep].end());
+					env_input.insert(env_input.end(), outputs_ok.begin(),
+							outputs_ok.end());
+					environment_sim->simulateOneTimeStep(env_input);
+					output_is_relevant = environment_sim->getOutputs();
+					environment_sim->switchToNextState();
+				}
 				if (environment_model_ && err_found_with_simulation)
 				{
-					err_found_with_simulation = isARelevantOutputDifferent(outputs, outputs2,
-							output_is_relevant[timestep]);
+					err_found_with_simulation = isARelevantOutputDifferent(outputs_ok, outputs2,
+							output_is_relevant);
 				}
 
 				if (err_found_with_simulation)
@@ -290,19 +304,19 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				renamed_out_vars.reserve(cnf_o.size());
 				for (unsigned cnt = 0; cnt < cnf_o.size(); ++cnt)
 					renamed_out_vars.push_back(Utils::applyRen(real_rename_map, cnf_o[cnt]));
-//				Utils::debugPrint(renamed_out_vars, "symbolic outputs: ");
+//				Utils::debugPrint(renamed_out_vars, "symbolic outputs_ok: ");
 
-				// clause saying that the outputs o and o' are different
+				// clause saying that the outputs_ok o and o' are different
 				vector<int> o_is_diff_clause;
 				o_is_diff_clause.reserve(renamed_out_vars.size() + 1);
 				for (unsigned out_idx = 0; out_idx < renamed_out_vars.size(); ++out_idx)
 				{
 					// skip if output is not relevant
-					if (environment_model_ && output_is_relevant[timestep][out_idx] == AIG_FALSE)
+					if (environment_model_ && output_is_relevant[out_idx] == AIG_FALSE)
 						continue;
 
-					if (outputs[out_idx] == AIG_TRUE) // simulation result of output is true
-						o_is_diff_clause.push_back(-renamed_out_vars[out_idx]); // add false to outputs
+					if (outputs_ok[out_idx] == AIG_TRUE) // simulation result of output is true
+						o_is_diff_clause.push_back(-renamed_out_vars[out_idx]); // add false to outputs_ok
 					else
 						o_is_diff_clause.push_back(renamed_out_vars[out_idx]);
 				}
@@ -349,10 +363,14 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 				symb_state = renamed_next_state_vars;
 
 			} // -- END "for each timestep in testcase" --
+			if (environment_model_)
+				delete environment_sim;
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
 
 	delete sim_;
+
+
 }
 
 void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
@@ -396,9 +414,9 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 			TestCase& testcase = testcases[tci];
 
 			// if environment-model: define which output is relevant at which point in time:
-			vector<vector<int> > output_is_relevant;
+			AigSimulator* environment_sim = 0;
 			if (environment_model_)
-				output_is_relevant = computeRelevantOutputs(testcase);
+				environment_sim = new AigSimulator(environment_model_);
 
 			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
@@ -407,7 +425,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				// Concrete simulations:
 				// correct simulation
 				sim_->simulateOneTimeStep(testcase[timestep], concrete_state);
-				vector<int> outputs = sim_->getOutputs();
+				vector<int> outputs_ok = sim_->getOutputs();
 				vector<int> next_state = sim_->getNextLatchValues();
 
 				// faulty simulation: flip component bit
@@ -419,15 +437,28 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				vector<int> outputs2 = sim_->getOutputs();
 
 				bool alarm = (outputs2[outputs2.size() - 1] == AIG_TRUE);
-				bool equal_outputs = (outputs == outputs2);
+				bool equal_outputs = (outputs_ok == outputs2);
 				bool err_found_with_simulation = (!equal_outputs && !alarm);
 
 				// if we have an environment-model and different outputs, check if output is
 				// really relevant
+				vector<int> output_is_relevant;
+				if(environment_model_)
+				{
+					vector<int> env_input;
+					env_input.reserve(testcase[timestep].size() + outputs_ok.size());
+					env_input.insert(env_input.end(),
+							testcase[timestep].begin(), testcase[timestep].end());
+					env_input.insert(env_input.end(), outputs_ok.begin(),
+							outputs_ok.end());
+					environment_sim->simulateOneTimeStep(env_input);
+					output_is_relevant = environment_sim->getOutputs();
+					environment_sim->switchToNextState();
+				}
 				if (environment_model_ && err_found_with_simulation)
 				{
-					err_found_with_simulation = isARelevantOutputDifferent(outputs, outputs2,
-							output_is_relevant[timestep]);
+					err_found_with_simulation = isARelevantOutputDifferent(outputs_ok, outputs2,
+							output_is_relevant);
 				}
 
 				if (err_found_with_simulation)
@@ -506,16 +537,16 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 
 				//------------------------------------------------------------------------------------
-				// clause saying that the outputs o and o' are different
+				// clause saying that the outputs_ok o and o' are different
 				vector<int> o_is_diff_clause;
 				o_is_diff_clause.reserve(out_cnf_values.size() + 1);
 				for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
 				{
 					// skip if output is not relevant
-					if (environment_model_ && output_is_relevant[timestep][out_idx] == AIG_FALSE)
+					if (environment_model_ && output_is_relevant[out_idx] == AIG_FALSE)
 						continue;
 
-					if (outputs[out_idx] == AIG_TRUE) // simulation result of output is true
+					if (outputs_ok[out_idx] == AIG_TRUE) // simulation result of output is true
 						o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add false to outputs
 					else
 						o_is_diff_clause.push_back(out_cnf_values[out_idx]);
@@ -701,15 +732,15 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 			TestCase& testcase = testcases[tci];
 			TestCase real_cnf_inputs;
 
-			for (unsigned i = 0; i < testcase.size(); i++)
+			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
 
 				//------------------------------------------------------------------------------------
 				// Concrete simulations:
 				// correct simulation
-				sim_ok.simulateOneTimeStep(testcase[i]);
+				sim_ok.simulateOneTimeStep(testcase[timestep]);
 //				sim_->simulateOneTimeStep(testcase[i], concrete_state);
-				const vector<int> &outputs = sim_ok.getOutputValues();
+				const vector<int> &outputs_ok = sim_ok.getOutputValues();
 				const vector<int> &next_state = sim_ok.getNextLatchValues();
 
 //				// faulty simulation: flip component bit
@@ -771,7 +802,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 						solver_->incAdd2LitClause(-fi, -f[cnt]);
 
 					f.push_back(fi);
-					fi_to_timestep[fi] = i;
+					fi_to_timestep[fi] = timestep;
 				}
 				//------------------------------------------------------------------------------------
 
@@ -783,8 +814,15 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				vector<int> env_outputs;
 				if (environment_model_)
 				{
+					vector<int> env_input;
+					const vector<int>& input_values = sim_ok.getInputValues();
 
-					sim_env->setCnfInputValues(sim_ok.getInputValues());
+					env_input.reserve(input_values.size() + outputs_ok.size());
+					env_input.insert(env_input.end(), input_values.begin(),
+							input_values.end());
+					env_input.insert(env_input.end(), outputs_ok.begin(), outputs_ok.end());
+
+					sim_env->setCnfInputValues(env_input);
 					sim_env->simulateOneTimeStep();
 					env_outputs = sim_env->getOutputValues();
 					sim_env->switchToNextState();
@@ -798,29 +836,29 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				const vector<int> &next_state_cnf_values = symbsim.getLatchValues();
 
 				//------------------------------------------------------------------------------------
-				// clause saying that the outputs o and o' are different
+				// clause saying that the outputs_ok o and o' are different
 				int o_is_diff_enable_literal = next_free_cnf_var++;
 				vector<int> o_is_diff_clause;
 
 				o_is_diff_clause.reserve(out_cnf_values.size() + 1);
 				for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
 				{
-					if (!environment_model_ && outputs[out_idx] == CNF_TRUE) // simulation result of output is true
+					if (!environment_model_ && outputs_ok[out_idx] == CNF_TRUE) // simulation result of output is true
 						o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add negated output
-					else if (!environment_model_ && outputs[out_idx] == CNF_FALSE)
+					else if (!environment_model_ && outputs_ok[out_idx] == CNF_FALSE)
 						o_is_diff_clause.push_back(out_cnf_values[out_idx]);
 					else if (!environment_model_ && out_cnf_values[out_idx] == CNF_TRUE)
-						o_is_diff_clause.push_back(-outputs[out_idx]);
+						o_is_diff_clause.push_back(-outputs_ok[out_idx]);
 					else if (!environment_model_ && out_cnf_values[out_idx] == CNF_FALSE)
-						o_is_diff_clause.push_back(-outputs[out_idx]);
-					else if (out_cnf_values[out_idx] != outputs[out_idx]) // both are symbolic and not equal
+						o_is_diff_clause.push_back(-outputs_ok[out_idx]);
+					else if (out_cnf_values[out_idx] != outputs_ok[out_idx]) // both are symbolic and not equal
 					{
 						int o_is_different_var = next_free_cnf_var++;
-						// both outputs are true --> o_is_different_var is false
-						solver_->incAdd3LitClause(-outputs[out_idx], -out_cnf_values[out_idx],
+						// both outputs_ok are true --> o_is_different_var is false
+						solver_->incAdd3LitClause(-outputs_ok[out_idx], -out_cnf_values[out_idx],
 								-o_is_different_var);
-						// both outputs are false --> o_is_different_var is false
-						solver_->incAdd3LitClause(outputs[out_idx], out_cnf_values[out_idx],
+						// both outputs_ok are false --> o_is_different_var is false
+						solver_->incAdd3LitClause(outputs_ok[out_idx], out_cnf_values[out_idx],
 								-o_is_different_var);
 
 						if (environment_model_)
@@ -873,7 +911,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 					vulnerable_elements_.insert(component_aig);
 					if (Options::instance().isUseDiagnosticOutput())
 					{
-						addErrorTrace(component_aig, i, fi_to_timestep, model, real_cnf_inputs,
+						addErrorTrace(component_aig, timestep, fi_to_timestep, model, real_cnf_inputs,
 								true);
 					}
 					break;
@@ -899,10 +937,10 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 					else if (next_state[cnt] != next_state_cnf_values[cnt]) // both are symbolic and not equal
 					{
 						lit_to_add = next_free_cnf_var++;
-						// both outputs are true --> o_is_different_var is false
+						// both outputs_ok are true --> o_is_different_var is false
 						solver_->incAdd3LitClause(-next_state[cnt], -next_state_cnf_values[cnt],
 								-lit_to_add);
-						// both outputs are false --> o_is_different_var is false
+						// both outputs_ok are false --> o_is_different_var is false
 						solver_->incAdd3LitClause(next_state[cnt], next_state_cnf_values[cnt],
 								-lit_to_add);
 					}
@@ -980,7 +1018,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 					{
 						f.push_back(-*it);
 					}
-					L_LOG("step"<<i<<" reduced f variables: " << num_reduced_f_variables)
+					L_LOG("step"<<timestep<<" reduced f variables: " << num_reduced_f_variables)
 					// END TODO
 
 				}
