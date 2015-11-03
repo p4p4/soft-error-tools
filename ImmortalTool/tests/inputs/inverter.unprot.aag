@@ -1,3 +1,8 @@
-aag 1 1 0 1 0
+aag 3 3 0 1 0
 2
+4
+6
 3
+c
+----------------------------------------------------
+inputs 4 and 6 are unused (output values of one_latch_unprotected)

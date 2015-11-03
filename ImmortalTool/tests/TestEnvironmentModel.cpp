@@ -77,7 +77,7 @@ void TestEnvironmentModel::basic_test_1(std::string backend_name, int mode)
 	backend->findVulnerabilities(1, 5); // first without environment
 	CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 1);
 	// in this test the output is always false, i.e. we don't care about the output
-	aiger* environment = Utils::readAiger("inputs/one_latch.unprotected.aag");
+	aiger* environment = Utils::readAiger("inputs/env1.aag");
 	backend->setEnvironmentModel(environment);
 	backend->findVulnerabilities(1, 5);
 	CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 0);

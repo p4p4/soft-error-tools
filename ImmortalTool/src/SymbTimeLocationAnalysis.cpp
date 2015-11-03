@@ -844,6 +844,9 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 
 		} // -- END "for each timestep in testcase" --
 	} // ------ END 'for each latch' ---------------
+
+	if(sim_env)
+		delete sim_env;
 }
 
 vector<vector<int> > SymbTimeLocationAnalysis::computeRelevantOutputs(TestCase& testcase)

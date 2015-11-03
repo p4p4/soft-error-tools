@@ -63,6 +63,9 @@ public:
 ///         the cube, i.e., the cube contains only negated literals). False otherwise.
   static bool containsInit(const vector<int> &cube);
 
+
+  static TestCase combineTestCases (TestCase& left, TestCase& right);
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief reads and parses an aigsim-file and stores (appends!) it as testcase

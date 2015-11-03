@@ -1,0 +1,10 @@
+aag 3 2 1 2 0
+2
+4
+6 6
+6
+0
+o1 Err_out_Final
+c
+----------------------------------------------------
+inputs 2 and 4 are unused (output values of one_latch_unprotected)

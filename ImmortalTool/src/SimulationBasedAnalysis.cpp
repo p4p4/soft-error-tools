@@ -95,10 +95,11 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	vector<vector<int> > output_is_relevant;
 	if(environment_model_)
 	{
-		output_is_relevant.reserve(current_TC_.size());
+		TestCase env_tc = Utils::combineTestCases(current_TC_, outputs_ok);
+		output_is_relevant.reserve(env_tc.size());
 
 		AigSimulator environment_sim(environment_model_);
-		environment_sim.setTestcase(current_TC_);
+		environment_sim.setTestcase(env_tc);
 		while (environment_sim.simulateOneTimeStep())
 		{
 			output_is_relevant.push_back(environment_sim.getOutputs());
