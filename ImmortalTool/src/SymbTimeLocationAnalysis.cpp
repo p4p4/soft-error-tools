@@ -158,9 +158,9 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 		TestCase& testcase = testcases[tc_number];
 
 		// if environment-model: define which output is relevant at which point in time:
-		vector<vector<int> > output_is_relevant;
+		AigSimulator* environment_sim = 0;
 		if (environment_model_)
-			output_is_relevant = computeRelevantOutputs(testcase);
+			environment_sim = new AigSimulator(environment_model_);
 
 		for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
@@ -168,7 +168,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			//--------------------------------------------------------------------------------------
 			// Concrete simulations:
 			sim_->simulateOneTimeStep(testcase[timestep], concrete_state);
-			vector<int> outputs = sim_->getOutputs();
+			vector<int> outputs_ok = sim_->getOutputs();
 			vector<int> next_state = sim_->getNextLatchValues();
 
 			// switch concrete simulation to next state
@@ -224,19 +224,33 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			const vector<int> &next_state_cnf_values = symbsim.getLatchValues(); // already next st
 			//--------------------------------------------------------------------------------------
 
+			vector<int> output_is_relevant;
+			if(environment_model_)
+			{
+				vector<int> env_input;
+				env_input.reserve(testcase[timestep].size() + outputs_ok.size());
+				env_input.insert(env_input.end(),
+						testcase[timestep].begin(), testcase[timestep].end());
+				env_input.insert(env_input.end(), outputs_ok.begin(),
+						outputs_ok.end());
+				environment_sim->simulateOneTimeStep(env_input);
+				output_is_relevant = environment_sim->getOutputs();
+				environment_sim->switchToNextState();
+			}
+
 			//--------------------------------------------------------------------------------------
-			// clause saying that the outputs o and o' are different
+			// clause saying that the outputs_ok o and o' are different
 			vector<int> o_is_diff_clause;
 			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
 			for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
 			{
 				// skip if output is not relevant
-				if (environment_model_ && output_is_relevant[timestep][out_idx] == AIG_FALSE)
+				if (environment_model_ && output_is_relevant[out_idx] == AIG_FALSE)
 					continue;
 
-				if (outputs[out_idx] == AIG_TRUE) // simulation result of output is true
+				if (outputs_ok[out_idx] == AIG_TRUE) // simulation result of output is true
 					o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add negated output
-				else if (outputs[out_idx] == AIG_FALSE)
+				else if (outputs_ok[out_idx] == AIG_FALSE)
 					o_is_diff_clause.push_back(out_cnf_values[out_idx]);
 			}
 			int o_is_diff_enable_literal = next_free_cnf_var++;
@@ -413,7 +427,10 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			}
 
 		} // -- END "for each timestep in testcase" --
-	} // ------ END 'for each latch' ---------------
+		if (environment_model_)
+			delete environment_sim;
+	} // ------ END 'for each testcase' ---------------
+
 
 	delete sim_;
 }
@@ -560,8 +577,15 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			vector<int> env_outputs;
 			if (environment_model_)
 			{
+				vector<int> env_input;
+				const vector<int>& input_values = sim_ok.getInputValues();
 
-				sim_env->setCnfInputValues(sim_ok.getInputValues());
+				env_input.reserve(input_values.size() + correct_outputs.size());
+				env_input.insert(env_input.end(), input_values.begin(),
+						input_values.end());
+				env_input.insert(env_input.end(), correct_outputs.begin(), correct_outputs.end());
+
+				sim_env->setCnfInputValues(env_input);
 				sim_env->simulateOneTimeStep();
 				env_outputs = sim_env->getOutputValues();
 				sim_env->switchToNextState();
