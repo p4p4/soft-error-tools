@@ -5,6 +5,7 @@ AndCacheMap.cpp
 BackEnd.cpp
 CNF.cpp
 ErrorTraceManager.cpp
+FalsePositives.cpp
 LingelingApi.cpp
 Logger.cpp
 MiniSatApi.cpp

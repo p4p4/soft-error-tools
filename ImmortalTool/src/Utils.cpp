@@ -255,15 +255,6 @@ void Utils::logPrint(const vector<int> &vec, string prefix)
 	L_LOG(prefix << oss.str());
 }
 
-// -------------------------------------------------------------------------------------------
-void Utils::debugCheckWinReg(const CNF &winning_region)
-{
-#ifndef NDEBUG
-	CNF neg_winnning_region(winning_region);
-	neg_winnning_region.negate();
-	debugCheckWinReg(winning_region, neg_winnning_region);
-#endif
-}
 
 // -------------------------------------------------------------------------------------------
 void Utils::debugPrintCurrentMemUsage()

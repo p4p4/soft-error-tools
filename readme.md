@@ -42,6 +42,9 @@ IMMORTALTP to the same path as DEMIURGETPD instead of re-installing the librarie
 
 the *executable* is located here: ImmortalTool/build/src/immortal-bin
 
+Dependencies (tested for Ubuntu 15.10):
+zlib1g-dev cmake build-essential
+
 
 
 ## 2.2 How to use openSEA:
