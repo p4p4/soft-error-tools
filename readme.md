@@ -45,6 +45,9 @@ the *executable* is located here: ImmortalTool/build/src/immortal-bin
 Dependencies (tested for Ubuntu 15.10):
 zlib1g-dev cmake build-essential
 
+ad 1.: in .bashrc, dadd something like
+export IMMORTALTP=/path/to/libs
+
 
 
 ## 2.2 How to use openSEA:

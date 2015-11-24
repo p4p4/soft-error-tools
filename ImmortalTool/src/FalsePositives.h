@@ -78,6 +78,25 @@ protected:
 	unsigned num_err_latches_;
 
 private:
+	class SuperfluousTrace
+	{
+
+		int component_;
+		unsigned flip_timestep_;
+		unsigned alarm_timestep_;
+		unsigned error_gone_timestep_;
+		TestCase& testcase_;
+	public:
+		SuperfluousTrace(int component, TestCase& testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts) : testcase_(testcase)
+		{
+			component_ = component;
+			flip_timestep_ = flip_timestep;
+			alarm_timestep_ = alarm_timestep;
+			error_gone_timestep_ = error_gone_ts;
+		}
+
+
+	};
 
 // -------------------------------------------------------------------------------------------
 ///

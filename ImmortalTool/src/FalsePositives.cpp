@@ -23,7 +23,6 @@
 /// @brief Contains the definition of the class FalsePositives.
 // -------------------------------------------------------------------------------------------
 
-
 #include "FalsePositives.h"
 #include "SatSolver.h"
 #include "AigSimulator.h"
@@ -38,9 +37,9 @@ extern "C"
 // -------------------------------------------------------------------------------------------
 FalsePositives::FalsePositives(aiger* circuit, int num_err_latches)
 {
-  circuit_ = circuit;
-  num_err_latches_ = num_err_latches;
-  mode_ = 0;
+	circuit_ = circuit;
+	num_err_latches_ = num_err_latches;
+	mode_ = 0;
 
 }
 
@@ -51,11 +50,11 @@ FalsePositives::~FalsePositives()
 
 bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 {
-	SatSolver* solver_ =  Options::instance().getSATSolver();
+	SatSolver* solver_ = Options::instance().getSATSolver();
 	AigSimulator* sim_ = new AigSimulator(circuit_);
 	int next_free_cnf_var = 2;
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
-
+	vector<SuperfluousTrace*> superfluous; // TODO: use it, maybe declare as member
 // ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
@@ -63,6 +62,8 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 		int component_cnf = component_aig >> 1;
 
 		next_free_cnf_var = 2;
+
+
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -78,18 +79,19 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 			// a set of literals to enable or disable the represented output_is_different clauses,
 			// necessary for incremental solving. At each sat-solver call only the newest clause
 			// must be active:The newest enable-lit is always set to FALSE, while all other are TRUE
-			vector<int> odiff_enable_literals;
+			vector<int> enable_literals;
 
 			// start new incremental SAT-solving session
 			vector<int> vars_to_keep;
-			vars_to_keep.push_back(1); // TRUE and FALSE literals
+			vars_to_keep.push_back(CNF_FALSE);
 			solver_->startIncrementalSession(vars_to_keep, 0);
-			solver_->incAddUnitClause(-1); // -1 = TRUE constant
+			solver_->incAddUnitClause(CNF_TRUE);
 
 			symbsim.initLatches(); // initialize latches to false
 
 			TestCase& testcase = testcases[tci];
 
+			vector<int> alarm_outputs;
 
 			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{ // -------- BEGIN "for each timestep in testcase" ------------------------------------
@@ -100,7 +102,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				sim_->simulateOneTimeStep(testcase[timestep], concrete_state_ok);
 				vector<int> outputs_ok = sim_->getOutputs();
 				bool alarm_ok = outputs_ok.back() == AIG_TRUE;
-				if(alarm_ok)
+				if (alarm_ok)
 				{
 					cout << "Alarm raised without Error!" << endl;
 					return true;
@@ -109,7 +111,9 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 				// faulty simulation: flip component bit
 				vector<int> faulty_state = concrete_state_ok;
-				faulty_state[c_cnt] = (faulty_state[c_cnt] == AIG_TRUE) ? AIG_FALSE : AIG_TRUE;
+				faulty_state[c_cnt] = (faulty_state[c_cnt] == AIG_TRUE) ?
+				AIG_FALSE :
+																			AIG_TRUE;
 
 				// faulty simulation with flipped bit
 				sim_->simulateOneTimeStep(testcase[timestep], faulty_state);
@@ -117,45 +121,110 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				vector<int> next_state_faulty = sim_->getNextLatchValues();
 				bool alarm_faulty = outputs_faulty.back() == AIG_TRUE;
 
+				symbsim.setInputValues(testcase[timestep]);
 
-				// switch concrete simulation to next state
-				concrete_state_ok = next_state_ok; // OR: change to sim_->switchToNextState();
-
-
-				if (outputs_ok == outputs_faulty && next_state_ok == next_state_faulty && alarm_faulty)
+				if (outputs_ok == outputs_faulty && next_state_ok == next_state_faulty
+						&& alarm_faulty)
 				{
-					// superfluous.push_back() ..... TODO
-					// ...
+					SuperfluousTrace* sf = new SuperfluousTrace(component_aig, testcase, timestep, timestep, timestep + 1);
+					superfluous.push_back(sf);
+					symbsim.simulateOneTimeStep();
+					alarm_outputs.push_back(symbsim.getAlarmValue());
+					symbsim.switchToNextState();
+
+					// switch concrete simulation to next state
+					concrete_state_ok = next_state_ok; // OR: change to sim_->switchToNextState();
 					continue;
 				}
 
-				if (outputs_ok != outputs_faulty || !alarm_faulty)
+				if (outputs_ok == outputs_faulty && alarm_faulty)
 				{
-					// TODO
+					// f variables:
+					int fi = next_free_cnf_var++;
+					solver_->addVarToKeep(fi);
+
+					int old_value = symbsim.getResultValue(component_cnf);
+					if (old_value == CNF_TRUE) // old value is true
+						symbsim.setResultValue(component_cnf, -fi);
+					else if (old_value == CNF_FALSE) // old value is false
+						symbsim.setResultValue(component_cnf, fi);
+					else
+					{
+						int new_value = next_free_cnf_var++;
+						solver_->addVarToKeep(new_value);
+						// new_value == fi ? -old_value : old_value
+						solver_->incAdd3LitClause(fi, old_value, -new_value);
+						solver_->incAdd3LitClause(fi, -old_value, new_value);
+						solver_->incAdd3LitClause(-fi, old_value, new_value);
+						solver_->incAdd3LitClause(-fi, -old_value, -new_value);
+						symbsim.setResultValue(component_cnf, new_value);
+					}
+
+					// there might be at most one flip in one time-step:
+					// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
+					for (unsigned cnt = 0; cnt < f.size(); cnt++)
+						solver_->incAdd2LitClause(-fi, -f[cnt]);
+
+					f.push_back(fi);
+					fi_to_timestep[fi] = timestep;
+
 				}
-				else
-				{
-					// fi etc
-				}
+				symbsim.simulateOneTimeStep();
+				alarm_outputs.push_back(symbsim.getAlarmValue());
+
+				const vector<int> &state_cnf_values = symbsim.getLatchValues();
+
+				symbsim.switchToNextState();
 				//------------------------------------------------------------------------------------
 
+				//------------------------------------------------------------------------------------
+				// clause saying that the outputs_ok o and o' are different
+				vector<int> state_is_equal_clause;
+				state_is_equal_clause.reserve(state_cnf_values.size() + 1);
+				for (unsigned state_idx = 0; state_idx < state_cnf_values.size(); ++state_idx)
+				{
 
+					if (concrete_state_ok[state_idx] == AIG_FALSE)
+						state_is_equal_clause.push_back(-state_cnf_values[state_idx]); // add false to outputs
+					else
+						state_is_equal_clause.push_back(state_cnf_values[state_idx]);
+				}
+				int curr_enable_literal = next_free_cnf_var++;
+				state_is_equal_clause.push_back(curr_enable_literal);
+				enable_literals.push_back(-curr_enable_literal);
+				solver_->addVarToKeep(curr_enable_literal);
+				solver_->incAddClause(state_is_equal_clause);
 
+				vector<int> current_alarm_clause = alarm_outputs;
+				current_alarm_clause.push_back(curr_enable_literal);
+				solver_->incAddClause(current_alarm_clause);
+				//------------------------------------------------------------------------------------
+
+				// switch concrete simulation to next state
+				concrete_state_ok = next_state_ok; // OR: change to sim_->switchToNextState();
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
 
 				vector<int> model;
-				bool sat = solver_->incIsSatModelOrCore(odiff_enable_literals, f, model);
+				bool sat = solver_->incIsSatModelOrCore(enable_literals, f, model);
 
-
-				odiff_enable_literals.back() = -odiff_enable_literals.back();
-
-				if (sat)
+				while (sat)
 				{
-//					vulnerable_elements_.insert(component_aig);
+					// TODO: parse model;
+					int component = 0; // TODO
+					unsigned flip_timestep = 0; //fi_to_timestep
+					unsigned fj = 0;
+					unsigned alarm_timestep = 0;
+
+					// TODO: replace by a function
+					SuperfluousTrace* sf = new SuperfluousTrace(component, testcase, flip_timestep, alarm_timestep, timestep);
+					superfluous.push_back(sf);
+
+					solver_->incAddUnitClause(-fj);
 					break;
 				}
 
+				enable_literals.back() = -enable_literals.back();
 
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
