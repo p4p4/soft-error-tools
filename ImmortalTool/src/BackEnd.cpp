@@ -24,6 +24,7 @@
 #include <algorithm>
 
 #include "BackEnd.h"
+#include "Utils.h"
 
 extern "C"
 {
@@ -58,20 +59,7 @@ bool BackEnd::findVulnerabilities(unsigned num_of_TCs, unsigned num_of_timesteps
 
 	// 1. generate random testcases
 	vector<TestCase> testcases;
-	testcases.reserve(num_of_TCs);
-	for (unsigned tc_i = 0; tc_i < num_of_TCs; tc_i++)
-	{
-		TestCase tc;
-		tc.reserve(num_of_timesteps);
-		for (unsigned timestep = 0; timestep < num_of_timesteps; timestep++)
-		{
-			vector<int> inputs;
-			inputs.reserve(circuit_->num_inputs);
-			generate_n(back_inserter(inputs), circuit_->num_inputs, gen_rand());
-			tc.push_back(inputs);
-		}
-		testcases.push_back(tc);
-	}
+	Utils::generateRandomTestCases(testcases, num_of_TCs,num_of_timesteps,circuit_->num_inputs);
 
 	// 2. run testcases:
 	return findVulnerabilities(testcases);

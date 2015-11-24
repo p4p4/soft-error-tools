@@ -155,14 +155,7 @@ public:
 /// @param cube_or_clause The cube or clause in which all literals should be negated.
   static void negateLiterals(vector<int> &cube_or_clause);
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Replaces all current-state literals by their next-state copy.
-///
-/// @note The passed vector of literals must only contain current-state literals.
-/// @param vec The vector of literals in which all current-state literals (it must only talk
-///        about current-state literals) should be replaced by their next-state copy.
-  static void swapPresentToNext(vector<int> &vec);
+
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -191,65 +184,7 @@ public:
 /// @return True if 'subset' is really a subset of 'superset', false otherwise.
   static bool isSubset(const vector<int> &subset, const vector<int> &superset);
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Compresses a state-CNF by removing clauses that are implied by others.
-///
-/// This is done by incremental SAT-solving and is usually quite fast (at least compared to
-/// QBF solving).
-///
-/// @param cnf The CNF formula to compress.
-/// @param hardcore Set this parameter to true if you do not only want to remove clauses but
-///        also literals from clauses. This is more expensive, but can produce smaller CNF
-///        representations.
-/// @return True if the CNF was modified, false otherwise.
-  static bool compressStateCNF(CNF &cnf, bool hardcore = false);
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Negates a CNF over the state-variables without introducing temporary variables.
-///
-/// The negation of the passed CNF is computed via computational learning. It uses a SAT
-/// solver in an incremental fashion. This is more expensive than simply calling
-/// cnf.negate(), but it does not introduce temporary variables, and hence may lead to a
-/// smaller CNF.
-///
-/// @param cnf The CNF formula to negate.
-  static void negateStateCNF(CNF &cnf);
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Negates a CNF by transforming into AIGER and back.
-///
-/// This method performs the following 3 steps to negate a CNF: (1) the CNF is transformed
-/// into AIGER format, (2) optimized with ABC, and (3) transformed back into CNF. The new
-/// CNF has one (fresh) temporary variable per AIGER gate.
-///
-/// @param cnf The CNF formula to negate.
-  static void negateViaAig(CNF &cnf);
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Compresses a state-CNF by removing implied clauses and computes the next-state CNF.
-///
-/// This method is similar to #compressStateCNF(). The difference is that this method also
-/// computes a compact representation of the next-state copy of passed state-CNF. When
-/// compressing the next-state copy, clauses are removed if they are already implied by
-/// existing clauses or the present-state copy of the CNF. That is, the compression of the
-/// next-state copy is only valid if the current-state copy is going to be asserted in the
-/// solver.
-//
-///
-/// @param ps_cnf The CNF formula to compress. We assume that this CNF only talks about the
-///        present-state variables. This CNF is compressed, similar as done by
-///        #compressStateCNF().
-/// @param ns_cnf An empty CNF. This CNF is filled with the compression of the next-state
-///        copy of ps_cnf. The resulting ns_cnf is only valid under the assumption that
-///        ps_cnf is asserted.
-/// @param hardcore Set this parameter to true if you do not only want to remove clauses but
-///        also literals from clauses. This is more expensive, but can produce smaller CNF
-///        representations.
-  static void compressNextStateCNF(CNF &ps_cnf, CNF &ns_cnf, bool hardcore = false);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -283,53 +218,6 @@ public:
     return  oss.str();
   }
 
-//  static void logPrint(const set<int> &set, string prefix = "");
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Checks a winning region for correctness.
-///
-/// The check is only done in debug-mode. In release-mode this method does nothing.
-/// In debug-mode this method checks three properties of a winning region W.
-/// <ol>
-///  <li> I(x) => W(x): every initial state must be contained in the winning region
-///  <li> W(x) => P(x): every state of the winning region must be safe
-///  <li> forall x,i: exists c,x': W(x) => (T(x,i,c,x') & W(x')): from every state in the
-///       winning region it must be possible to stay in the winning region by setting the
-///       c-signals appropriately.
-/// </ol>
-/// These three properties are sufficient for turning the winning region into a circuit.
-/// However, thise conditions are not necessary. E.g., if optimization RC is used by
-/// LearnSynthQBFInd or LearnSynthSAT, the third property does not hold. Hence, these
-/// classes have special methods to check such winning regions.
-///
-/// @param winning_region The winning region to check.
-  static void debugCheckWinReg(const CNF &winning_region);
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Checks a winning region and its negation for correctness.
-///
-/// Use this method if you have the negation of the winning region available. Otherwise, we
-/// would end up with a double-negation, which is inefficient.
-///
-/// The check is only done in debug-mode. In release-mode this method does nothing.
-/// In debug-mode this method checks three properties of a winning region W.
-/// <ol>
-///  <li> I(x) => W(x): every initial state must be contained in the winning region
-///  <li> W(x) => P(x): every state of the winning region must be safe
-///  <li> forall x,i: exists c,x': W(x) => (T(x,i,c,x') & W(x')): from every state in the
-///       winning region it must be possible to stay in the winning region by setting the
-///       c-signals appropriately.
-/// </ol>
-/// These three properties are sufficient for turning the winning region into a circuit.
-/// However, thise conditions are not necessary. E.g., if optimization RC is used by
-/// LearnSynthQBFInd or LearnSynthSAT, the third property does not hold. Hence, these
-/// classes have special methods to check such winning regions.
-///
-/// @param winning_region The winning region to check.
-/// @param neg_winning_region The negation of the winning region to check.
-  static void debugCheckWinReg(const CNF &winning_region, const CNF &neg_winning_region);
 
 
   static inline int applyRen(const vector<int> &rename_map, int lit)
@@ -348,6 +236,21 @@ public:
 ///
 /// @brief Prints the current memory usage as debug message.
   static void debugPrintCurrentMemUsage();
+
+  static void generateRandomTestCases(vector<TestCase>& testcases, unsigned num_of_TCs,
+			unsigned num_of_timesteps, unsigned num_inputs);
+
+  // -------------------------------------------------------------------------------------------
+  ///
+  /// @brief randomly generates 0 or 1
+  ///
+  	struct gen_rand {
+  	public:
+  	    gen_rand() {}
+  	    int operator()() {
+  	        return rand() % 2;
+  	    }
+  	};
 
 protected:
 

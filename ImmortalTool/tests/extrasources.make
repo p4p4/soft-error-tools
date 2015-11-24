@@ -1,6 +1,7 @@
 TestAigSimulator.cpp
 TestAigToCNF.cpp
 TestEnvironmentModel.cpp
+TestFalsePositives.cpp
 TestFreeInputs.cpp
 TestSimulationBasedAnalysis.cpp
 TestSymbTimeAnalysis.cpp
