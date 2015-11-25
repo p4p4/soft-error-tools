@@ -28,6 +28,7 @@
 #include "AigSimulator.h"
 #include "SymbolicSimulator.h"
 #include "Options.h"
+#include "Utils.h"
 
 extern "C"
 {
@@ -50,7 +51,6 @@ FalsePositives::~FalsePositives()
 
 bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 {
-	cout << "Hallo, test" << endl;
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();
@@ -60,6 +60,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
+//		cout << "latch " << c_cnt << endl;
 		next_free_cnf_var = 2;
 
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
@@ -99,6 +100,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				sim_concrete->simulateOneTimeStep(testcase[timestep], concrete_state_ok);
 				vector<int> outputs_ok = sim_concrete->getOutputs();
 				bool alarm_ok = outputs_ok.back() == AIG_TRUE;
+				//Utils::debugPrint(outputs_ok,"outputs_ok");
 				if (alarm_ok)
 				{
 					cout << "Alarm raised without Error!" << endl;
@@ -117,17 +119,14 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				bool alarm_faulty = outputs_faulty.back() == AIG_TRUE;
 				//------------------------------------------------------------------------------------
 
-
-
-				//------------------------------------------------------------------------------------
+				bool equal_concrete_outputs = isEqualN(outputs_ok, outputs_faulty, 1);
+				bool equal_concrete_states = isEqualN(next_state_ok, next_state_faulty, num_err_latches_);
 
 				sim_symb.setInputValues(testcase[timestep]);
 
-				if (outputs_ok == outputs_faulty && next_state_ok == next_state_faulty
-						&& alarm_faulty)
+				if (equal_concrete_outputs && equal_concrete_states && alarm_faulty)
 				{
-					addSuperfluousTrace(component_aig, testcase, timestep,
-							timestep, timestep + 1);
+					addSuperfluousTrace(component_aig, testcase, timestep, timestep, timestep + 1);
 					sim_symb.simulateOneTimeStep();
 					alarm_literals.push_back(sim_symb.getAlarmValue());
 					alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
@@ -138,7 +137,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					continue;
 				}
 
-				if (outputs_ok == outputs_faulty && alarm_faulty)
+				if (equal_concrete_outputs && alarm_faulty)
 				{
 					// f variables:
 					int fi = next_free_cnf_var++;
@@ -174,46 +173,55 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				alarm_literals.push_back(sim_symb.getAlarmValue());
 				alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
 
+				//cout << "alarm_value " << sim_symb.getAlarmValue() << endl;
+
+
+
 				const vector<int> &state_cnf_values = sim_symb.getLatchValues();
 
 				sim_symb.switchToNextState();
 				//------------------------------------------------------------------------------------
-
-				//------------------------------------------------------------------------------------
-				// clause saying that the state is equal
-				vector<int> state_is_equal_clause;
-				state_is_equal_clause.reserve(state_cnf_values.size() + 1);
-				for (unsigned state_idx = 0; state_idx < state_cnf_values.size(); ++state_idx)
-				{
-
-					if (concrete_state_ok[state_idx] == AIG_FALSE)
-						state_is_equal_clause.push_back(-state_cnf_values[state_idx]); // add false to outputs
-					else
-						state_is_equal_clause.push_back(state_cnf_values[state_idx]);
-				}
 				int curr_enable_literal = next_free_cnf_var++;
-				state_is_equal_clause.push_back(curr_enable_literal);
-				enable_literals.push_back(-curr_enable_literal);
 				solver_->addVarToKeep(curr_enable_literal);
-				solver_->incAddClause(state_is_equal_clause);
+				enable_literals.push_back(curr_enable_literal);
 
 				vector<int> current_alarm_clause = alarm_literals;
 				current_alarm_clause.push_back(curr_enable_literal);
 				solver_->incAddClause(current_alarm_clause);
 				//------------------------------------------------------------------------------------
+				// assumptions saying that the states are equal
+				vector<int> assumptions;
+				assumptions.reserve(state_cnf_values.size() - num_err_latches_ + enable_literals.size());
+				assumptions = enable_literals;
+				assumptions.back() = -assumptions.back();
+
+				for (unsigned state_idx = 0; state_idx < state_cnf_values.size() - num_err_latches_; ++state_idx)
+				{
+					if (concrete_state_ok[state_idx] == AIG_FALSE)
+						assumptions.push_back(-state_cnf_values[state_idx]);
+					else
+						assumptions.push_back(state_cnf_values[state_idx]);
+				}
+
+				//------------------------------------------------------------------------------------
 
 				// switch concrete simulation to next state
 				concrete_state_ok = next_state_ok; // OR: change to sim_->switchToNextState();
+
+
+
 				//------------------------------------------------------------------------------------
 				// call SAT-solver
 				vector<int> vars_of_interest = f;
 				vars_of_interest.insert(vars_of_interest.end(), alarm_literals.begin(), alarm_literals.end());
 
 				vector<int> model;
-				bool sat = solver_->incIsSatModelOrCore(enable_literals, vars_of_interest, model);
+				bool sat = solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model);
 
 				while (sat)
 				{
+					cout << "sat" << endl;
+					Utils::debugPrint(model,"model");
 					SuperfluousTrace* sf = new SuperfluousTrace(testcase);
 					sf->component_ = component_aig;
 					int earliest_alarm_timestep = timestep;
@@ -248,11 +256,10 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					sf->alarm_timestep_ = earliest_alarm_timestep;
 
 					superfluous.push_back(sf);
-					sat = solver_->incIsSatModelOrCore(enable_literals, vars_of_interest, model);
+					sat = solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model);
 				}
 
-				// set last enable literal to false
-				enable_literals.back() = -enable_literals.back();
+
 
 			} // -- END "for each timestep in testcase" --
 		} // end "for each testcase"
@@ -269,4 +276,11 @@ void FalsePositives::addSuperfluousTrace(int component, TestCase& testcase, unsi
 	SuperfluousTrace* sf = new SuperfluousTrace(component, testcase, flip_timestep, alarm_timestep,
 			error_gone_ts);
 	superfluous.push_back(sf);
+}
+
+bool FalsePositives::isEqualN(vector<int> a, vector<int> b, int elements_to_skip)
+{
+	unsigned length = a.size() - elements_to_skip;
+
+	return equal(a.begin(), a.begin() + length, b.begin());
 }

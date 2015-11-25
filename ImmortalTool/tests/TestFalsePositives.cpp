@@ -44,8 +44,9 @@ void TestFalsePositives::tearDown()
 }
 
 // -------------------------------------------------------------------------------------------
-void TestFalsePositives::test1()
+void TestFalsePositives::test1_no_alarm()
 {
+	Logger::instance().enable(Logger::DBG);
 	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
 	FalsePositives falsepos(circuit,1);
 
@@ -59,13 +60,60 @@ void TestFalsePositives::test1()
 //	aiger_reset(circuit);
 }
 
-void TestFalsePositives::test2()
+void TestFalsePositives::test2_alarm_without_error()
 {
+	Logger::instance().enable(Logger::DBG);
 	aiger* circuit = Utils::readAiger("inputs/one_latch.fp.aag");
-	FalsePositives falsepos(circuit,1);
+	FalsePositives falsepos(circuit,0);
 
 	vector<TestCase> tc;
 	Utils::generateRandomTestCases(tc,1,5,circuit->num_inputs);
 
+	// Alarm should be raised without an error:
 	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tc));
+}
+
+void TestFalsePositives::test3()
+{
+	aiger* circuit = Utils::readAiger("inputs/one_latch.fp2.aag");
+	FalsePositives falsepos(circuit,0);
+
+
+	// TC alarm values = 0,0,0
+	vector<int> input_vector_false;
+	input_vector_false.push_back(0);
+
+	TestCase tc;
+	tc.push_back(input_vector_false);
+	tc.push_back(input_vector_false);
+	tc.push_back(input_vector_false);
+
+	vector<TestCase> tcs;
+	tcs.push_back(tc);
+
+
+	CPPUNIT_ASSERT(!falsepos.findFalsePositives_1b(tcs));
+}
+
+void TestFalsePositives::test4()
+{
+	aiger* circuit = Utils::readAiger("inputs/one_latch.fp2.aag");
+	FalsePositives falsepos(circuit,0);
+
+	// TC alarm values = 0,0,1
+	vector<int> input_vector_false;
+	input_vector_false.push_back(0);
+	vector<int> input_vector_true;
+	input_vector_true.push_back(1);
+
+	TestCase tc;
+	tc.push_back(input_vector_false);
+	tc.push_back(input_vector_false);
+	tc.push_back(input_vector_true);
+
+	vector<TestCase> tcs;
+	tcs.push_back(tc);
+
+	// Alarm should be raised without an error:
+	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tcs));
 }

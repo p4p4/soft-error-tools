@@ -104,6 +104,8 @@ protected:
 
 	vector<SuperfluousTrace*> superfluous;
 
+	bool isEqualN(vector<int> a, vector<int> b, int elements_to_skip);
+
 
 private:
 

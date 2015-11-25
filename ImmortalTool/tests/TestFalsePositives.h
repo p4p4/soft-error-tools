@@ -36,8 +36,10 @@
 class TestFalsePositives : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestFalsePositives);
-  CPPUNIT_TEST(test1);
-  CPPUNIT_TEST(test2);
+  CPPUNIT_TEST(test1_no_alarm);
+  CPPUNIT_TEST(test2_alarm_without_error);
+  CPPUNIT_TEST(test3);
+  CPPUNIT_TEST(test4);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -55,8 +57,10 @@ public:
 protected:
 
 
-  void test1();
-  void test2();
+  void test1_no_alarm();
+  void test2_alarm_without_error();
+  void test3();
+  void test4();
 
 };
 
