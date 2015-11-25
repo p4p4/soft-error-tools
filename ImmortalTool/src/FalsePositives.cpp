@@ -50,6 +50,7 @@ FalsePositives::~FalsePositives()
 
 bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 {
+	cout << "Hallo, test" << endl;
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();

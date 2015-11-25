@@ -37,6 +37,7 @@ class TestFalsePositives : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestFalsePositives);
   CPPUNIT_TEST(test1);
+  CPPUNIT_TEST(test2);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -53,10 +54,9 @@ public:
 
 protected:
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Give brief description of test here.
+
   void test1();
+  void test2();
 
 };
 

@@ -59,4 +59,13 @@ void TestFalsePositives::test1()
 //	aiger_reset(circuit);
 }
 
+void TestFalsePositives::test2()
+{
+	aiger* circuit = Utils::readAiger("inputs/one_latch.fp.aag");
+	FalsePositives falsepos(circuit,1);
 
+	vector<TestCase> tc;
+	Utils::generateRandomTestCases(tc,1,5,circuit->num_inputs);
+
+	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tc));
+}
