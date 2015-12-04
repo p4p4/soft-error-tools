@@ -1,0 +1,12 @@
+aag 2 1 1 2 0
+2
+4 4
+4
+2
+o1 Err_out_Final
+c
+----------------------------------------------------
+Number of Latches (total): 1
+Latches to protect: 0% (0 Latches)
+Number of additional latches: 0
+## fake alarm: true, when input is true
