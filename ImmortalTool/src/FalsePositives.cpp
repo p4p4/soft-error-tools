@@ -120,7 +120,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				//------------------------------------------------------------------------------------
 
 				bool equal_concrete_outputs = isEqualN(outputs_ok, outputs_faulty, 1);
-				bool equal_concrete_states = isEqualN(next_state_ok, next_state_faulty, num_err_latches_);
+				bool equal_concrete_states = (next_state_ok == next_state_faulty);//isEqualN(next_state_ok, next_state_faulty, num_err_latches_);
 
 				sim_symb.setInputValues(testcase[timestep]);
 
@@ -137,7 +137,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					continue;
 				}
 
-				if (equal_concrete_outputs && alarm_faulty)
+				if (equal_concrete_outputs) // set TRUE for testing
 				{
 					// f variables:
 					int fi = next_free_cnf_var++;
