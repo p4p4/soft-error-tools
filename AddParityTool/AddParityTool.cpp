@@ -63,7 +63,7 @@ void print_help(int argc, char* argv[])
 			<< "\t <avg-latches>.......average nuber of latches to protect with one additional parity latch"
 			<< endl;
 	cout
-			<< "\t <aiger-output>......path to the aiger input file. The mode used is ASCII for a '.aag'"
+			<< "\t <aiger-output>......path to the aiger output file. The mode used is ASCII for a '.aag'"
 			<< endl;
 	cout << "\t                     suffix and binary mode otherwise." << endl;
 }
