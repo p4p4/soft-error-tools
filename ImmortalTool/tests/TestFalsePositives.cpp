@@ -117,3 +117,18 @@ void TestFalsePositives::test4()
 	// Alarm should be raised without an error:
 	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tcs));
 }
+
+void TestFalsePositives::test5_irrelevant_latches()
+{
+	//irrelevant_latches.prot.aag
+
+	aiger* circuit = Utils::readAiger("inputs/irrelevant_latches.prot.aag");
+	FalsePositives falsepos(circuit,0);
+
+	vector<TestCase> tcs;
+		Utils::generateRandomTestCases(tcs,1,6,circuit->num_inputs);
+
+
+	// Alarm should be raised
+	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tcs));
+}

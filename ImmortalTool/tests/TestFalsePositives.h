@@ -40,6 +40,7 @@ class TestFalsePositives : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test2_alarm_without_error);
   CPPUNIT_TEST(test3);
   CPPUNIT_TEST(test4);
+  CPPUNIT_TEST(test5_irrelevant_latches);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -61,6 +62,7 @@ protected:
   void test2_alarm_without_error();
   void test3();
   void test4();
+  void test5_irrelevant_latches();
 
 };
 

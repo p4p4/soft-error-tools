@@ -29,6 +29,7 @@
 #include "SymbolicSimulator.h"
 #include "Options.h"
 #include "Utils.h"
+#include "Logger.h"
 
 extern "C"
 {
@@ -60,7 +61,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
-//		cout << "latch " << c_cnt << endl;
+		cout << "latch " << c_cnt << endl;
 		next_free_cnf_var = 2;
 
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
@@ -137,7 +138,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					continue;
 				}
 
-				if (equal_concrete_outputs) // set TRUE for testing
+				if (true) // set TRUE for testing (equal_concrete_outputs)
 				{
 					// f variables:
 					int fi = next_free_cnf_var++;
@@ -224,7 +225,10 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					Utils::debugPrint(model,"model");
 					SuperfluousTrace* sf = new SuperfluousTrace(testcase);
 					sf->component_ = component_aig;
-					int earliest_alarm_timestep = timestep;
+					sf->error_gone_timestep_ = timestep;
+					L_DBG("error_gone_timestep: " << timestep)
+					L_DBG("component_aig" << component_aig)
+					int earliest_alarm_timestep = timestep+10;
 					//parse:
 					for (unsigned model_count = 0; model_count < model.size(); model_count++)
 					{
@@ -237,6 +241,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 							solver_->incAddUnitClause(-fj);
 
 							sf->flip_timestep_ = it->second;
+							L_DBG("flip_timestep " << sf->flip_timestep_ << "(lit="<<lit<<")")
 						}
 						else if (lit > 0)
 						{
@@ -249,11 +254,21 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 							if(it->second < earliest_alarm_timestep)
 							{
 								earliest_alarm_timestep = it->second;
+
+
 							}
 						}
 
 					}
-					sf->alarm_timestep_ = earliest_alarm_timestep;
+					if(earliest_alarm_timestep != timestep+10)
+						sf->alarm_timestep_ = earliest_alarm_timestep;
+					else
+					{
+						L_DBG("same literal for f and alarm..")
+						sf->alarm_timestep_ = sf->flip_timestep_;
+					}
+
+					L_DBG("earliest_alarm_timestep" << sf->alarm_timestep_)
 
 					superfluous.push_back(sf);
 					sat = solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model);

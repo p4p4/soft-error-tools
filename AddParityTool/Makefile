@@ -1,4 +1,4 @@
-AIGERPATH = /home/pklampfl/libs/aiger-1.9.4/
+AIGERPATH = /home/jp/uni/SEA/libs/aiger-1.9.4/
 
 CXXFILES = AddParityTool.cpp 
 CXXFLAGS = -O3 -o addParityTool
