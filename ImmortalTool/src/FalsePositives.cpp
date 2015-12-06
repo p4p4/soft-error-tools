@@ -61,11 +61,13 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
-		cout << "latch " << c_cnt << endl;
+
 		next_free_cnf_var = 2;
 
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = component_aig >> 1;
+
+		cout << "==============================" << endl << "latch " << component_aig << endl;
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -173,8 +175,6 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				sim_symb.simulateOneTimeStep();
 				alarm_literals.push_back(sim_symb.getAlarmValue());
 				alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
-
-				//cout << "alarm_value " << sim_symb.getAlarmValue() << endl;
 
 
 
@@ -288,6 +288,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 void FalsePositives::addSuperfluousTrace(int component, TestCase& testcase, unsigned flip_timestep,
 		unsigned alarm_timestep, unsigned error_gone_ts)
 {
+	L_DBG("Superfluous component=" << component << ", flip_timestep=" << flip_timestep << ", alarm_timestep=" << alarm_timestep << ",error_gone_ts=" << error_gone_ts)
 	SuperfluousTrace* sf = new SuperfluousTrace(component, testcase, flip_timestep, alarm_timestep,
 			error_gone_ts);
 	superfluous.push_back(sf);
