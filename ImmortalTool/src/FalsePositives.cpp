@@ -96,7 +96,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{
-
+                                Utils::debugPrint(testcase[timestep], "Test inputs");
 				//------------------------------------------------------------------------------------
 				// Concrete simulations:
 				// correct simulation
@@ -177,10 +177,10 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
 
 
-
+                                sim_symb.switchToNextState();
 				const vector<int> &state_cnf_values = sim_symb.getLatchValues();
 
-				sim_symb.switchToNextState();
+
 				//------------------------------------------------------------------------------------
 				int curr_enable_literal = next_free_cnf_var++;
 				solver_->addVarToKeep(curr_enable_literal);
@@ -196,13 +196,16 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				assumptions = enable_literals;
 				assumptions.back() = -assumptions.back();
 
-				for (unsigned state_idx = 0; state_idx < state_cnf_values.size() - num_err_latches_; ++state_idx)
-				{
-					if (concrete_state_ok[state_idx] == AIG_FALSE)
+				for (unsigned state_idx = 0;
+						state_idx < state_cnf_values.size() - num_err_latches_;
+						++state_idx) {
+					if (next_state_ok[state_idx] == AIG_FALSE)
 						assumptions.push_back(-state_cnf_values[state_idx]);
 					else
 						assumptions.push_back(state_cnf_values[state_idx]);
+
 				}
+//				Utils::debugPrint(assumptions, "Assumptions: ");
 
 				//------------------------------------------------------------------------------------
 
