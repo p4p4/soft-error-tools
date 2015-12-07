@@ -189,7 +189,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				vector<int> current_alarm_clause = alarm_literals;
 				current_alarm_clause.push_back(curr_enable_literal);
 				solver_->incAddClause(current_alarm_clause);
-				//------------------------------------------------------------------------------------
+				//---------------------------------------------timeste---------------------------------------
 				// assumptions saying that the states are equal
 				vector<int> assumptions;
 				assumptions.reserve(state_cnf_values.size() - num_err_latches_ + enable_literals.size());
@@ -228,9 +228,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					Utils::debugPrint(model,"model");
 					SuperfluousTrace* sf = new SuperfluousTrace(testcase);
 					sf->component_ = component_aig;
-					sf->error_gone_timestep_ = timestep;
-					L_DBG("error_gone_timestep: " << timestep)
-					L_DBG("component_aig" << component_aig)
+					sf->error_gone_timestep_ = timestep + 1;
 					int earliest_alarm_timestep = timestep+10;
 					//parse:
 					for (unsigned model_count = 0; model_count < model.size(); model_count++)
@@ -244,7 +242,6 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 							solver_->incAddUnitClause(-fj);
 
 							sf->flip_timestep_ = it->second;
-							L_DBG("flip_timestep " << sf->flip_timestep_ << "(lit="<<lit<<")")
 						}
 						else if (lit > 0)
 						{
@@ -257,8 +254,6 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 							if(it->second < earliest_alarm_timestep)
 							{
 								earliest_alarm_timestep = it->second;
-
-
 							}
 						}
 
@@ -270,8 +265,8 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 						L_DBG("same literal for f and alarm..")
 						sf->alarm_timestep_ = sf->flip_timestep_;
 					}
+					L_DBG("[sat]Superfluous component=" << component_aig << ", flip_timestep=" << sf->flip_timestep_ << ", alarm_timestep=" << sf->alarm_timestep_ << ",error_gone_ts=" << timestep+1)
 
-					L_DBG("earliest_alarm_timestep" << sf->alarm_timestep_)
 
 					superfluous.push_back(sf);
 					sat = solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model);
