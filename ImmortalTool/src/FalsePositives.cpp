@@ -417,7 +417,7 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 			}
 
 			// there might be at most one flip in one time-step
-			// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
+			// if fi is true, all other f must be false (fi -> -f1, fi -> -f2, ...)
 			for (unsigned cnt = 0; cnt < f.size(); cnt++)
 				solver_->incAdd2LitClause(-fi, -f[cnt]);
 
@@ -488,9 +488,13 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 			while (solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model))
 			{
 				Utils::debugPrint(model, "model");
-				// ...
+
+
+
+				int earliest_alarm_timestep = timestep + 1;
 				int fi = CNF_TRUE;
 				int cj = CNF_TRUE;
+
 				for (unsigned model_count = 0; model_count < model.size(); model_count++)
 				{
 					int lit = model[model_count];
@@ -509,12 +513,28 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 						fi = lit;
 						continue;
 					}
-				}
-				solver_->incAdd2LitClause(-fi, -cj);
-				L_DBG("Blocking clause: (-" << fi << ", -"<<cj <<")")
 
-				SuperfluousTrace* sf = 0;
+					// parse earliest alarm time step
+					it = alarmlit_to_timestep.find(lit);
+					if(it != alarmlit_to_timestep.end() && it->second < earliest_alarm_timestep)
+					{
+						earliest_alarm_timestep = it->second;
+					}
+				}
+
+				// blocking clause: ignore flips at this particular time step for this particular latch in the future
+				solver_->incAdd2LitClause(-fi, -cj);
+
+				SuperfluousTrace* sf = new SuperfluousTrace(testcase);
+				sf->error_gone_timestep_ = timestep +1;
+				sf->component_ = cj_to_latch[cj];
+				sf->flip_timestep_ = fi_to_timestep[fi];
+				if(earliest_alarm_timestep != timestep + 1)
+					sf->alarm_timestep_ = earliest_alarm_timestep;
+				else
+					sf->alarm_timestep_ = alarmlit_to_timestep[fi];
 				superfluous.push_back(sf);
+				L_DBG(sf->toString())
 			}
 
 

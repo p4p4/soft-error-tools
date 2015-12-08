@@ -27,6 +27,8 @@
 #define FalsePositives_H__
 
 #include "defines.h"
+#include "SuperFluousTrace.h"
+
 struct aiger;
 
 // -------------------------------------------------------------------------------------------
@@ -39,27 +41,6 @@ struct aiger;
 class FalsePositives
 {
 public:
-
-	class SuperfluousTrace
-	{
-	public:
-		int component_=0;
-		unsigned flip_timestep_=0;
-		unsigned alarm_timestep_=0;
-		unsigned error_gone_timestep_=0;
-		TestCase& testcase_;
-
-		SuperfluousTrace(TestCase& testcase)  : testcase_(testcase) {}
-		SuperfluousTrace(int component, TestCase& testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts) : testcase_(testcase)
-		{
-			component_ = component;
-			flip_timestep_ = flip_timestep;
-			alarm_timestep_ = alarm_timestep;
-			error_gone_timestep_ = error_gone_ts;
-		}
-
-
-	};
 
 // -------------------------------------------------------------------------------------------
 ///

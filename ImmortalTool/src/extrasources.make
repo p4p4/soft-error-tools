@@ -15,6 +15,7 @@ SatSolver.cpp
 SimulationBasedAnalysis.cpp
 Stopwatch.cpp
 StringUtils.cpp
+SuperFluousTrace.cpp
 SymbTimeAnalysis.cpp
 SymbTimeLocationAnalysis.cpp
 SymbolicSimulator.cpp

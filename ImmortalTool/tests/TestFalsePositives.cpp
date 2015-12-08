@@ -54,7 +54,7 @@ void TestFalsePositives::test1_no_alarm()
 	vector<TestCase> tc;
 	Utils::generateRandomTestCases(tc,1,5,circuit->num_inputs);
 
-	CPPUNIT_ASSERT(!falsepos.findFalsePositives_1b(tc));
+	CPPUNIT_ASSERT(!falsepos.findFalsePositives_2b(tc));
 
 //	sta.findVulnerabilities(1, 3);
 //	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
@@ -71,7 +71,7 @@ void TestFalsePositives::test2_alarm_without_error()
 	Utils::generateRandomTestCases(tc,1,5,circuit->num_inputs);
 
 	// Alarm should be raised without an error:
-	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tc));
+	CPPUNIT_ASSERT(falsepos.findFalsePositives_2b(tc));
 }
 
 void TestFalsePositives::test3()
@@ -128,7 +128,7 @@ void TestFalsePositives::test5_irrelevant_latches()
 		Utils::generateRandomTestCases(tcs,1,6,circuit->num_inputs);
 
 	// Alarm should be raised
-	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tcs));
+	CPPUNIT_ASSERT(falsepos.findFalsePositives_2b(tcs));
 }
 
 void TestFalsePositives::test6_irrelevant_latches_delayOneTimestep()
