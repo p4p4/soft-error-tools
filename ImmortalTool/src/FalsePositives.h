@@ -73,6 +73,13 @@ public:
 	/// @return TRUE if vulnerabilities were found.
 	bool findFalsePositives_1b(vector<TestCase> &testcases);
 
+	// -------------------------------------------------------------------------------------------
+	///
+	/// @brief tries to find false positives using the provided TestCases, free inputs allowed
+	///
+	/// @param testcases a vector of TestCases.
+	/// @return TRUE if vulnerabilities were found.
+	bool findFalsePositives_1b_free_inputs(vector<TestCase> &testcases);
 
 	// -------------------------------------------------------------------------------------------
 	///
@@ -81,6 +88,14 @@ public:
 	/// @param testcases a vector of TestCases.
 	/// @return TRUE if vulnerabilities were found.
 	bool findFalsePositives_2b(vector<TestCase> &testcases);
+
+	// -------------------------------------------------------------------------------------------
+	///
+	/// @brief tries to find false positives using the provided TestCases, free inputs allowed
+	///
+	/// @param testcases a vector of TestCases.
+	/// @return TRUE if vulnerabilities were found.
+	bool findFalsePositives_2b_free_inputs(vector<TestCase> &testcases);
 
 
 protected:
