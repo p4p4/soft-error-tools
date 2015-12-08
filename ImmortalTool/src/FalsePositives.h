@@ -73,13 +73,20 @@ public:
 
 	// -------------------------------------------------------------------------------------------
 	///
-	/// @brief tries to find vulnerabilities using the provided TestCases
-	///
-	/// tries to find vulnerabilities using the provided TestCases
+	/// @brief tries to find false positives using the provided TestCases
 	///
 	/// @param testcases a vector of TestCases.
 	/// @return TRUE if vulnerabilities were found.
 	bool findFalsePositives_1b(vector<TestCase> &testcases);
+
+
+	// -------------------------------------------------------------------------------------------
+	///
+	/// @brief tries to find false positives using the provided TestCases
+	///
+	/// @param testcases a vector of TestCases.
+	/// @return TRUE if vulnerabilities were found.
+	bool findFalsePositives_2b(vector<TestCase> &testcases);
 
 
 protected:
