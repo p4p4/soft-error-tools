@@ -37,17 +37,33 @@ extern "C"
 }
 
 // -------------------------------------------------------------------------------------------
-FalsePositives::FalsePositives(aiger* circuit, int num_err_latches)
+FalsePositives::FalsePositives(aiger* circuit, int num_err_latches, int mode) :
+				BackEnd(circuit, num_err_latches, mode)
 {
 	circuit_ = circuit;
 	num_err_latches_ = num_err_latches;
-	mode_ = 0;
+	mode_ = mode;
 
 }
 
 // -------------------------------------------------------------------------------------------
 FalsePositives::~FalsePositives()
 {
+}
+
+bool FalsePositives::analyze(vector<TestCase>& testcases)
+{
+	//	vulnerable_latches = empty_set/list
+	superfluous.clear();
+
+	if (mode_ == 0)	// TODO: create modes, split into meaningful BackEnd groups
+		findFalsePositives_1b(testcases);
+	else if (mode_ == 1)
+		findFalsePositives_2b(testcases);
+	else
+		MASSERT(false, "unknown mode!");
+
+	return (superfluous.size() != 0);
 }
 
 bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)

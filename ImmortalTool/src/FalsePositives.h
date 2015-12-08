@@ -27,6 +27,7 @@
 #define FalsePositives_H__
 
 #include "defines.h"
+#include "BackEnd.h"
 #include "SuperFluousTrace.h"
 
 struct aiger;
@@ -38,19 +39,31 @@ struct aiger;
 ///
 /// @author TODO
 /// @version 1.2.0
-class FalsePositives
+class FalsePositives : public BackEnd
 {
 public:
-
+	using BackEnd::analyze;
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-	FalsePositives(aiger* circuit, int num_err_latches);
+	FalsePositives(aiger* circuit, int num_err_latches, int mode = 0);
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Destructor.
 	virtual ~FalsePositives();
+
+
+	// -------------------------------------------------------------------------------------------
+	///
+	/// @brief tries to find vulnerabilities using the provided TestCases
+	///
+	/// tries to find vulnerabilities using the provided TestCases
+	///
+	/// @param testcases a vector of TestCases.
+	/// @return TRUE if vulnerabilities were found.
+		bool analyze(vector<TestCase> &testcases);
+
 
 	// -------------------------------------------------------------------------------------------
 	///
