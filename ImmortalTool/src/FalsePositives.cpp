@@ -218,9 +218,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				vars_of_interest.insert(vars_of_interest.end(), alarm_literals.begin(), alarm_literals.end());
 
 				vector<int> model;
-				bool sat = solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model);
-
-				while (sat)
+				while (solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model))
 				{
 					Utils::debugPrint(model,"model");
 					SuperfluousTrace* sf = new SuperfluousTrace(testcase);
@@ -265,8 +263,6 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					}
 					L_DBG("[sat]  flip_timestep=" << sf->flip_timestep_ << ", alarm_timestep=" << sf->alarm_timestep_ << ",error_gone_ts=" << timestep+1)
 					superfluous.push_back(sf);
-
-					sat = solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model);
 				}
 
 
@@ -482,12 +478,43 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
-			vector<int> model;
-			vector<int> &vars_of_interest = cj_literals;
 
+			vector<int> vars_of_interest = f;
+			vars_of_interest.insert(vars_of_interest.end(), alarm_literals.begin(), alarm_literals.end());
+			vars_of_interest.insert(vars_of_interest.end(), cj_literals.begin(), cj_literals.end());
+
+
+			vector<int> model;
 			while (solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model))
 			{
+				Utils::debugPrint(model, "model");
 				// ...
+				int fi = CNF_TRUE;
+				int cj = CNF_TRUE;
+				for (unsigned model_count = 0; model_count < model.size(); model_count++)
+				{
+					int lit = model[model_count];
+
+
+					if (lit > 0 && lit < next_cnf_var_after_ci_vars) // we have found the one and only active cj signal
+					{
+						cj = lit;
+						continue;
+					}
+
+					// parse f time step
+					map<int, unsigned>::iterator it = fi_to_timestep.find(lit);
+					if (lit > 0 && it != fi_to_timestep.end()) // we have found the fi variable which was set to TRUE
+					{
+						fi = lit;
+						continue;
+					}
+				}
+				solver_->incAdd2LitClause(-fi, -cj);
+				L_DBG("Blocking clause: (-" << fi << ", -"<<cj <<")")
+
+				SuperfluousTrace* sf = 0;
+				superfluous.push_back(sf);
 			}
 
 
