@@ -46,7 +46,7 @@ SimulationBasedAnalysis::~SimulationBasedAnalysis()
 }
 
 // -------------------------------------------------------------------------------------------
-bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
+bool SimulationBasedAnalysis::analyze(vector<TestCase> &testcases)
 {
 	vulnerable_elements_.clear();
 	//for each test case:
@@ -54,21 +54,6 @@ bool SimulationBasedAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 	{
 		sim_->setTestcase(testcases[tc_index_]);
 		current_TC_ = testcases[tc_index_];
-		findVulnerabilitiesForCurrentTC();
-	}
-
-	return (vulnerable_elements_.size() != 0);
-}
-
-// -------------------------------------------------------------------------------------------
-bool SimulationBasedAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
-{
-	vulnerable_elements_.clear();
-	//for each test case
-	for (tc_index_ = 0; tc_index_ < paths_to_TC_files.size(); tc_index_++)
-	{
-		sim_->setTestcase(paths_to_TC_files[tc_index_]);
-		current_TC_ = sim_->getTestcase();
 		findVulnerabilitiesForCurrentTC();
 	}
 

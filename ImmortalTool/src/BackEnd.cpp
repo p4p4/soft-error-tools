@@ -52,7 +52,7 @@ const set<unsigned>& BackEnd::getVulnerableElements() const
 }
 
 // -------------------------------------------------------------------------------------------
-bool BackEnd::findVulnerabilities(unsigned num_of_TCs, unsigned num_of_timesteps)
+bool BackEnd::analyzeWithRandomTestCases(unsigned num_of_TCs, unsigned num_of_timesteps)
 {
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
@@ -62,11 +62,11 @@ bool BackEnd::findVulnerabilities(unsigned num_of_TCs, unsigned num_of_timesteps
 	Utils::generateRandomTestCases(testcases, num_of_TCs,num_of_timesteps,circuit_->num_inputs);
 
 	// 2. run testcases:
-	return findVulnerabilities(testcases);
+	return analyze(testcases);
 
 }
 
-bool BackEnd::findVulnerabilitiesMC(unsigned num_of_timesteps)
+bool BackEnd::analyzeModelChecking(unsigned num_of_timesteps)
 {
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
@@ -90,7 +90,21 @@ bool BackEnd::findVulnerabilitiesMC(unsigned num_of_timesteps)
 	testcases.push_back(tc);
 
 	// 2. run testcases:
-	return findVulnerabilities(testcases);
+	return analyze(testcases);
+}
+
+bool BackEnd::analyze(vector<string> paths_to_TC_files)
+{
+	vector<TestCase> testcases;
+	//for each test case t[][]
+	for (unsigned tc_index_ = 0; tc_index_ < paths_to_TC_files.size(); tc_index_++)
+	{
+		TestCase testcase;
+		Utils::parseAigSimFile(paths_to_TC_files[tc_index_], testcase, circuit_->num_inputs);
+		testcases.push_back(testcase);
+	}
+
+	return analyze(testcases);
 }
 
 void BackEnd::setEnvironmentModel(aiger* environmentModel)

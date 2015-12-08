@@ -41,7 +41,7 @@ class SymbTimeAnalysis: public BackEnd
 {
 	public:
 
-	using BackEnd::findVulnerabilities;
+	using BackEnd::analyze;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -66,17 +66,8 @@ class SymbTimeAnalysis: public BackEnd
 ///
 /// @param testcases a vector of TestCases.
 /// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(vector<TestCase> &testcases);
+	bool analyze(vector<TestCase> &testcases);
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities using the provided TestCases
-///
-/// tries to find vulnerabilities using the provided TestCases
-///
-/// @param paths_to_TC_files a vector of paths to TestCase files.
-/// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(vector<string> paths_to_TC_files);
 
 	protected:
 

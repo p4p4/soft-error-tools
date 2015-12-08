@@ -68,7 +68,7 @@ void TestSimulationBasedAnalysis::checkVulnerabilities(
 
 	aiger* circuit = readAigerFile(path_to_aiger_circuit);
 	SimulationBasedAnalysis sba(circuit, num_err_latches);
-	sba.findVulnerabilities(tc_files);
+	sba.analyze(tc_files);
 	const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
 
 	// DEBUG: print the vulnerable latches
@@ -150,7 +150,7 @@ void TestSimulationBasedAnalysis::test3_simulation_w_random_inputs()
 
 	aiger* circuit = readAigerFile("inputs/toggle.2vulnerabilities.aag");
 	SimulationBasedAnalysis sba(circuit, 1);
-	sba.findVulnerabilities(1, 2);
+	sba.analyzeWithRandomTestCases(1, 2);
 	const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
 
 	// DEBUG: print the vulnerable latches
@@ -178,7 +178,7 @@ void TestSimulationBasedAnalysis::test4_simulation_big_w_random_inputs()
 
 	aiger* circuit = readAigerFile("inputs/s5378.50percent.aag");
 	SimulationBasedAnalysis sba(circuit, 2);
-	sba.findVulnerabilities(5, 5); // 1 TC with 2 timesteps would also already work
+	sba.analyzeWithRandomTestCases(5, 5); // 1 TC with 2 timesteps would also already work
 	const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
 
 	// out of the 82 unprotected latches, only 67 are real vulnerabilities

@@ -44,7 +44,7 @@ class SimulationBasedAnalysis : public BackEnd
 public:
 
 	// for the linker: also use the inherited method(s) with the name findVulnerabilities
-	using BackEnd::findVulnerabilities;
+	using BackEnd::analyze;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -67,18 +67,8 @@ public:
 ///
 /// @param testcases a vector of TestCases.
 /// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(vector<TestCase> &testcases);
+	bool analyze(vector<TestCase> &testcases);
 
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities using the provided TestCases
-///
-/// tries to find vulnerabilities using the provided TestCases
-///
-/// @param paths_to_TC_files a vector of paths to TestCase files.
-/// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(vector<string> paths_to_TC_files);
 
 
 protected:

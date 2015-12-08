@@ -224,7 +224,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					SuperfluousTrace* sf = new SuperfluousTrace(testcase);
 					sf->component_ = component_aig;
 					sf->error_gone_timestep_ = timestep + 1;
-					int earliest_alarm_timestep = timestep + 1;
+					unsigned earliest_alarm_timestep = timestep + 1;
 					//parse:
 					int fj = 0;
 					for (unsigned model_count = 0; model_count < model.size(); model_count++)
@@ -491,7 +491,7 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 
 
 
-				int earliest_alarm_timestep = timestep + 1;
+				unsigned earliest_alarm_timestep = timestep + 1;
 				int fi = CNF_TRUE;
 				int cj = CNF_TRUE;
 

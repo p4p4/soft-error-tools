@@ -68,7 +68,7 @@ public:
 ///
 /// @param testcases a vector of TestCases.
 /// @return TRUE if vulnerabilities were found.
-	virtual bool findVulnerabilities(vector<TestCase> &testcases) = 0;
+	virtual bool analyze(vector<TestCase> &testcases) = 0;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -78,7 +78,7 @@ public:
 ///
 /// @param paths_to_TC_files a vector of paths to TestCase files.
 /// @return TRUE if vulnerabilities were found.
-	virtual bool findVulnerabilities(vector<string> paths_to_TC_files) = 0;
+	bool analyze(vector<string> paths_to_TC_files);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -89,7 +89,7 @@ public:
 /// @param num_of_TCs the number of random testcases to use
 /// @param num_of_timesteps the number random input vectors to test
 /// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilities(unsigned num_of_TCs,
+	bool analyzeWithRandomTestCases(unsigned num_of_TCs,
 		unsigned num_of_timesteps);
 
 // -------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ public:
 ///
 /// @param num_of_timesteps the number of timesteps to search for vulnerabilities
 /// @return TRUE if vulnerabilities were found.
-	bool findVulnerabilitiesMC(unsigned num_of_timesteps);
+	bool analyzeModelChecking(unsigned num_of_timesteps);
 
 // -------------------------------------------------------------------------------------------
 ///

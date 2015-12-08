@@ -58,18 +58,18 @@ int main(int argc, char *argv[])
 	{
 	case Options::TC_RANDOM:
 	{
-		error_analysis->findVulnerabilities(Options::instance().getNumTestcases(),
+		error_analysis->analyzeWithRandomTestCases(Options::instance().getNumTestcases(),
 				Options::instance().getLenRandTestcases());
 		break;
 	}
 	case Options::TC_FILES:
 	{
-		error_analysis->findVulnerabilities(Options::instance().getPathsToTestcases());
+		error_analysis->analyze(Options::instance().getPathsToTestcases());
 		break;
 	}
 	case Options::TC_MC:
 	{
-		error_analysis->findVulnerabilitiesMC(Options::instance().getLenRandTestcases());
+		error_analysis->analyzeModelChecking(Options::instance().getLenRandTestcases());
 		break;
 	}
 	default:

@@ -55,7 +55,7 @@ SymbTimeAnalysis::~SymbTimeAnalysis()
 }
 
 // -------------------------------------------------------------------------------------------
-bool SymbTimeAnalysis::findVulnerabilities(vector<TestCase> &testcases)
+bool SymbTimeAnalysis::analyze(vector<TestCase> &testcases)
 {
 	//	vulnerable_latches = empty_set/list
 	vulnerable_elements_.clear();
@@ -72,21 +72,6 @@ bool SymbTimeAnalysis::findVulnerabilities(vector<TestCase> &testcases)
 	return (vulnerable_elements_.size() != 0);
 }
 
-// -------------------------------------------------------------------------------------------
-bool SymbTimeAnalysis::findVulnerabilities(vector<string> paths_to_TC_files)
-{
-
-	vector<TestCase> testcases;
-	//for each test case t[][]
-	for (unsigned tc_index_ = 0; tc_index_ < paths_to_TC_files.size(); tc_index_++)
-	{
-		TestCase testcase;
-		Utils::parseAigSimFile(paths_to_TC_files[tc_index_], testcase, circuit_->num_inputs);
-		testcases.push_back(testcase);
-	}
-
-	return findVulnerabilities(testcases);
-}
 
 // -------------------------------------------------------------------------------------------
 void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
