@@ -96,7 +96,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 			for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 			{
-                                Utils::debugPrint(testcase[timestep], "Test inputs");
+//				Utils::debugPrint(testcase[timestep], "Test inputs");
 				//------------------------------------------------------------------------------------
 				// Concrete simulations:
 				// correct simulation
@@ -224,51 +224,57 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 				while (sat)
 				{
-					cout << "sat" << endl;
 					Utils::debugPrint(model,"model");
 					SuperfluousTrace* sf = new SuperfluousTrace(testcase);
 					sf->component_ = component_aig;
 					sf->error_gone_timestep_ = timestep + 1;
-					int earliest_alarm_timestep = timestep+10;
+					int earliest_alarm_timestep = timestep + 1;
 					//parse:
+					int fj = 0;
 					for (unsigned model_count = 0; model_count < model.size(); model_count++)
 					{
 						int lit = model[model_count];
 
-						map<int, unsigned>::iterator it = fi_to_timestep.find(lit);
-						if (lit > 0 && it != fi_to_timestep.end()) // we have found the fi variable which was set to TRUE
-						{
-							int fj = lit;
-							solver_->incAddUnitClause(-fj);
+						if (lit < 0)
+							continue;
 
-							sf->flip_timestep_ = it->second;
-						}
-						else if (lit > 0)
+//						if(model_count < f.size()) // f literal
 						{
-							it = alarmlit_to_timestep.find(lit);
+							map<int, unsigned>::iterator it = fi_to_timestep.find(lit);
+							if (lit > 0 && it != fi_to_timestep.end()) // we have found the fi variable which was set to TRUE
+							{
+								fj = lit;
+								solver_->incAddUnitClause(-fj);
+
+								sf->flip_timestep_ = it->second;
+							}
+						}
+//						else
+						{
+							map<int, unsigned>::iterator it = alarmlit_to_timestep.find(lit);
+//							cout << "alarmlit " << lit << " is ts " << it->second << endl;
 							if (it == alarmlit_to_timestep.end())
 							{
-								MASSERT(false,"not an alarm lit. should not happen...")
+//								MASSERT(false,"not an alarm lit. should not happen...")
 							}
-
-							if(it->second < earliest_alarm_timestep)
+							else if(it->second < earliest_alarm_timestep)
 							{
 								earliest_alarm_timestep = it->second;
 							}
 						}
 
 					}
-					if(earliest_alarm_timestep != timestep+10)
+
+					if(earliest_alarm_timestep != timestep + 1)
 						sf->alarm_timestep_ = earliest_alarm_timestep;
 					else
 					{
-						L_DBG("same literal for f and alarm..")
-						sf->alarm_timestep_ = sf->flip_timestep_;
+						//L_DBG("same literal for f and alarm..")
+						sf->alarm_timestep_ = alarmlit_to_timestep[fj];
 					}
-					L_DBG("[sat]Superfluous component=" << component_aig << ", flip_timestep=" << sf->flip_timestep_ << ", alarm_timestep=" << sf->alarm_timestep_ << ",error_gone_ts=" << timestep+1)
-
-
+					L_DBG("[sat]  flip_timestep=" << sf->flip_timestep_ << ", alarm_timestep=" << sf->alarm_timestep_ << ",error_gone_ts=" << timestep+1)
 					superfluous.push_back(sf);
+
 					sat = solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model);
 				}
 
@@ -286,7 +292,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 void FalsePositives::addSuperfluousTrace(int component, TestCase& testcase, unsigned flip_timestep,
 		unsigned alarm_timestep, unsigned error_gone_ts)
 {
-	L_DBG("Superfluous component=" << component << ", flip_timestep=" << flip_timestep << ", alarm_timestep=" << alarm_timestep << ",error_gone_ts=" << error_gone_ts)
+	L_DBG("       flip_timestep=" << flip_timestep << ", alarm_timestep=" << alarm_timestep << ",error_gone_ts=" << error_gone_ts)
 	SuperfluousTrace* sf = new SuperfluousTrace(component, testcase, flip_timestep, alarm_timestep,
 			error_gone_ts);
 	superfluous.push_back(sf);

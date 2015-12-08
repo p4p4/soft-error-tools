@@ -35,6 +35,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestFalsePositives);
 void TestFalsePositives::setUp()
 {
   //setup for testcases
+	Logger::instance().enable(Logger::DBG);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ void TestFalsePositives::test1_no_alarm()
 
 void TestFalsePositives::test2_alarm_without_error()
 {
-	Logger::instance().enable(Logger::DBG);
+
 	aiger* circuit = Utils::readAiger("inputs/one_latch.fp.aag");
 	FalsePositives falsepos(circuit,0);
 
@@ -120,14 +121,11 @@ void TestFalsePositives::test4()
 
 void TestFalsePositives::test5_irrelevant_latches()
 {
-	//irrelevant_latches.prot.aag
-
 	aiger* circuit = Utils::readAiger("inputs/irrelevant_latches.prot.aag");
 	FalsePositives falsepos(circuit,0);
 
 	vector<TestCase> tcs;
 		Utils::generateRandomTestCases(tcs,1,6,circuit->num_inputs);
-
 
 	// Alarm should be raised
 	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tcs));
