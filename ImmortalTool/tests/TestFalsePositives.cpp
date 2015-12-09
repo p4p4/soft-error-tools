@@ -166,22 +166,20 @@ void TestFalsePositives::test6_irrelevant_latches_delayOneTimestep()
 
 	// Alarm should be raised
 	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b(tcs));
-	checkIrrelevantLatches(falsepos.getSuperfluous());
+	checkIrrelevantLatchesDelayOneTraces(falsepos.getSuperfluous());
 	CPPUNIT_ASSERT(falsepos.findFalsePositives_2b(tcs));
-	checkIrrelevantLatches(falsepos.getSuperfluous());
+	checkIrrelevantLatchesDelayOneTraces(falsepos.getSuperfluous());
 	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b_free_inputs(tcs));
-	checkIrrelevantLatches(falsepos.getSuperfluous());
+	checkIrrelevantLatchesDelayOneTraces(falsepos.getSuperfluous());
 	CPPUNIT_ASSERT(falsepos.findFalsePositives_2b_free_inputs(tcs));
-	checkIrrelevantLatches(falsepos.getSuperfluous());
+	checkIrrelevantLatchesDelayOneTraces(falsepos.getSuperfluous());
 	aiger_reset(circuit);
 
 }
 
-void TestFalsePositives::checkIrrelevantLatches(vector<SuperfluousTrace*> sftrace)
+void TestFalsePositives::checkIrrelevantLatchesDelayOneTraces(vector<SuperfluousTrace*> sftrace)
 {
-//	cout << "SIZE = " << sftrace.size() << endl;
 	CPPUNIT_ASSERT(sftrace.size() == 25);
-
 
 	for(vector<SuperfluousTrace*>::iterator it = sftrace.begin(); it != sftrace.end(); ++it)
 	{
@@ -202,4 +200,48 @@ void TestFalsePositives::checkIrrelevantLatches(vector<SuperfluousTrace*> sftrac
 			CPPUNIT_ASSERT(trace->alarm_timestep_ + 1 == trace->error_gone_timestep_);
 		}
 	}
+}
+
+// alarm can only be true if the input value is also true
+void TestFalsePositives::test7_free_inputs()
+{
+	aiger* circuit = Utils::readAiger("inputs/irrelevant_latches.prot.delay1.useinput.aag");
+
+	FalsePositives falsepos(circuit,0);
+
+	// TC: 6 Timesteps with open input value
+	vector<int> input_vector_open;
+	input_vector_open.push_back(2);
+	TestCase tc;
+	tc.push_back(input_vector_open);
+	tc.push_back(input_vector_open);
+	tc.push_back(input_vector_open);
+	tc.push_back(input_vector_open);
+	tc.push_back(input_vector_open);
+	tc.push_back(input_vector_open);
+	vector<TestCase> tcs;
+	tcs.push_back(tc);
+
+
+	CPPUNIT_ASSERT(falsepos.findFalsePositives_1b_free_inputs(tcs));
+	checkTest7Traces(falsepos.getSuperfluous());
+
+	CPPUNIT_ASSERT(falsepos.findFalsePositives_2b_free_inputs(tcs));
+	checkTest7Traces(falsepos.getSuperfluous());
+
+	aiger_reset(circuit);
+}
+
+void TestFalsePositives::checkTest7Traces(vector<SuperfluousTrace*> sftrace)
+{
+	checkIrrelevantLatchesDelayOneTraces(sftrace); // basic circuit is equal to test6
+
+	// the one and only input must be true whenever the alarm is raised
+	for(vector<SuperfluousTrace*>::iterator it = sftrace.begin(); it != sftrace.end(); ++it)
+	{
+		SuperfluousTrace* trace = *it;
+		unsigned alarm_ts = trace->alarm_timestep_;
+		CPPUNIT_ASSERT(trace->testcase_[alarm_ts][0] == AIG_TRUE);
+	}
+
 }

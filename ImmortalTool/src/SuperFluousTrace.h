@@ -29,6 +29,7 @@
 #include "defines.h"
 	class SuperfluousTrace
 	{
+		TestCase empty;
 	public:
 		int component_=0;
 		unsigned flip_timestep_=0;
@@ -36,6 +37,7 @@
 		unsigned error_gone_timestep_=0;
 		TestCase& testcase_;
 
+		SuperfluousTrace() : testcase_(empty) {}
 		SuperfluousTrace(TestCase& testcase)  : testcase_(testcase) {}
 		SuperfluousTrace(int component, TestCase& testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts) : testcase_(testcase)
 		{
