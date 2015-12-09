@@ -68,6 +68,7 @@ bool FalsePositives::analyze(vector<TestCase>& testcases)
 
 bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 {
+	superfluous.clear();
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();
@@ -294,6 +295,8 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 {
+	superfluous.clear();
+
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();
@@ -562,6 +565,7 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 
 bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcases)
 {
+	superfluous.clear();
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();
@@ -582,6 +586,7 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
 			TestCase& testcase = testcases[tci];
+			TestCase real_cnf_inputs;
 
 			sim_symb.initLatches(); // initialize latches to false
 			sim_ok.initLatches();
@@ -623,9 +628,6 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 				}
 				vector<int> next_state_ok = sim_ok.getNextLatchValues();
 
-				sim_symb.setInputValues(testcase[timestep]);
-
-
 				// f variables:
 				int fi = next_free_cnf_var++;
 				solver_->addVarToKeep(fi);
@@ -656,10 +658,11 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 				fi_to_timestep[fi] = timestep;
 
 
+				real_cnf_inputs.push_back(sim_ok.getInputValues());
+				sim_symb.setCnfInputValues(sim_ok.getInputValues());
 				sim_symb.simulateOneTimeStep();
 				alarm_literals.push_back(sim_symb.getAlarmValue());
 				alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
-
 
                 sim_symb.switchToNextState();
 				const vector<int> &next_cnf_values = sim_symb.getLatchValues();
@@ -683,10 +686,19 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 				for (unsigned state_idx = 0;
 						state_idx < next_cnf_values.size() - num_err_latches_;
 						++state_idx) {
-					if (next_state_ok[state_idx] == AIG_FALSE)
-						assumptions.push_back(-next_cnf_values[state_idx]);
+					int ok_lit = next_state_ok[state_idx];
+					int symb_lit = next_cnf_values[state_idx];
+
+					if (ok_lit == CNF_FALSE)
+						assumptions.push_back(-symb_lit);
+					else if (ok_lit == CNF_TRUE)
+						assumptions.push_back(symb_lit);
 					else
-						assumptions.push_back(next_cnf_values[state_idx]);
+					{
+						// TODO check
+						solver_->incAdd3LitClause(curr_enable_literal, -ok_lit, symb_lit);
+						solver_->incAdd3LitClause(curr_enable_literal, ok_lit, -symb_lit);
+					}
 
 				}
 //				Utils::debugPrint(assumptions, "Assumptions: ");
@@ -703,8 +715,17 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 				vector<int> model;
 				while (solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model))
 				{
+
+					map<int, unsigned> cnf_input_var_to_aig_truth_lit;
+					cnf_input_var_to_aig_truth_lit[CNF_TRUE] = AIG_TRUE;
+					cnf_input_var_to_aig_truth_lit[CNF_FALSE] = AIG_FALSE;
+
 					Utils::debugPrint(model,"model");
-					SuperfluousTrace* sf = new SuperfluousTrace(testcase);
+
+					TestCase real_input_values;
+					real_input_values.reserve(real_cnf_inputs.size());
+					SuperfluousTrace* sf = new SuperfluousTrace(real_input_values);
+
 					sf->component_ = component_aig;
 					sf->error_gone_timestep_ = timestep + 1;
 					unsigned earliest_alarm_timestep = timestep + 1;
@@ -713,6 +734,7 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 					for (unsigned model_count = 0; model_count < model.size(); model_count++)
 					{
 						int lit = model[model_count];
+						cnf_input_var_to_aig_truth_lit[lit] = (lit > 0) ? AIG_TRUE : AIG_FALSE;
 
 						if (lit < 0)
 							continue;
@@ -745,6 +767,22 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 						sf->alarm_timestep_ = alarmlit_to_timestep[fj];
 					}
 					L_DBG("[sat]  flip_timestep=" << sf->flip_timestep_ << ", alarm_timestep=" << sf->alarm_timestep_ << ",error_gone_ts=" << timestep+1)
+
+
+					for (TestCase::const_iterator in = real_cnf_inputs.begin();
+							in != real_cnf_inputs.end(); ++in)
+					{
+
+						vector<int> real_input_vector;
+						real_input_vector.reserve(in->size());
+						for (vector<int>::const_iterator iv = in->begin(); iv != in->end();
+								++iv)
+						{
+							real_input_vector.push_back(cnf_input_var_to_aig_truth_lit[*iv]);
+						}
+						real_input_values.push_back(real_input_vector);
+					}
+
 					superfluous.push_back(sf);
 				}
 
@@ -760,6 +798,7 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 
 bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcases)
 {
+	superfluous.clear();
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();

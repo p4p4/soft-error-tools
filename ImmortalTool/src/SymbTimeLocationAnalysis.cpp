@@ -510,7 +510,6 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 			sim_ok.simulateOneTimeStep(testcase[timestep]);
 			const vector<int> &correct_outputs = sim_ok.getOutputValues();
 //
-//			const vector<int> &correct_next_state = sim_ok.getLatchValues();
 			const vector<int> &correct_next_state = sim_ok.getNextLatchValues();
 			//--------------------------------------------------------------------------------------
 

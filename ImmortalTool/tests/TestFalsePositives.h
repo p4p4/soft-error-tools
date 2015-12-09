@@ -25,6 +25,11 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "../src/defines.h"
+#include "../src/SuperFluousTrace.h"
+
+
+
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -65,6 +70,7 @@ protected:
   void test4();
   void test5_irrelevant_latches();
   void test6_irrelevant_latches_delayOneTimestep();
+  void checkIrrelevantLatches(vector<SuperfluousTrace*> sftrace);
 
 };
 

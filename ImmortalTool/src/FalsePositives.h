@@ -97,6 +97,10 @@ public:
 	/// @return TRUE if vulnerabilities were found.
 	bool findFalsePositives_2b_free_inputs(vector<TestCase> &testcases);
 
+	vector<SuperfluousTrace*> getSuperfluous()
+	{
+		return superfluous;
+	}
 
 protected:
 	// -------------------------------------------------------------------------------------------
