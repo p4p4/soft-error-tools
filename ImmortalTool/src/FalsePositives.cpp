@@ -775,6 +775,11 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 					sim_env->simulateOneTimeStep();
 					env_outputs = sim_env->getOutputValues();
 					sim_env->switchToNextState();
+
+					// last output of environment model defines valid input values
+					// must be true
+					if(env_outputs.size() == outputs_ok.size())
+						solver_->incAddUnitClause(env_outputs.back());
 				}
 
 				//------------------------------------------------------------------------------------
@@ -1100,6 +1105,11 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 				sim_env->simulateOneTimeStep();
 				env_outputs = sim_env->getOutputValues();
 				sim_env->switchToNextState();
+
+				// last output of environment model defines valid input values
+				// must be true
+				if(env_outputs.size() == outputs_ok.size())
+					solver_->incAddUnitClause(env_outputs.back());
 			}
 			//------------------------------------------------------------------------------------
 			// unit clauses saying that the current (relevant) outputs are equal

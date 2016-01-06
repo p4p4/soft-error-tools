@@ -574,6 +574,11 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 				sim_env->simulateOneTimeStep();
 				env_outputs = sim_env->getOutputValues();
 				sim_env->switchToNextState();
+
+				// last output of environment model defines valid input values
+				// must be true
+				if(env_outputs.size() == correct_outputs.size())
+					solver_->incAddUnitClause(env_outputs.back());
 			}
 			// get Outputs and next state values, switch to next state
 			solver_->incAddUnitClause(-symbsim.getAlarmValue()); // set alarm to false

@@ -36,7 +36,7 @@ BackEnd::BackEnd(aiger* circuit, int num_err_latches, int mode, aiger* environme
 		circuit_(circuit), environment_model_(environment_model), mode_(mode),
 		current_TC_(empty_TC_), num_err_latches_(num_err_latches)
 {
-	// nothing to be done
+	MASSERT(!environment_model || environment_model->num_outputs >= circuit->num_outputs - 1, "Error: Environment model has too few outputs!");
 }
 
 // -------------------------------------------------------------------------------------------

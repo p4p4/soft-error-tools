@@ -439,6 +439,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 					environment_sim->simulateOneTimeStep(env_input);
 					output_is_relevant = environment_sim->getOutputs();
 					environment_sim->switchToNextState();
+
 				}
 				if (environment_model_ && err_found_with_simulation)
 				{
@@ -813,6 +814,12 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 					sim_env->simulateOneTimeStep();
 					env_outputs = sim_env->getOutputValues();
 					sim_env->switchToNextState();
+
+					// last output of environment model defines valid input values
+					// must be true
+
+					if(env_outputs.size() == outputs_ok.size())
+						solver_->incAddUnitClause(env_outputs.back());
 				}
 				//------------------------------------------------------------------------------------
 				// get Outputs and next state values, swich to next state
