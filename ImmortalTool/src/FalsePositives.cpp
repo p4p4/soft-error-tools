@@ -60,6 +60,10 @@ bool FalsePositives::analyze(vector<TestCase>& testcases)
 		findFalsePositives_1b(testcases);
 	else if (mode_ == 1)
 		findFalsePositives_2b(testcases);
+	else if (mode_ == 2)
+		findFalsePositives_1b_free_inputs(testcases);
+	else if (mode_ == 3)
+		findFalsePositives_2b_free_inputs(testcases);
 	else
 		MASSERT(false, "unknown mode!");
 
@@ -74,6 +78,9 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 	SatSolver* solver_ = Options::instance().getSATSolver();
 	AigSimulator* sim_concrete = new AigSimulator(circuit_);
 	SymbolicSimulator sim_symb(circuit_, solver_, next_free_cnf_var);
+	AigSimulator* sim_env = 0;
+	if (environment_model_)
+		sim_env = new AigSimulator(environment_model_);
 
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
@@ -93,7 +100,9 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 			// initial state for concrete simulation = (0 0 0 0 0 0 0)  (AIG literals)
 			vector<int> concrete_state_ok;
 			concrete_state_ok.resize(circuit_->num_latches);
-			sim_symb.initLatches(); // initialize latches to false
+			sim_symb.initLatches();
+			if (environment_model_)
+				sim_env->initLatches();
 
 			// start new incremental SAT-solving session
 			vector<int> vars_to_keep;
@@ -196,15 +205,37 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 				alarm_literals.push_back(sim_symb.getAlarmValue());
 				alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
 
+				vector<int> output_is_relevant;
+				if (environment_model_)
+				{
+					vector<int> env_input;
+					const vector<int>& input_values = testcase[timestep];
+
+					env_input.reserve(input_values.size() + outputs_ok.size());
+					env_input.insert(env_input.end(), input_values.begin(),
+							input_values.end());
+					env_input.insert(env_input.end(), outputs_ok.begin(), outputs_ok.end());
+
+					sim_env->simulateOneTimeStep(env_input);
+					output_is_relevant = sim_env->getOutputs();
+					sim_env->switchToNextState();
+				}
+
 				//------------------------------------------------------------------------------------
-				// unit clauses saying that the current (TODO: "RELEVANT") outputs are equal
+				// unit clauses saying that the current (relevant) outputs are equal
 				const vector<int> &out_cnf_values = sim_symb.getOutputValues();
 				for (unsigned output_idx = 0;
 						output_idx < outputs_ok.size() - 1;	++output_idx) {
+
+					// skip if output is not relevant
+					if (environment_model_ && output_is_relevant[output_idx] == AIG_FALSE)
+						continue;
+
 					if (outputs_ok[output_idx] == AIG_FALSE)
 						solver_->incAddUnitClause(-out_cnf_values[output_idx]);
 					else
 						solver_->incAddUnitClause(out_cnf_values[output_idx]);
+
 
 				}
 				//------------------------------------------------------------------------------------
@@ -303,7 +334,11 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
 
+
+	if(sim_env)
+		delete sim_env;
 	delete sim_concrete;
+	delete solver_;
 
 	return superfluous.size() != 0;
 }
@@ -317,6 +352,9 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 	SatSolver* solver_ = Options::instance().getSATSolver();
 	AigSimulator* sim_concrete = new AigSimulator(circuit_);
 	SymbolicSimulator sim_symb(circuit_, solver_, next_free_cnf_var);
+	AigSimulator* sim_env = 0;
+	if (environment_model_)
+		sim_env = new AigSimulator(environment_model_);
 
 
 	// TODO: move outside of this function ----
@@ -349,6 +387,8 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 		vector<int> concrete_state_ok;
 		concrete_state_ok.resize(circuit_->num_latches);
 		sim_symb.initLatches();
+		if (environment_model_)
+			sim_env->initLatches();
 
 		// f = a set of variables fi indicating whether the latch is *flipped in _step_ i* or not
 		vector<int> f;
@@ -455,11 +495,32 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 			alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
 
 
+			vector<int> output_is_relevant;
+			if (environment_model_)
+			{
+				vector<int> env_input;
+				const vector<int>& input_values = testcase[timestep];
+
+				env_input.reserve(input_values.size() + outputs_ok.size());
+				env_input.insert(env_input.end(), input_values.begin(),
+						input_values.end());
+				env_input.insert(env_input.end(), outputs_ok.begin(), outputs_ok.end());
+
+				sim_env->simulateOneTimeStep(env_input);
+				output_is_relevant = sim_env->getOutputs();
+				sim_env->switchToNextState();
+			}
+
 			//------------------------------------------------------------------------------------
-			// unit clauses saying that the current (TODO: "RELEVANT") outputs are equal
+			// unit clauses saying that the current (relevant) outputs are equal
 			const vector<int> &out_cnf_values = sim_symb.getOutputValues();
 			for (unsigned output_idx = 0;
 					output_idx < outputs_ok.size() - 1;	++output_idx) {
+
+				// skip if output is not relevant
+				if (environment_model_ && output_is_relevant[output_idx] == AIG_FALSE)
+					continue;
+
 				if (outputs_ok[output_idx] == AIG_FALSE)
 					solver_->incAddUnitClause(-out_cnf_values[output_idx]);
 				else
@@ -584,7 +645,8 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 //			delete environment_sim;
 	} // ------ END 'for each testcase' ---------------
 
-
+	if(sim_env)
+		delete sim_env;
 	delete sim_concrete;
 	delete solver_;
 
@@ -599,6 +661,9 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 	SatSolver* solver_ = Options::instance().getSATSolver();
 	SymbolicSimulator sim_ok(circuit_,solver_, next_free_cnf_var);
 	SymbolicSimulator sim_symb(circuit_, solver_, next_free_cnf_var);
+	SymbolicSimulator* sim_env = 0;
+	if (environment_model_)
+		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
@@ -618,6 +683,8 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 
 			sim_symb.initLatches(); // initialize latches to false
 			sim_ok.initLatches();
+			if (environment_model_)
+				sim_env->initLatches();
 
 			AndCacheMap cache(solver_);
 			sim_ok.setCache(&cache);
@@ -693,17 +760,39 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 				alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
 
 				//------------------------------------------------------------------------------------
-				// unit clauses saying that the current (TODO: "RELEVANT") outputs are equal
+				vector<int> env_outputs;
+				if (environment_model_)
+				{
+					vector<int> env_input;
+					const vector<int>& input_values = sim_ok.getInputValues();
+
+					env_input.reserve(input_values.size() + outputs_ok.size());
+					env_input.insert(env_input.end(), input_values.begin(),
+							input_values.end());
+					env_input.insert(env_input.end(), outputs_ok.begin(), outputs_ok.end());
+
+					sim_env->setCnfInputValues(env_input);
+					sim_env->simulateOneTimeStep();
+					env_outputs = sim_env->getOutputValues();
+					sim_env->switchToNextState();
+				}
+
+				//------------------------------------------------------------------------------------
+				// unit clauses saying that the current (relevant) outputs are equal
 				const vector<int> &out_cnf_values = sim_symb.getOutputValues();
 				for (unsigned output_idx = 0;
 						output_idx < outputs_ok.size() - 1;	++output_idx) {
-					if (outputs_ok[output_idx] == CNF_FALSE)
+					if (!environment_model_ &&outputs_ok[output_idx] == CNF_FALSE)
 						solver_->incAddUnitClause(-out_cnf_values[output_idx]);
-					else if (outputs_ok[output_idx] == CNF_TRUE)
+					else if (!environment_model_ && outputs_ok[output_idx] == CNF_TRUE)
 						solver_->incAddUnitClause(out_cnf_values[output_idx]);
-					else {
+					else if (!environment_model_){
 						solver_->incAdd2LitClause(-outputs_ok[output_idx], out_cnf_values[output_idx]);
 						solver_->incAdd2LitClause(outputs_ok[output_idx], -out_cnf_values[output_idx]);
+					}
+					else { // if environment-model
+						solver_->incAdd3LitClause(-env_outputs[output_idx], -outputs_ok[output_idx], out_cnf_values[output_idx]);
+						solver_->incAdd3LitClause(-env_outputs[output_idx], outputs_ok[output_idx], -out_cnf_values[output_idx]);
 					}
 
 				}
@@ -838,6 +927,10 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 	} // ------ END 'for each latch' ---------------
 
 
+	delete solver_;
+	if(sim_env)
+		delete sim_env;
+
 	return superfluous.size() != 0;
 }
 
@@ -849,11 +942,12 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 	SatSolver* solver_ = Options::instance().getSATSolver();
 	SymbolicSimulator sim_ok(circuit_,solver_, next_free_cnf_var);
 	SymbolicSimulator sim_symb(circuit_, solver_, next_free_cnf_var);
+	SymbolicSimulator* sim_env = 0;
+	if (environment_model_)
+		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
 
-	// TODO: move outside of this function ----
-	set<int> latches_to_check_; // TODO: always use all latches for the false positives algorithm?
-
+	set<int> latches_to_check_;
 	//------------------------------------------------------------------------------------------
 	// set up ci signals
 	// maps for latch-literals <=> cj-literals: each latch has a corresponding cj literal,
@@ -880,6 +974,8 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 
 		sim_ok.initLatches();
 		sim_symb.initLatches();
+		if (environment_model_)
+			sim_env->initLatches();
 
 		AndCacheMap cache(solver_);
 		sim_ok.setCache(&cache);
@@ -989,17 +1085,38 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 			alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
 
 			//------------------------------------------------------------------------------------
-			// unit clauses saying that the current (TODO: "RELEVANT") outputs are equal
+			vector<int> env_outputs;
+			if (environment_model_)
+			{
+				vector<int> env_input;
+				const vector<int>& input_values = sim_ok.getInputValues();
+
+				env_input.reserve(input_values.size() + outputs_ok.size());
+				env_input.insert(env_input.end(), input_values.begin(),
+						input_values.end());
+				env_input.insert(env_input.end(), outputs_ok.begin(), outputs_ok.end());
+
+				sim_env->setCnfInputValues(env_input);
+				sim_env->simulateOneTimeStep();
+				env_outputs = sim_env->getOutputValues();
+				sim_env->switchToNextState();
+			}
+			//------------------------------------------------------------------------------------
+			// unit clauses saying that the current (relevant) outputs are equal
 			const vector<int> &out_cnf_values = sim_symb.getOutputValues();
 			for (unsigned output_idx = 0;
 					output_idx < outputs_ok.size() - 1;	++output_idx) {
-				if (outputs_ok[output_idx] == CNF_FALSE)
+				if (!environment_model_ &&outputs_ok[output_idx] == CNF_FALSE)
 					solver_->incAddUnitClause(-out_cnf_values[output_idx]);
-				else if (outputs_ok[output_idx] == CNF_TRUE)
+				else if (!environment_model_ && outputs_ok[output_idx] == CNF_TRUE)
 					solver_->incAddUnitClause(out_cnf_values[output_idx]);
-				else {
+				else if (!environment_model_){
 					solver_->incAdd2LitClause(-outputs_ok[output_idx], out_cnf_values[output_idx]);
 					solver_->incAdd2LitClause(outputs_ok[output_idx], -out_cnf_values[output_idx]);
+				}
+				else { // if environment-model
+					solver_->incAdd3LitClause(-env_outputs[output_idx], -outputs_ok[output_idx], out_cnf_values[output_idx]);
+					solver_->incAdd3LitClause(-env_outputs[output_idx], outputs_ok[output_idx], -out_cnf_values[output_idx]);
 				}
 
 			}
@@ -1148,6 +1265,8 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 
 
 	delete solver_;
+	if(sim_env)
+		delete sim_env;
 
 	return superfluous.size() != 0;
 }

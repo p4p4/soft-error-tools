@@ -659,6 +659,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 				}
 
 			} // -- END "for each timestep in testcase" --
+			if(environment_sim)
+				delete environment_sim;
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
 
@@ -706,7 +708,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 			solver_->incAddUnitClause(CNF_TRUE); // TRUE constant
 
 			sim_ok.initLatches();
-			symbsim.initLatches(); // initialize latches to false
+			symbsim.initLatches();
 			if (environment_model_)
 				sim_env->initLatches();
 

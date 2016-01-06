@@ -158,6 +158,12 @@ class AigSimulator
 
 // -------------------------------------------------------------------------------------------
 ///
+/// @brief (re)sets the latch values to Zero
+///
+	void initLatches();
+
+// -------------------------------------------------------------------------------------------
+///
 /// @brief Returns a reference to the provided test-case
 ///
 	const TestCase& getTestcase() const
@@ -192,12 +198,6 @@ class AigSimulator
 /// @brief The current time-step. Only used for getVerboseString() and for debugging
 ///
 	size_t time_index_;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief (re)sets the latch values to Zero
-///
-	void initLatches();
 
 
 	private:
