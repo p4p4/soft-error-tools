@@ -157,7 +157,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					continue;
 				}
 
-				if (true) // set TRUE for testing (equal_concrete_outputs)
+				if (equal_concrete_outputs) // set TRUE for testing
 				{
 					// f variables:
 					int fi = next_free_cnf_var++;
@@ -189,10 +189,25 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					fi_to_timestep[fi] = timestep;
 
 				}
+
+
+
 				sim_symb.simulateOneTimeStep();
 				alarm_literals.push_back(sim_symb.getAlarmValue());
 				alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
 
+				//------------------------------------------------------------------------------------
+				// unit clauses saying that the current (TODO: "RELEVANT") outputs are equal
+				const vector<int> &out_cnf_values = sim_symb.getOutputValues();
+				for (unsigned output_idx = 0;
+						output_idx < outputs_ok.size() - 1;	++output_idx) {
+					if (outputs_ok[output_idx] == AIG_FALSE)
+						solver_->incAddUnitClause(-out_cnf_values[output_idx]);
+					else
+						solver_->incAddUnitClause(out_cnf_values[output_idx]);
+
+				}
+				//------------------------------------------------------------------------------------
 
                 sim_symb.switchToNextState();
 				const vector<int> &next_cnf_values = sim_symb.getLatchValues();
@@ -433,12 +448,25 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 
 			f.push_back(fi);
 			fi_to_timestep[fi] = timestep;
-			//--------------------------------------------------------------------------------------
+
 
 			sim_symb.simulateOneTimeStep();
 			alarm_literals.push_back(sim_symb.getAlarmValue());
 			alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
 
+
+			//------------------------------------------------------------------------------------
+			// unit clauses saying that the current (TODO: "RELEVANT") outputs are equal
+			const vector<int> &out_cnf_values = sim_symb.getOutputValues();
+			for (unsigned output_idx = 0;
+					output_idx < outputs_ok.size() - 1;	++output_idx) {
+				if (outputs_ok[output_idx] == AIG_FALSE)
+					solver_->incAddUnitClause(-out_cnf_values[output_idx]);
+				else
+					solver_->incAddUnitClause(out_cnf_values[output_idx]);
+
+			}
+			//--------------------------------------------------------------------------------------
 
 			// get Outputs and next state values, switch to next state
 			sim_symb.switchToNextState();
@@ -663,6 +691,23 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 				sim_symb.simulateOneTimeStep();
 				alarm_literals.push_back(sim_symb.getAlarmValue());
 				alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
+
+				//------------------------------------------------------------------------------------
+				// unit clauses saying that the current (TODO: "RELEVANT") outputs are equal
+				const vector<int> &out_cnf_values = sim_symb.getOutputValues();
+				for (unsigned output_idx = 0;
+						output_idx < outputs_ok.size() - 1;	++output_idx) {
+					if (outputs_ok[output_idx] == CNF_FALSE)
+						solver_->incAddUnitClause(-out_cnf_values[output_idx]);
+					else if (outputs_ok[output_idx] == CNF_TRUE)
+						solver_->incAddUnitClause(out_cnf_values[output_idx]);
+					else {
+						solver_->incAdd2LitClause(-outputs_ok[output_idx], out_cnf_values[output_idx]);
+						solver_->incAdd2LitClause(outputs_ok[output_idx], -out_cnf_values[output_idx]);
+					}
+
+				}
+				//--------------------------------------------------------------------------------------
 
                 sim_symb.switchToNextState();
 				const vector<int> &next_cnf_values = sim_symb.getLatchValues();
@@ -942,6 +987,24 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 			sim_symb.simulateOneTimeStep();
 			alarm_literals.push_back(sim_symb.getAlarmValue());
 			alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
+
+			//------------------------------------------------------------------------------------
+			// unit clauses saying that the current (TODO: "RELEVANT") outputs are equal
+			const vector<int> &out_cnf_values = sim_symb.getOutputValues();
+			for (unsigned output_idx = 0;
+					output_idx < outputs_ok.size() - 1;	++output_idx) {
+				if (outputs_ok[output_idx] == CNF_FALSE)
+					solver_->incAddUnitClause(-out_cnf_values[output_idx]);
+				else if (outputs_ok[output_idx] == CNF_TRUE)
+					solver_->incAddUnitClause(out_cnf_values[output_idx]);
+				else {
+					solver_->incAdd2LitClause(-outputs_ok[output_idx], out_cnf_values[output_idx]);
+					solver_->incAdd2LitClause(outputs_ok[output_idx], -out_cnf_values[output_idx]);
+				}
+
+			}
+			//--------------------------------------------------------------------------------------
+
 
 			sim_symb.switchToNextState();
 			const vector<int> &next_cnf_values = sim_symb.getLatchValues();
