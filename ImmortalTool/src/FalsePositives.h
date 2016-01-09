@@ -43,6 +43,15 @@ class FalsePositives : public BackEnd
 {
 public:
 	using BackEnd::analyze;
+
+
+	enum AnalysisMode
+	{
+		SYMB_TIME = 0,
+		SYMB_TIME_LOCATION = 1,
+		SYMB_TIME_INPUTS = 2,
+		SYMB_TIME_LOCATION_INPUTS = 3
+	};
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.

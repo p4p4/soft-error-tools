@@ -245,3 +245,49 @@ void TestFalsePositives::checkTest7Traces(vector<SuperfluousTrace*> sftrace)
 	}
 
 }
+
+void TestFalsePositives::test8_environment_input_model()
+{
+	aiger* circuit = Utils::readAiger("inputs/irrelevant_latches.prot.delay1.useinput.aag");
+	aiger* environment = Utils::readAiger("inputs/env_buffer.aag");
+
+	vector<unsigned> modes_to_test;
+	modes_to_test.push_back(FalsePositives::SYMB_TIME_INPUTS);
+	modes_to_test.push_back(FalsePositives::SYMB_TIME_LOCATION_INPUTS);
+
+	for(unsigned i = 0; i < modes_to_test.size(); i++)
+	{
+		FalsePositives falsepos(circuit,modes_to_test[i]);
+		falsepos.setEnvironmentModel(environment);
+
+		// a) let the inputs value be selected by the SAT-solver for 3 timesteps
+		falsepos.analyzeModelChecking(3);
+
+		CPPUNIT_ASSERT(falsepos.getSuperfluous().size() > 0);
+
+		// b) the input is hardcoded to 0, which makes it
+		//    irrelevant according to the environment
+		//    model.
+
+		InputVector invalid_input_vector;
+		invalid_input_vector.push_back(AIG_FALSE); // this makes the CNF of the env UNSAT
+
+		TestCase tc;
+		tc.push_back(invalid_input_vector);
+		tc.push_back(invalid_input_vector);
+		tc.push_back(invalid_input_vector);
+
+		vector<TestCase> testcases;
+		testcases.push_back(tc);
+
+		falsepos.analyze(testcases);
+
+		CPPUNIT_ASSERT(falsepos.getSuperfluous().size() == 0);
+	}
+
+
+
+
+	aiger_reset(circuit);
+	aiger_reset(environment);
+}

@@ -48,6 +48,7 @@ class TestFalsePositives : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test5_irrelevant_latches);
   CPPUNIT_TEST(test6_irrelevant_latches_delayOneTimestep);
   CPPUNIT_TEST(test7_free_inputs);
+  CPPUNIT_TEST(test8_environment_input_model);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -74,6 +75,7 @@ protected:
   void checkIrrelevantLatchesDelayOneTraces(vector<SuperfluousTrace*> sftrace);
   void test7_free_inputs();
   void checkTest7Traces(vector<SuperfluousTrace*> sftrace);
+  void test8_environment_input_model();
 
 };
 

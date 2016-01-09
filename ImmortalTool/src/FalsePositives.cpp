@@ -56,13 +56,13 @@ bool FalsePositives::analyze(vector<TestCase>& testcases)
 	//	vulnerable_latches = empty_set/list
 	superfluous.clear();
 
-	if (mode_ == 0)	// TODO: create modes, split into meaningful BackEnd groups
+	if (mode_ == FalsePositives::SYMB_TIME)	// TODO: split into meaningful BackEnd groups
 		findFalsePositives_1b(testcases);
-	else if (mode_ == 1)
+	else if (mode_ == FalsePositives::SYMB_TIME_LOCATION)
 		findFalsePositives_2b(testcases);
-	else if (mode_ == 2)
+	else if (mode_ == FalsePositives::SYMB_TIME_INPUTS)
 		findFalsePositives_1b_free_inputs(testcases);
-	else if (mode_ == 3)
+	else if (mode_ == FalsePositives::SYMB_TIME_LOCATION_INPUTS)
 		findFalsePositives_2b_free_inputs(testcases);
 	else
 		MASSERT(false, "unknown mode!");

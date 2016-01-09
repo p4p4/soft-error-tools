@@ -192,10 +192,10 @@ void TestEnvironmentModel::test12_stla1_basic_2()
 	basic_test_2("stla", SymbTimeLocationAnalysis::FREE_INPUTS);
 }
 
-void TestEnvironmentModel::test13_free_inputs()
+void TestEnvironmentModel::check_input_restrictions(std::string backend_name, int mode)
 {
 	aiger* circuit = Utils::readAiger("inputs/toggle.3vulnerabilities.aag");
-	BackEnd* backend = getBackend("stla", SymbTimeLocationAnalysis::FREE_INPUTS, circuit);
+	BackEnd* backend = getBackend(backend_name, mode, circuit);
 	aiger* environment = Utils::readAiger("inputs/env_3inputs_mustbe1.aag");
 	backend->setEnvironmentModel(environment);
 
@@ -228,5 +228,12 @@ void TestEnvironmentModel::test13_free_inputs()
 	aiger_reset(circuit);
 	aiger_reset(environment);
 	delete backend;
+}
+
+void TestEnvironmentModel::test13_free_inputs()
+{
+	check_input_restrictions("sta", SymbTimeAnalysis::FREE_INPUTS);
+	check_input_restrictions("stla", SymbTimeLocationAnalysis::FREE_INPUTS);
+
 }
 

@@ -35,9 +35,11 @@
 class TestEnvironmentModel: public CPPUNIT_NS::TestFixture
 {
 
-	void basic_test_1(std::string backend, int mode);
+	void basic_test_1(std::string backend_name, int mode);
+	void basic_test_2(std::string backend_name, int mode);
+	void check_input_restrictions(std::string backend_name, int mode);
 
-	void basic_test_2(std::string backend, int mode);
+
 
 	BackEnd* getBackend(const std::string& backend_name, int mode, aiger* circuit);
 
