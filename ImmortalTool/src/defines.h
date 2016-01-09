@@ -43,7 +43,8 @@ using namespace std;
 
 // A TestCase is a set of input-vectors. One input-vector per time-step, containing
 // num_of_inputs input-values.
-typedef vector<vector<int> > TestCase;
+typedef vector<int> InputVector;
+typedef vector<InputVector > TestCase;
 
 #define AIG_FALSE			 0
 #define AIG_TRUE 			 1

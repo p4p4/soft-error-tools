@@ -95,6 +95,7 @@ bool BackEnd::analyzeModelChecking(unsigned num_of_timesteps)
 
 bool BackEnd::analyze(vector<string> paths_to_TC_files)
 {
+	vulnerable_elements_.clear();
 	vector<TestCase> testcases;
 	//for each test case t[][]
 	for (unsigned tc_index_ = 0; tc_index_ < paths_to_TC_files.size(); tc_index_++)

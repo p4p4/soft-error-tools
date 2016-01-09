@@ -54,6 +54,7 @@ CPPUNIT_TEST_SUITE(TestEnvironmentModel);
 	CPPUNIT_TEST(test10_stla0_basic_2);
 	CPPUNIT_TEST(test11_stla1_basic_1);
 	CPPUNIT_TEST(test12_stla1_basic_2);
+	CPPUNIT_TEST(test13_free_inputs);
 	CPPUNIT_TEST_SUITE_END()
 	;
 
@@ -84,6 +85,9 @@ protected:
 	void test10_stla0_basic_2();
 	void test11_stla1_basic_1();
 	void test12_stla1_basic_2();
+
+	//testing the optional last output which defines correct input vectors for free input modes:
+	void test13_free_inputs();
 
 };
 

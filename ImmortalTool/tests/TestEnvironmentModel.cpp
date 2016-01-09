@@ -82,6 +82,8 @@ void TestEnvironmentModel::basic_test_1(std::string backend_name, int mode)
 	backend->analyzeWithRandomTestCases(1, 5);
 	CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 0);
 
+	aiger_reset(circuit);
+	aiger_reset(environment);
 	delete backend;
 }
 
@@ -109,6 +111,7 @@ void TestEnvironmentModel::basic_test_2(std::string backend_name, int mode)
 	tcs.push_back(tc);
 	CPPUNIT_ASSERT(backend->analyze(tcs));
 	// 2c) env = buffer, inputs = 0 0
+	aiger_reset(environment);
 	environment = Utils::readAiger("inputs/buffer.unprot.aag");
 	backend->setEnvironmentModel(environment);
 	tc.clear();
@@ -122,6 +125,10 @@ void TestEnvironmentModel::basic_test_2(std::string backend_name, int mode)
 	tcs.clear();
 	tcs.push_back(tc);
 	CPPUNIT_ASSERT(backend->analyze(tcs));
+
+	delete backend;
+	aiger_reset(circuit);
+	aiger_reset(environment);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -184,3 +191,42 @@ void TestEnvironmentModel::test12_stla1_basic_2()
 {
 	basic_test_2("stla", SymbTimeLocationAnalysis::FREE_INPUTS);
 }
+
+void TestEnvironmentModel::test13_free_inputs()
+{
+	aiger* circuit = Utils::readAiger("inputs/toggle.3vulnerabilities.aag");
+	BackEnd* backend = getBackend("stla", SymbTimeLocationAnalysis::FREE_INPUTS, circuit);
+	aiger* environment = Utils::readAiger("inputs/env_3inputs_mustbe1.aag");
+	backend->setEnvironmentModel(environment);
+
+	// a) let all 3 inputs values be selected by the SAT-solver for 3 timesteps
+	backend->analyzeModelChecking(3);
+	CPPUNIT_ASSERT(backend->getVulnerableElements().size() > 0);
+
+
+	// b) let only 2 of 3 input values be selected by the MC
+	//    one input is hardcoded to 0, which makes all possible
+	//    input vectors to irrelevant according to the environment
+	//    model.
+
+	InputVector invalid_input_vector;
+	invalid_input_vector.push_back(LIT_FREE);
+	invalid_input_vector.push_back(LIT_FREE);
+	invalid_input_vector.push_back(AIG_FALSE); // this makes the CNF of the env UNSAT
+
+	TestCase tc;
+	tc.push_back(invalid_input_vector);
+	tc.push_back(invalid_input_vector);
+	tc.push_back(invalid_input_vector);
+
+	vector<TestCase> testcases;
+	testcases.push_back(tc);
+
+	backend->analyze(testcases);
+	CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 0);
+
+	aiger_reset(circuit);
+	aiger_reset(environment);
+	delete backend;
+}
+
