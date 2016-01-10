@@ -106,6 +106,13 @@ public:
 	/// @return TRUE if vulnerabilities were found.
 	bool findFalsePositives_2b_free_inputs(vector<TestCase> &testcases);
 
+
+/// @return The number of vulnerable elements / number of superfluous traces
+	unsigned int getNumberOfErrors();
+
+	void printErrorTraces();
+
+
 	vector<SuperfluousTrace*> getSuperfluous()
 	{
 		return superfluous;
@@ -134,6 +141,8 @@ protected:
 	vector<SuperfluousTrace*> superfluous;
 
 	bool isEqualN(vector<int> a, vector<int> b, int elements_to_skip);
+
+	void clearSuperfluousList();
 
 
 private:

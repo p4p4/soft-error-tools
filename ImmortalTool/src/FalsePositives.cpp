@@ -53,8 +53,6 @@ FalsePositives::~FalsePositives()
 
 bool FalsePositives::analyze(vector<TestCase>& testcases)
 {
-	//	vulnerable_latches = empty_set/list
-	superfluous.clear();
 
 	if (mode_ == FalsePositives::SYMB_TIME)	// TODO: split into meaningful BackEnd groups
 		findFalsePositives_1b(testcases);
@@ -72,7 +70,7 @@ bool FalsePositives::analyze(vector<TestCase>& testcases)
 
 bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 {
-	superfluous.clear();
+	clearSuperfluousList();
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();
@@ -91,7 +89,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = component_aig >> 1;
 
-		cout << "==============================" << endl << "latch " << component_aig << endl;
+//		cout << "==============================" << endl << "latch " << component_aig << endl;
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -345,7 +343,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 {
-	superfluous.clear();
+	clearSuperfluousList();
 
 	int next_free_cnf_var = 2;
 
@@ -655,7 +653,7 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 
 bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcases)
 {
-	superfluous.clear();
+	clearSuperfluousList();
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();
@@ -674,7 +672,7 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 		unsigned component_aig = circuit_->latches[c_cnt].lit;
 		int component_cnf = component_aig >> 1;
 
-		cout << "==============================" << endl << "latch " << component_aig << endl;
+//		cout << "==============================" << endl << "latch " << component_aig << endl;
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -941,7 +939,7 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 
 bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcases)
 {
-	superfluous.clear();
+	clearSuperfluousList();
 	int next_free_cnf_var = 2;
 
 	SatSolver* solver_ = Options::instance().getSATSolver();
@@ -1281,6 +1279,26 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 	return superfluous.size() != 0;
 }
 
+unsigned int FalsePositives::getNumberOfErrors()
+{
+	return superfluous.size();
+}
+
+void FalsePositives::printErrorTraces()
+{
+	cerr << "TODO: implement listing of superfluous traces (similar to error traces for vulnerabilities)" << endl;
+
+	// TODO: only draft listing of superfluous components, integrate into ErrorTraceManager
+	for(unsigned i = 0; i < superfluous.size(); i++)
+	{
+		SuperfluousTrace* sf = superfluous[i];
+		L_LOG("  component="<< sf->component_ << ", flip_timestep=" << sf->flip_timestep_ << ", alarm_timestep=" << sf->alarm_timestep_ << ",error_gone_ts=" << sf->error_gone_timestep_)
+
+
+	}
+
+}
+
 bool FalsePositives::isEqualN(vector<int> a, vector<int> b, int elements_to_skip)
 {
 	unsigned length = a.size() - elements_to_skip;
@@ -1295,4 +1313,13 @@ void FalsePositives::addSuperfluousTrace(int component, TestCase& testcase, unsi
 	SuperfluousTrace* sf = new SuperfluousTrace(component, testcase, flip_timestep, alarm_timestep,
 			error_gone_ts);
 	superfluous.push_back(sf);
+}
+
+void FalsePositives::clearSuperfluousList()
+{
+	for(unsigned i = 0; i < superfluous.size(); i++)
+	{
+		delete superfluous[i];
+	}
+	superfluous.clear();
 }

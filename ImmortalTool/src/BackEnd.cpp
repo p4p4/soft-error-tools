@@ -25,6 +25,7 @@
 
 #include "BackEnd.h"
 #include "Utils.h"
+#include "ErrorTraceManager.h"
 
 extern "C"
 {
@@ -106,6 +107,16 @@ bool BackEnd::analyze(vector<string> paths_to_TC_files)
 	}
 
 	return analyze(testcases);
+}
+
+unsigned int BackEnd::getNumberOfErrors()
+{
+	return vulnerable_elements_.size();
+}
+
+void BackEnd::printErrorTraces()
+{
+	ErrorTraceManager::instance().printErrorTraces();
 }
 
 void BackEnd::setEnvironmentModel(aiger* environmentModel)

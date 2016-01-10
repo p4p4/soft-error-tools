@@ -32,6 +32,7 @@
 #include "SimulationBasedAnalysis.h"
 #include "SymbTimeAnalysis.h"
 #include "SymbTimeLocationAnalysis.h"
+#include "FalsePositives.h"
 #include "Utils.h"
 
 #include <sys/stat.h>
@@ -43,7 +44,7 @@ extern "C"
 }
 
 // -------------------------------------------------------------------------------------------
-const string Options::VERSION = string("0.1");
+const string Options::VERSION = string("0.2");
 const string Options::TP_VAR = string("IMMORTALTP");
 
 // -------------------------------------------------------------------------------------------
@@ -369,6 +370,10 @@ BackEnd* Options::getBackEnd()
 	{
 		back_end_instance_ = new SymbTimeLocationAnalysis(circuit_, num_err_latches_, mode_);
 	}
+	else if (back_end_ == "fp")
+	{
+		back_end_instance_ = new FalsePositives(circuit_, num_err_latches_, mode_);
+	}
 	else
 	{
 		L_ERR("Unknown back-end '" << back_end_ <<"'.");
@@ -441,11 +446,15 @@ void Options::printHelp() const
 	cout << "  -v, --version" << endl;
 	cout << "                 Print version information and exit." << endl;
 	cout << "  -i INPUT_FILE, --in=INPUT_FILE" << endl;
-	cout << "                 The AIGER file with additional alarm output" << endl;
+	cout << "                 The AIGER circuit with additional alarm output" << endl;
 	cout << "                 It can be:" << endl;
 	cout << "                  - a binary AIGER file (header starts with 'aig')," << endl;
 	cout << "                  - an ASCII AIGER file (header starts with 'aag')," << endl;
 	cout << "                  - a compressed file (INPUT_FILE ends with '.gz')." << endl;
+	cout << "  -env ENVIRONMENT_FILE" << endl;
+	cout << "                 An *optional* environment circuit in aiger representation" << endl;
+	cout << "                 which defines relevance of output values and optionally" << endl;
+	cout << "                 the allowed input combinations." << endl;
 	cout << "  -tc TESTCASE_FILE(s)" << endl;
 	cout << "                The TestCase(s) to use. A TESTCASE_FILE contains a list " << endl;
 	cout << "                of input-vectors. One input-vector contains values for " << endl;
@@ -483,6 +492,9 @@ void Options::printHelp() const
 	cout << "                         when to introduce a flip is symbolic, the    " << endl;
 	cout << "                         location (the latch to flip) is  also " << endl;
 	cout << "                         symbolic.  " << endl;
+	cout << "                 fp: The false-positives analysis" << endl;
+	cout << "                         Adoptions of the sta and stla algorithms to" << endl;
+	cout << "                         find false positives (instead of vulnerabiliteis)" << endl;
 	cout << "                 The default is 'sim'." << endl;
 	cout << "  -m MODE , --mode=MODE" << endl;
 	cout << "                 Some back-ends can be used in several modes (certain" << endl;
@@ -505,6 +517,17 @@ void Options::printHelp() const
 	cout << "                      and generate the unrolled transition relation " << endl;
 	cout << "                      on the fly " << endl;
 	cout << "                   1: FREE_INPUTS - as the previous method, but allows" << endl;
+	cout << "                      to leave some or all values in the given TestCase" << endl;
+	cout << "                      to be left open (write '?' instead of '0' or '1')" << endl;
+	cout << "                 Back-end 'fp': " << endl;
+	cout << "                   0: SYMB_TIME mode - find false positives with an algorithm" << endl;
+	cout << "                      working similar to the one of the 'sta' backend." << endl;
+	cout << "                   1: SYMB_TIME_LOCATION - find false positives with an algorithm" << endl;
+	cout << "                      working similar to the one of the 'stla' backend." << endl;
+	cout << "                   2: SYMB_TIME_INPUTS - as mode 0, but allows" << endl;
+	cout << "                      to leave some or all values in the given TestCase" << endl;
+	cout << "                      to be left open (write '?' instead of '0' or '1')" << endl;
+	cout << "                   2: SYMB_TIME_LOCATION_INPUTS - as mode 1, but allows" << endl;
 	cout << "                      to leave some or all values in the given TestCase" << endl;
 	cout << "                      to be left open (write '?' instead of '0' or '1')" << endl;
 	cout << "                 The default is 0." << endl;

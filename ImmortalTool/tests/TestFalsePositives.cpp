@@ -35,7 +35,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestFalsePositives);
 void TestFalsePositives::setUp()
 {
   //setup for testcases
-	Logger::instance().enable(Logger::DBG);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -47,7 +46,6 @@ void TestFalsePositives::tearDown()
 // -------------------------------------------------------------------------------------------
 void TestFalsePositives::test1_no_alarm()
 {
-	Logger::instance().enable(Logger::DBG);
 	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
 	FalsePositives falsepos(circuit,1);
 
@@ -264,6 +262,8 @@ void TestFalsePositives::test8_environment_input_model()
 		falsepos.analyzeModelChecking(3);
 
 		CPPUNIT_ASSERT(falsepos.getSuperfluous().size() > 0);
+
+		falsepos.printErrorTraces();
 
 		// b) the input is hardcoded to 0, which makes it
 		//    irrelevant according to the environment

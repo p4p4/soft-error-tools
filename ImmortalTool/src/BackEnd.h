@@ -60,6 +60,11 @@ public:
 /// @return The set of vulnerable elements of the circuit
 	const set<unsigned>& getVulnerableElements() const;
 
+/// @return The number of vulnerable elements / number of superfluous traces
+	unsigned int getNumberOfErrors();
+
+	void printErrorTraces();
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief tries to find vulnerabilities using the provided TestCases

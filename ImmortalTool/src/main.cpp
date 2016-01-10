@@ -30,7 +30,6 @@
 #include "Logger.h"
 #include "LingelingApi.h"
 #include "SimulationBasedAnalysis.h"
-#include "ErrorTraceManager.h"
 #include "Utils.h"
 
 extern "C"
@@ -77,9 +76,7 @@ int main(int argc, char *argv[])
 		;
 	}
 
-	const set<unsigned> &vulnerabilities = error_analysis->getVulnerableElements();
-
-	L_LOG("#Vulnerabilities found: " << vulnerabilities.size());
+	L_LOG("#Errors found: " << error_analysis->getNumberOfErrors());
 //	for (set<unsigned>::iterator it = vulnerabilities.begin();
 //			it != vulnerabilities.end(); ++it)
 //	{
@@ -88,7 +85,7 @@ int main(int argc, char *argv[])
 
 	if (Options::instance().isUseDiagnosticOutput())
 	{
-		ErrorTraceManager::instance().printErrorTraces();
+		error_analysis->printErrorTraces();
 	}
 
 	//----------------------------------------------------------------------------
