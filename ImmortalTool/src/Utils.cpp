@@ -394,3 +394,35 @@ void Utils::generateRandomTestCases(vector<TestCase>& testcases, unsigned num_of
 		}
 
 }
+
+void Utils::generateRandomTestCases(vector<TestCase>& testcases, unsigned num_of_TCs, unsigned num_of_timesteps, unsigned num_inputs, unsigned num_free_inputs)
+{
+	// 1. generate random testcases
+		testcases.reserve(num_of_TCs);
+		for (unsigned tc_i = 0; tc_i < num_of_TCs; tc_i++)
+		{
+			TestCase tc;
+			tc.reserve(num_of_timesteps);
+			for (unsigned timestep = 0; timestep < num_of_timesteps; timestep++)
+			{
+				vector<int> inputs;
+				inputs.reserve(num_inputs);
+				for(unsigned i=0; i < num_inputs; i++)
+				{
+					if(num_free_inputs > 0)
+					{
+						num_free_inputs--;
+						inputs.push_back(LIT_FREE);
+					}
+					else
+					{
+						inputs.push_back(rand() % 2);
+					}
+				}
+
+				tc.push_back(inputs);
+			}
+			testcases.push_back(tc);
+		}
+
+}

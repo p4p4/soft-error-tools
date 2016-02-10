@@ -26,6 +26,7 @@
 #include "BackEnd.h"
 #include "Utils.h"
 #include "ErrorTraceManager.h"
+#include "Options.h"
 
 extern "C"
 {
@@ -60,7 +61,11 @@ bool BackEnd::analyzeWithRandomTestCases(unsigned num_of_TCs, unsigned num_of_ti
 
 	// 1. generate random testcases
 	vector<TestCase> testcases;
-	Utils::generateRandomTestCases(testcases, num_of_TCs,num_of_timesteps,circuit_->num_inputs);
+	if (Options::instance().num_open_inputs_ == 0)
+		Utils::generateRandomTestCases(testcases, num_of_TCs,num_of_timesteps,circuit_->num_inputs);
+	else
+		Utils::generateRandomTestCases(testcases, num_of_TCs,num_of_timesteps,circuit_->num_inputs,Options::instance().num_open_inputs_);
+
 
 	// 2. run testcases:
 	return analyze(testcases);

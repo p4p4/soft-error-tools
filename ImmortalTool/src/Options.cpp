@@ -265,6 +265,37 @@ bool Options::parse(int argc, char **argv)
 			}
 			testcase_mode_ = TC_RANDOM;
 		}
+		else if (arg == "-tcr2") // only for benchmarking
+		{
+			if (testcase_mode_ != TC_UNDEFINED)
+			{
+				cerr << "Error: More than one TestCase-Mode given. Which to use?" << endl;
+				return true;
+			}
+
+			if (arg_count + 3 >= argc)
+			{
+				cerr << "Option -tcr2 must be followed by three positive integer numbers." << endl;
+				return true;
+			}
+
+			istringstream iss(argv[++arg_count]);
+			iss >> num_testcases_;
+
+			istringstream iss2(argv[++arg_count]);
+			iss2 >> len_rand_testcases_;
+
+
+			istringstream iss3(argv[++arg_count]);
+			iss3 >> num_open_inputs_;
+
+			if (num_testcases_ <= 0 || len_rand_testcases_ <= 0 || num_open_inputs_ <= 0)
+			{
+				cerr << "Option -tcr2 must be followed by three positive integer numbers." << endl;
+				return true;
+			}
+			testcase_mode_ = TC_RANDOM;
+		}
 		else if (arg == "-mc")
 		{
 			if (testcase_mode_ != TC_UNDEFINED)
@@ -631,7 +662,7 @@ Options::Options() :
 				"ERWIL"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), env_model_(0), num_err_latches_(
 				0), seed_(0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
-				false), diagnostic_output_path_("")
+				false), diagnostic_output_path_(""), num_open_inputs_(0)
 {
 	// nothing to be done
 }

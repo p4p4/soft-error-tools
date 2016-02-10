@@ -240,6 +240,9 @@ public:
   static void generateRandomTestCases(vector<TestCase>& testcases, unsigned num_of_TCs,
 			unsigned num_of_timesteps, unsigned num_inputs);
 
+  static void generateRandomTestCases(vector<TestCase>& testcases, unsigned num_of_TCs,
+			unsigned num_of_timesteps, unsigned num_inputs, unsigned num_free_inputs);
+
   // -------------------------------------------------------------------------------------------
   ///
   /// @brief randomly generates 0 or 1

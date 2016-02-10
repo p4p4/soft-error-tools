@@ -237,6 +237,8 @@ class Options
 
 	const string& getAigEnvFileName() const;
 
+	int num_open_inputs_; // only for tcr2 testcase mode (for benchmarking open inputs)
+
 	protected:
 
 // -------------------------------------------------------------------------------------------
