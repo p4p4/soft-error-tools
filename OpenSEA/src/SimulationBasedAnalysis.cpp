@@ -21,6 +21,7 @@
 /// @file SimulationBasedAnalysis.cpp
 /// @brief Contains the definition of the class SimulationBasedAnalysis.
 // -------------------------------------------------------------------------------------------
+#include <math.h>
 
 #include "SimulationBasedAnalysis.h"
 #include "Logger.h"
@@ -52,21 +53,26 @@ bool SimulationBasedAnalysis::analyze(vector<TestCase> &testcases)
 	//for each test case:
 	for (tc_index_ = 0; tc_index_ < testcases.size(); tc_index_++)
 	{
-		sim_->setTestcase(testcases[tc_index_]);
-		current_TC_ = testcases[tc_index_];
-		findVulnerabilitiesForCurrentTC();
+		if (mode_ == STANDARD)
+			findVulnerabilitiesForTC(testcases[tc_index_]);
+		else if (mode_ == FREE_INPUTS)
+			findVulnerabilitiesForTCFreeInputs(testcases[tc_index_]);
+		else
+			MASSERT(false, "unknown mode!");
 	}
 
 	return (vulnerable_elements_.size() != 0);
 }
 
 // -------------------------------------------------------------------------------------------
-void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
+void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 {
+	sim_->setTestcase(test_case);
+
 	vector<vector<int> > outputs_ok;
 	vector<vector<int> > states_ok;
-	outputs_ok.reserve(current_TC_.size());
-	states_ok.reserve(current_TC_.size());
+	outputs_ok.reserve(test_case.size());
+	states_ok.reserve(test_case.size());
 
 	// simulate whole TestCase without error, store results
 	while (sim_->simulateOneTimeStep() == true)
@@ -80,7 +86,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	vector<vector<int> > output_is_relevant;
 	if(environment_model_)
 	{
-		TestCase env_tc = Utils::combineTestCases(current_TC_, outputs_ok);
+		TestCase env_tc = Utils::combineTestCases(test_case, outputs_ok);
 		output_is_relevant.reserve(env_tc.size());
 
 		AigSimulator environment_sim(environment_model_);
@@ -121,7 +127,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 			for (unsigned later_timestep = timestep; later_timestep < states_ok.size(); ++later_timestep)
 			{
 				// next_state[], out[], alarm = simulate1step(state[], t[later_timestep])
-				sim_w_flip.simulateOneTimeStep(current_TC_[later_timestep], state);
+				sim_w_flip.simulateOneTimeStep(test_case[later_timestep], state);
 
 				state = sim_w_flip.getNextLatchValues(); // state = next state
 				vector<int> outputs_w_flip = sim_w_flip.getOutputs();
@@ -166,7 +172,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 						trace->error_timestep_ = later_timestep;
 						trace->flipped_timestep_ = timestep;
 						trace->latch_index_ = circuit_->latches[l_cnt].lit;
-						trace->input_trace_ = current_TC_;
+						trace->input_trace_ = test_case;
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
 					}
 
@@ -186,3 +192,51 @@ void SimulationBasedAnalysis::findVulnerabilitiesForCurrentTC()
 	}
 
 }
+
+void SimulationBasedAnalysis::findVulnerabilitiesForTCFreeInputs(TestCase& test_case)
+{
+	// find number of free inputs
+	unsigned num_free_inputs = 0;
+	for (unsigned timestep = 0; timestep < test_case.size(); timestep++)
+	{
+		for(unsigned input= 0; input  < test_case[timestep].size(); input ++)
+		{
+			if (test_case[timestep][input] == LIT_FREE)
+				num_free_inputs++;
+		}
+	}
+
+	if (num_free_inputs == 0)
+		findVulnerabilitiesForTC(test_case);
+
+	// check for overflow
+	L_DBG("SIM free inputs: " << num_free_inputs)
+	MASSERT(num_free_inputs <= sizeof(unsigned long long) * 8, "too many free inputs")
+
+	for (unsigned long long input_vector = 0; input_vector < pow(2,num_free_inputs); input_vector++)
+	{
+
+		TestCase concrete_test_case = test_case;
+		unsigned free_input_ctr = 0;
+		for (unsigned timestep = 0; timestep < concrete_test_case.size(); timestep++)
+		{
+			for(unsigned input = 0; input  < concrete_test_case[timestep].size(); input++)
+			{
+				if (concrete_test_case[timestep][input] == LIT_FREE)
+				{
+					if ((input_vector & (1 << free_input_ctr)) > 0) // bit is set
+						concrete_test_case[timestep][input] = AIG_TRUE;
+					else
+						concrete_test_case[timestep][input] = AIG_FALSE;
+
+					free_input_ctr++;
+				}
+			}
+		}
+
+		findVulnerabilitiesForTC(concrete_test_case);
+	}
+
+}
+
+

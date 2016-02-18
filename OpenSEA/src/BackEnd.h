@@ -147,11 +147,6 @@ protected:
 /// @brief the list of vulnerabilities found so for
 	set<unsigned> vulnerable_elements_;
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief the current Test-Case
-	TestCase &current_TC_;
-	TestCase empty_TC_; // DUMMY TC
 
 // -------------------------------------------------------------------------------------------
 ///
