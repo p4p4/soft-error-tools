@@ -29,7 +29,7 @@ protected and how many additional latches should be used therefore.
 
 
 # 2 openSEA
-in ImmortalTool/    # TODO: rename folder name!
+in OpenSEA/
 
 ## 2.1 How to install:
 1. create a folder where you want to install the third-party libraries and set the path to it in 
@@ -144,7 +144,7 @@ openSEA tries to find soft-error vulnerabilities (or false-positives) in a given
                            2: SYMB_TIME_INPUTS - as mode 0, but allows
                               to leave some or all values in the given TestCase
                               to be left open (write '?' instead of '0' or '1')
-                           2: SYMB_TIME_LOCATION_INPUTS - as mode 1, but allows
+                           3: SYMB_TIME_LOCATION_INPUTS - as mode 1, but allows
                               to leave some or all values in the given TestCase
                               to be left open (write '?' instead of '0' or '1')
                          The default is 0.
@@ -220,7 +220,12 @@ orignal circuit but without raising the alarm-output.
 - these resulting circuits don't have any protection logic, you may use AddParityTool from 1.)
 - the script to convert the benchmarks needs abc installed, set the path accordingly
 
-## presentation/
+## doc/
+### doc/presentation/
 - A presentation on soft-error-analysis which explains some principles of the tools within this repository
 - held in September 2015 by Patrick Klampfl
+
+### doc/paper/
+- An article about the OpenSEA implementation and experimental results
+- written in February 2016 by Patrick Klampfl
 

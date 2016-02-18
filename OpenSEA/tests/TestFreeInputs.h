@@ -47,6 +47,9 @@ class TestFreeInputs : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test4);
   CPPUNIT_TEST(test5_sta);
   CPPUNIT_TEST(test6_stla);
+  CPPUNIT_TEST(test7_sim);
+  CPPUNIT_TEST(test8_sim);
+  CPPUNIT_TEST(test9_sim);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -69,6 +72,10 @@ void checkVulnerabilitiesSTA(string path_to_aiger_circuit,
 		vector<string> tc_files, set<unsigned> should_be_vulnerable,
 		int num_err_latches, int mode);
 
+void checkVulnerabilitiesSIM(string path_to_aiger_circuit,
+		vector<string> tc_files, set<unsigned> should_be_vulnerable,
+		int num_err_latches, int mode);
+
 protected:
 
 // -------------------------------------------------------------------------------------------
@@ -83,6 +90,10 @@ protected:
 
   void test5_sta();
   void test6_stla();
+
+  void test7_sim();
+  void test8_sim();
+  void test9_sim();
 
 };
 

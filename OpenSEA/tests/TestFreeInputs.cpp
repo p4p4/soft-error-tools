@@ -102,6 +102,30 @@ void TestFreeInputs::checkVulnerabilitiesSTA(string path_to_aiger_circuit,
 			vulnerabilities == should_be_vulnerable);
 }
 
+
+void TestFreeInputs::checkVulnerabilitiesSIM(string path_to_aiger_circuit, vector<string> tc_files,
+		set<unsigned> should_be_vulnerable, int num_err_latches, int mode)
+{
+	aiger* circuit = Utils::readAiger(path_to_aiger_circuit);
+	CPPUNIT_ASSERT_MESSAGE("can not open " + path_to_aiger_circuit, circuit != 0);
+
+	SimulationBasedAnalysis sim(circuit, num_err_latches, mode);
+	sim.analyze(tc_files);
+	const set<unsigned> &vulnerabilities = sim.getVulnerableElements();
+
+	// DEBUG: print the vulnerable latches
+//	for (set<unsigned>::iterator it = vulnerabilities.begin();
+//			it != vulnerabilities.end(); ++it)
+//	{
+//		cout << "  Latch " << *it << endl;
+//	}
+
+	aiger_reset(circuit);
+
+	CPPUNIT_ASSERT_MESSAGE("circuit was: " + path_to_aiger_circuit,
+			vulnerabilities == should_be_vulnerable);
+}
+
 // -------------------------------------------------------------------------------------------
 void TestFreeInputs::test1()
 {
@@ -137,25 +161,25 @@ void TestFreeInputs::test1()
 void TestFreeInputs::test2()
 {
 	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
-		CPPUNIT_ASSERT_MESSAGE("can not open inputs/s5378.50percent.aag", circuit != 0);
-		Options::instance().setUnsatCoreInterval(0);
-		vector<string> tc_files;
-		tc_files.push_back("inputs/35_bit_input_1");
+	CPPUNIT_ASSERT_MESSAGE("can not open inputs/s5378.50percent.aag", circuit != 0);
+	Options::instance().setUnsatCoreInterval(0);
+	vector<string> tc_files;
+	tc_files.push_back("inputs/35_bit_input_2");
 
-		SymbTimeLocationAnalysis sta(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
-		sta.analyze(tc_files);
-		const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
+	SymbTimeLocationAnalysis stla(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
+	stla.analyze(tc_files);
+	const set<unsigned> &vulnerabilities = stla.getVulnerableElements();
 
-		// DEBUG: print the vulnerable latches
+	// DEBUG: print the vulnerable latches
 //		for (set<unsigned>::iterator it = vulnerabilities.begin();
 //				it != vulnerabilities.end(); ++it)
 //		{
 //			cout << "  Latch " << *it << endl;
 //		}
-//		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
-		CPPUNIT_ASSERT(vulnerabilities.size() == 75);
+	cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+	CPPUNIT_ASSERT(vulnerabilities.size() == 65);
 
-		aiger_reset(circuit);
+	aiger_reset(circuit);
 }
 
 void TestFreeInputs::test3()
@@ -193,75 +217,156 @@ void TestFreeInputs::test3()
 void TestFreeInputs::test4()
 {
 	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
-		CPPUNIT_ASSERT_MESSAGE("can not open inputs/s5378.50percent.aag", circuit != 0);
-		Options::instance().setUnsatCoreInterval(0);
-		vector<string> tc_files;
-		tc_files.push_back("inputs/35_bit_input_1");
+	CPPUNIT_ASSERT_MESSAGE("can not open inputs/s5378.50percent.aag", circuit != 0);
+	Options::instance().setUnsatCoreInterval(0);
+	vector<string> tc_files;
+	tc_files.push_back("inputs/35_bit_input_2");
 
-		SymbTimeAnalysis sta(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
-		sta.analyze(tc_files);
-		const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
+	SymbTimeAnalysis sta(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
+	sta.analyze(tc_files);
+	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
-		// DEBUG: print the vulnerable latches
+	// DEBUG: print the vulnerable latches
 //		for (set<unsigned>::iterator it = vulnerabilities.begin();
 //				it != vulnerabilities.end(); ++it)
 //		{
 //			cout << "  Latch " << *it << endl;
 //		}
 //		cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
-		CPPUNIT_ASSERT(vulnerabilities.size() == 75);
+	CPPUNIT_ASSERT(vulnerabilities.size() == 65);
 
-		aiger_reset(circuit);
+	aiger_reset(circuit);
 }
 
 void TestFreeInputs::test5_sta()
 {
 	aiger* circuit = Utils::readAiger("inputs/protected_IWLS_2005_AIG_s208.aig");
-		CPPUNIT_ASSERT_MESSAGE("can not open inputs/protected_IWLS_2005_AIG_s208.aig", circuit != 0);
-		vector<string> tc_files;
+	CPPUNIT_ASSERT_MESSAGE("can not open inputs/protected_IWLS_2005_AIG_s208.aig", circuit != 0);
+	vector<string> tc_files;
 
-		tc_files.push_back("inputs/s208_concreteunsat.input");
-		SymbTimeAnalysis sta(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
-		sta.analyze(tc_files);
-		CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+	tc_files.push_back("inputs/s208_concreteunsat.input");
+	SymbTimeAnalysis sta(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
+	sta.analyze(tc_files);
+	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 
-		tc_files.clear();
-		tc_files.push_back("inputs/s208_concretesat.input");
-		SymbTimeAnalysis sta2(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
-		sta2.analyze(tc_files);
-		CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
+	tc_files.clear();
+	tc_files.push_back("inputs/s208_concretesat.input");
+	SymbTimeAnalysis sta2(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
+	sta2.analyze(tc_files);
+	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
 
-		tc_files.clear();
-		tc_files.push_back("inputs/s208_open.input");
-		SymbTimeAnalysis sta3(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
-		sta3.analyze(tc_files);
-		CPPUNIT_ASSERT(sta3.getVulnerableElements().size() == 1);
+	tc_files.clear();
+	tc_files.push_back("inputs/s208_open.input");
+	SymbTimeAnalysis sta3(circuit, 2, SymbTimeAnalysis::FREE_INPUTS);
+	sta3.analyze(tc_files);
+	CPPUNIT_ASSERT(sta3.getVulnerableElements().size() == 1);
 
-		aiger_reset(circuit);
+	aiger_reset(circuit);
 }
 
 void TestFreeInputs::test6_stla()
 {
 	aiger* circuit = Utils::readAiger("inputs/protected_IWLS_2005_AIG_s208.aig");
-		CPPUNIT_ASSERT_MESSAGE("can not open inputs/protected_IWLS_2005_AIG_s208.aig", circuit != 0);
-		vector<string> tc_files;
+	CPPUNIT_ASSERT_MESSAGE("can not open inputs/protected_IWLS_2005_AIG_s208.aig", circuit != 0);
+	vector<string> tc_files;
 
-		tc_files.push_back("inputs/s208_concreteunsat.input");
-		SymbTimeLocationAnalysis sta(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
-		sta.analyze(tc_files);
-		CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+	tc_files.push_back("inputs/s208_concreteunsat.input");
+	SymbTimeLocationAnalysis sta(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
+	sta.analyze(tc_files);
+	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
 
-		tc_files.clear();
-		tc_files.push_back("inputs/s208_concretesat.input");
-		SymbTimeLocationAnalysis sta2(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
-		sta2.analyze(tc_files);
-		CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
+	tc_files.clear();
+	tc_files.push_back("inputs/s208_concretesat.input");
+	SymbTimeLocationAnalysis sta2(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
+	sta2.analyze(tc_files);
+	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
 
-		tc_files.clear();
-		tc_files.push_back("inputs/s208_open.input");
-		SymbTimeLocationAnalysis sta3(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
-		sta3.analyze(tc_files);
-		CPPUNIT_ASSERT(sta3.getVulnerableElements().size() == 1);
+	tc_files.clear();
+	tc_files.push_back("inputs/s208_open.input");
+	SymbTimeLocationAnalysis sta3(circuit, 2, SymbTimeLocationAnalysis::FREE_INPUTS);
+	sta3.analyze(tc_files);
+	CPPUNIT_ASSERT(sta3.getVulnerableElements().size() == 1);
 
-		aiger_reset(circuit);
+	aiger_reset(circuit);
+}
+
+void TestFreeInputs::test7_sim()
+{
+	vector<string> tc_files;
+	tc_files.push_back("inputs/3b_w_free_inputs");
+
+	//-------------------------------------------
+	// test 4a: 3 of 3 latches protected
+//	Logger::instance().enable(Logger::DBG);
+	set<unsigned> should_be_vulnerable; // empty
+	checkVulnerabilitiesSIM("inputs/toggle.perfect.aag", tc_files,
+			should_be_vulnerable, 1, SimulationBasedAnalysis::FREE_INPUTS);
+	//-------------------------------------------
+	// test 4b: 2 of 3 latches protected
+
+	should_be_vulnerable.insert(10); // 10 is vulnerable
+	checkVulnerabilitiesSIM("inputs/toggle.1vulnerability.aag", tc_files,
+			should_be_vulnerable, 1, SimulationBasedAnalysis::FREE_INPUTS);
+
+	//-------------------------------------------
+	// test 4c: 1 of 3 latches protected
+	should_be_vulnerable.insert(12); // 10, 12 are vulnerable
+	checkVulnerabilitiesSIM("inputs/toggle.2vulnerabilities.aag", tc_files,
+			should_be_vulnerable, 1, SimulationBasedAnalysis::FREE_INPUTS);
+
+	//-------------------------------------------
+	// test 4d: 0 of 3 latches protected
+	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
+	checkVulnerabilitiesSIM("inputs/toggle.3vulnerabilities.aag", tc_files,
+			should_be_vulnerable, 0, SimulationBasedAnalysis::FREE_INPUTS);
+}
+
+void TestFreeInputs::test8_sim()
+{
+	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
+	CPPUNIT_ASSERT_MESSAGE("can not open inputs/s5378.50percent.aag", circuit != 0);
+	Options::instance().setUnsatCoreInterval(0);
+	vector<string> tc_files;
+	tc_files.push_back("inputs/35_bit_input_2");
+
+	SimulationBasedAnalysis sim(circuit, 2, SimulationBasedAnalysis::FREE_INPUTS);
+	sim.analyze(tc_files);
+	const set<unsigned> &vulnerabilities = sim.getVulnerableElements();
+
+	// DEBUG: print the vulnerable latches
+//		for (set<unsigned>::iterator it = vulnerabilities.begin();
+//				it != vulnerabilities.end(); ++it)
+//		{
+//			cout << "  Latch " << *it << endl;
+//		}
+	cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+	CPPUNIT_ASSERT(vulnerabilities.size() == 65);
+
+	aiger_reset(circuit);
+}
+
+void TestFreeInputs::test9_sim()
+{
+	aiger* circuit = Utils::readAiger("inputs/protected_IWLS_2005_AIG_s208.aig");
+	CPPUNIT_ASSERT_MESSAGE("can not open inputs/protected_IWLS_2005_AIG_s208.aig", circuit != 0);
+	vector<string> tc_files;
+
+	tc_files.push_back("inputs/s208_concreteunsat.input");
+	SimulationBasedAnalysis sim(circuit, 2, SimulationBasedAnalysis::FREE_INPUTS);
+	sim.analyze(tc_files);
+	CPPUNIT_ASSERT(sim.getVulnerableElements().size() == 0);
+
+	tc_files.clear();
+	tc_files.push_back("inputs/s208_concretesat.input");
+	SimulationBasedAnalysis sim2(circuit, 2, SimulationBasedAnalysis::FREE_INPUTS);
+	sim2.analyze(tc_files);
+	CPPUNIT_ASSERT(sim2.getVulnerableElements().size() == 1);
+
+	tc_files.clear();
+	tc_files.push_back("inputs/s208_open.input");
+	SimulationBasedAnalysis sim3(circuit, 2, SimulationBasedAnalysis::FREE_INPUTS);
+	sim3.analyze(tc_files);
+	CPPUNIT_ASSERT(sim3.getVulnerableElements().size() == 1);
+
+	aiger_reset(circuit);
 }

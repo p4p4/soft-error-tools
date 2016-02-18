@@ -57,6 +57,11 @@ public:
 /// @brief Destructor.
   virtual ~SimulationBasedAnalysis();
 
+enum AnalysisMode {
+STANDARD = 0,
+FREE_INPUTS = 1
+};
+
 
 
 // -------------------------------------------------------------------------------------------
@@ -88,17 +93,16 @@ protected:
 ///
 /// @brief tries to find vulnerabilities for the current TestCase.
 ///
-/// gets called by the public findVulnerabilities() functions.
 ///
-  void findVulnerabilitiesForCurrentTC();
+  void findVulnerabilitiesForTC(TestCase& test_case);
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief tries to find vulnerabilities for a random TestCase.
+/// @brief tries to find vulnerabilities for the current TestCase.
 ///
-/// gets called by the public findVulnerabilities(num_of_TCs,num_of_timesteps) function.
 ///
-	void findVulnerabilitiesForRandomTC(unsigned num_of_timesteps);
+void findVulnerabilitiesForTCFreeInputs(TestCase& test_case);
+
 private:
 
 // -------------------------------------------------------------------------------------------
