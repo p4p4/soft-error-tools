@@ -401,6 +401,7 @@ void Utils::generateRandomTestCases(vector<TestCase>& testcases, unsigned num_of
 		testcases.reserve(num_of_TCs);
 		for (unsigned tc_i = 0; tc_i < num_of_TCs; tc_i++)
 		{
+                        unsigned free_inputs_todo = num_free_inputs;
 			TestCase tc;
 			tc.reserve(num_of_timesteps);
 			for (unsigned timestep = 0; timestep < num_of_timesteps; timestep++)
@@ -409,9 +410,9 @@ void Utils::generateRandomTestCases(vector<TestCase>& testcases, unsigned num_of
 				inputs.reserve(num_inputs);
 				for(unsigned i=0; i < num_inputs; i++)
 				{
-					if(num_free_inputs > 0)
+					if(free_inputs_todo > 0)
 					{
-						num_free_inputs--;
+						free_inputs_todo--;
 						inputs.push_back(LIT_FREE);
 					}
 					else
