@@ -98,7 +98,7 @@ protected:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief tries to find vulnerabilities for the current TestCase.
+/// @brief tries to find vulnerabilities for a TC with Free Inputs.
 ///
 ///
 void findVulnerabilitiesForTCFreeInputs(TestCase& test_case);

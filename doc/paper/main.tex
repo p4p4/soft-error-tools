@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{subcaption}
-
+\usepackage{todonotes}
 
 %opening
 \title{OpenSEA - Implementational Details and Experimental Results}
@@ -63,7 +63,7 @@ In such a way, the sat-solver tries out all possible combinations of the unspeci
 \end{verbatim}
 
 The input values for the initial time step are fixed in that example. The next time step  (\emph{ ? 1}) can be both (\emph{ 0 1}) or (\emph{ 1 1}). Finally, the last time step
-can be set to all four possible 2-bit-permutations.
+can be set to all four possible 2-bit-combinations.
 
 
 \subsection{Environment Models}  \label{environment}
@@ -98,7 +98,7 @@ the algorithms won't find any further vulnerabilities/false-positives from this 
 \end{figure}
 
 \subsection{Output Format}
-After analyzing the quality of the protection logic, the tool results in a list of of definite problems (if any).
+After analyzing the quality of the protection logic, the tool results in a list of definite problems (if any).
 
 When searching for vulnerabilities, a list of vulnerable latches is provided. Optionally, a detailed error-trace can be generated
 for each vulnerable latch consisting of the concrete input values for each time step, the point in time, at which the latch has to be flipped,
@@ -118,15 +118,13 @@ The tool currently includes three distinct types of algorithms.
 \end{itemize}
 The tool implements modes to find vulnerabilities for all three types, but only for the latter two to find false positives
 
-The Simulation-Based-Algorithm exhaustively searches for vulnerabilities. Due to its exhaustive nature, only concrete input values are supported and feasible. Each open input-value would roughly double the number of
-necessary simulations.
+The Simulation-Based-Algorithm exhaustively searches for vulnerabilities. Due to its exhaustive nature, free input values do not scale very well. Each open input-value doubles the number of
+test cases.
 
 Symbolic-Time-Analysis is a SAT-solver based algorithm where the point in time of a bit-flip in a \emph{specific} latch is symbolic.
 
 Symbolic-Time-Location-Analysis is similar to the previously mentioned algorithm - with one important difference: not just the point in time of a bit-flip, but also the latch to flip is symbolic and can therefore be chosen
 by the SAT-solver. That means that compared to \texttt{STA} unrolling the transition relation only once suffices to check all latches for vulnerabilities.
-
-In contrast to \texttt{SIM}, both \texttt{STA} and \texttt{STLA}  have modes that allow to leave certain or all input values open.
 
 All modes can be used with an optional environment model (\ref{environment}).
 
@@ -137,7 +135,8 @@ All modes can be used with an optional environment model (\ref{environment}).
 \begin{tabular}{c|c|l}
 Algorithm & Mode & \mc{1}{c}{Description}\\
 \hline \hline
-\texttt{SIM} & - & only for concrete input values\\
+\texttt{SIM}  & 0 & only for concrete input values\\
+              & 1 & capable of free inputs (currently at most 64)\\
 \hline
 \texttt{STA} & 0 & copy whole transition relation when unrolling\\
   & 1 & symbolically simulate transition relation \\
@@ -175,6 +174,7 @@ For this, we first converted the circuits into the AIGER format using ABC. Then,
 of the previous latch inputs and the current latch outputs. To generate partially vulnerable circuits, our simple AddParityTool allows to specify the percentage of latches to protect.
 
 Note that all of the following charts within this chapter are cactus-plots with a logarithmic y-axis showing the execution time.
+The x-axis shows the number of benchmarks that can be solved within this time limit.
 
 
 \subsection{Comparison of Algorithms}
@@ -205,17 +205,18 @@ The chart indicates an increase of execution time of roughly one order of magnit
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[scale = 0.64]{img/stla_input_length_chart.eps}
+\includegraphics[scale = 0.5]{img/stla_input_length_chart.eps}
 \centering \caption{Execution times for different test case lengths} 
 \label{stla_input_length_chart}
 \end{figure}
 
-\subsection{Amount of Unspecified Input Values}
+A growing test case length in \texttt{SIM} only leads to a linearly growing run-time, as can be seen in Figure TODO. \todo{insert figure}
+
+\subsection{Amount of Unspecified Input Values} \label{sec_free_inputs}
 Using free input values in test cases allows to be more flexible, whereas concrete input values can be processed faster. In some cases however, free inputs might reduce the 
 length or number of necessary test-cases.
 
 In this section, we compare the run-time of our Symbolic-Time-Location-Analysis (\texttt{STLA}) using free input values with the naive simulation-based approach (\texttt{SIM}).
-Due to the lack of support for free input values in \texttt{SIM}, we asymptotically extrapolated the benchmark execution-times of concrete test-cases.
 Recall, that each free input value in the worst case doubles the run-time when using a naive exhaustive approach.
 
 The chart in Figure \ref{fig_free_inputs} shows the effect of free input values on the execution time for both the \texttt{STLA} and the \texttt{SIM} algorithm.
@@ -223,35 +224,32 @@ The chart in Figure \ref{fig_free_inputs} shows the effect of free input values 
 performing SAT-solver calls seems to be impractical. However, that undoubtedly changes when free input values come into play. The \texttt{STLA} algorithm has the crucial ability to utilize the flexibility of SAT-solvers.
 Because of that, the symbolic algorithm outperforms the simulation approach when it comes to scalability regarding free-input values. Both algorithms roughly have the same performance when using about 5 free input values.
 For more free input values, \texttt{STLA} is the best choice, for fewer to none, \texttt{SIM} is faster.
+\todo{SIM benchmarks still running for more than 5 free inputs}
 
 \begin{figure}[!htb]
 \centering
   \begin{subfigure}[b]{0.85\linewidth}  \centering
     \includegraphics[width=\linewidth]{img/sim_free_inputs.eps}
-    \caption{\texttt{SIM} with extrapolated run-time for free input values}
+    \caption{\texttt{SIM 1} benchmark results for free input values}
     \label{free_inputs_sim}
   \end{subfigure}
   \begin{subfigure}[b]{0.85\linewidth}  \centering
     \includegraphics[width=\linewidth]{img/stla1_free_inputs.eps}
     \label{free_inputs_stla}
-    \caption{\texttt{STLA} 1 benchmark results for free inputs}
+    \caption{\texttt{STLA 1}  benchmark results for free inputs}
   \end{subfigure}
-  \caption{Using free input values scales significantly better for the symbolic algorithm. }
+  \caption{Using free input values scales significantly better for the \texttt{STLA 1} algorithm. Benchmarks are 90\% protected, 3 test cases, each of a lenght of 15 time steps. The free input values are located within the first time step(s). }
 \label{fig_free_inputs}
 \end{figure}
 
-It is arguable that the extrapolated results for \texttt{SIM} in Figure \ref{free_inputs_sim} are very conservative assumptions and that optimizations could lead to a speed-up. For example because several input combinations
+It is arguable that optimizations for \texttt{SIM} could lead to a speed-up. For example because several input combinations
 might lead to the same next-state. That certainly is a valid objection, it is however questionable if such an optimized simulation-based algorithm can be designed in such an elegant way as \texttt{STLA}. 
 SAT-solvers, on the other hand, can cope with such problems very elegantly.
-
-To make the comparison as fair as possible, we defined the free input values in the earliest time step(s) of the test case. 
-That way we ensured that an equivalent \texttt{SIM}-based approach approximates the asymptotic upper limit (doubling the execution time for each free input) as good as possible. 
-
 
 
 \subsection{Optimization: Unsatisfiable Cores}
 The symbolic algorithms allow to compute unsatisfiable cores to reduce the number of variables while unrolling the transition relation. A reduced number of variables speeds up all following SAT-calls,
-but the computation of the unsatisfiable cores are quite costly. Hence, it is necessary to f a meaningful interval instead of computing the cores for each time step.
+but the computation of the unsatisfiable cores are quite costly. Hence, it is necessary to find a meaningful interval instead of computing the cores for each time step.
 
 The results for different core-computation-intervals with the \texttt{STLA} algorithm and test case lengths of 60 time steps can be seen in Figure \ref{uci-30ts}. Computing the unsatisfiable core all 5 time-steps on average almost cuts
 the execution time in half (-45 \%).
@@ -272,12 +270,34 @@ In contrast, as Figure \ref{uci-15ts} indicates, the computation of unsatisfiabl
 \label{uci-15ts}
 \end{figure}
 
+\subsection{Comparison with Model Checking}
+In Section \ref{sec_free_inputs} we already discussed the influence of free input values. 
+Model checking carries the idea of free inputs to an extreme: each input value for each time step (up to a specified time step bound) is a free input value. 
+As a consequence, model checking is the most accurate, but also the computationally most expensive way to approach a soft error-analysis.
+
+OpenSEA is capable of onalyzing a circuit in a full model-checking mode, meaning that no concrete input values in a test case are used. 
+Each mode that supports free inputs can be used for that.
+
+Since most model checkers are highly omptimized, this section shows results of a model checker (namely BLIMC) as well.
+For this purpose, we wrote a small tool (\texttt{AlarmToMC}) which converts a circuit with protection logic to a model-checking problem, which again is a special type of circuit.
+Model checkers typically take a circuit with exactly one output and try to find an input sequence which sets this error-output to true. 
 
 
-\newpage
+Figure \ref{mc-chart} illustrates the enormous differences in execution time between a model-checking approach (using BLIMC and our \texttt{STLA 1}) and concrete input values only (\texttt{STLA 0}).
+
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[scale = 0.64]{img/mc.eps}
+\centering \caption{Both \texttt{BLIMC} model-checking for 15 time steps and \texttt{STLA 1} with 15 time steps of only free inputs try out all possible input combinations, 
+whereas \texttt{STLA 0} uses only one concrete test case with a length of 15 time steps. } 
+\label{mc-chart}
+\end{figure}
+\todo{STLA 1 and BLIMC benchmarks still running}
+
 \subsection{Conclusion}
 Summing up the results, it can be concluded that symbolic algorithms like \texttt{STLA} scale better when it comes to free input values, whereas an analysis using concrete test-cases is carried out best with 
-a simple simulation approach (\texttt{SIM)} due to the lower computational overhead. In any case, concrete input values can be processed faster than free input values.
+a simple simulation based approach (\texttt{SIM)} due to the lower computational overhead. In any case, concrete input values can be processed faster than free input values.
 The results indicate that our \texttt{STLA} algorithm with free input values seems to be a good compromise between a simulation based- and a full model-checking approach.
 
 \end{document}
