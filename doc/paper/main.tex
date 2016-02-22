@@ -201,51 +201,23 @@ All modes to a given type of algorithm perform similarly on this set of benchmar
 The length of test cases (number of time steps) is one parameter that has an effect on the execution time. Longer test cases obviously result in a longer execution time.
 Figure \ref{stla_input_length_chart} illustrates the influence of test case lengths: The \texttt{STLA} algorithm was executed with test case lengths of 15, 30, 60 and 100 time steps. 
 No free input values were used, the randomly generated test-cases consisted solely of concrete input values (0 or 1).
-The chart indicates an increase of execution time of roughly one order of magnitude when doubling the test case length.
+The chart indicates an increase of execution time of roughly a half order of magnitude when doubling the test case length.
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[scale = 0.5]{img/stla_input_length_chart.eps}
-\centering \caption{Execution times for different test case lengths} 
+\includegraphics[scale = 0.6]{img/stla_input_length_chart.eps}
+\centering \caption{\texttt{STLA 0} execution times for different test case lengths} 
 \label{stla_input_length_chart}
 \end{figure}
 
-A growing test case length in \texttt{SIM} only leads to a linearly growing run-time, as can be seen in Figure TODO. \todo{insert figure}
-
-\subsection{Amount of Unspecified Input Values} \label{sec_free_inputs}
-Using free input values in test cases allows to be more flexible, whereas concrete input values can be processed faster. In some cases however, free inputs might reduce the 
-length or number of necessary test-cases.
-
-In this section, we compare the run-time of our Symbolic-Time-Location-Analysis (\texttt{STLA}) using free input values with the naive simulation-based approach (\texttt{SIM}).
-Recall, that each free input value in the worst case doubles the run-time when using a naive exhaustive approach.
-
-The chart in Figure \ref{fig_free_inputs} shows the effect of free input values on the execution time for both the \texttt{STLA} and the \texttt{SIM} algorithm.
-\texttt{SIM} is the fastest algorithm when using only concrete inputs, as already mentioned in previous chapters. Just for concrete input values, converting a circuit to a CNF transition relation, unrolling it and then
-performing SAT-solver calls seems to be impractical. However, that undoubtedly changes when free input values come into play. The \texttt{STLA} algorithm has the crucial ability to utilize the flexibility of SAT-solvers.
-Because of that, the symbolic algorithm outperforms the simulation approach when it comes to scalability regarding free-input values. Both algorithms roughly have the same performance when using about 5 free input values.
-For more free input values, \texttt{STLA} is the best choice, for fewer to none, \texttt{SIM} is faster.
-\todo{SIM benchmarks still running for more than 5 free inputs}
+An increasing test case length in \texttt{SIM} only leads to a linearly growing run-time, as can be seen in Figure \ref{sim_input_length_chart}.
 
 \begin{figure}[!htb]
 \centering
-  \begin{subfigure}[b]{0.85\linewidth}  \centering
-    \includegraphics[width=\linewidth]{img/sim_free_inputs.eps}
-    \caption{\texttt{SIM 1} benchmark results for free input values}
-    \label{free_inputs_sim}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.85\linewidth}  \centering
-    \includegraphics[width=\linewidth]{img/stla1_free_inputs.eps}
-    \label{free_inputs_stla}
-    \caption{\texttt{STLA 1}  benchmark results for free inputs}
-  \end{subfigure}
-  \caption{Using free input values scales significantly better for the \texttt{STLA 1} algorithm. Benchmarks are 90\% protected, 3 test cases, each of a lenght of 15 time steps. The free input values are located within the first time step(s). }
-\label{fig_free_inputs}
+\includegraphics[scale = 0.6]{img/sim_input_length_chart.eps}
+\centering \caption{\texttt{SIM 0} execution times for different test case lengths} 
+\label{sim_input_length_chart}
 \end{figure}
-
-It is arguable that optimizations for \texttt{SIM} could lead to a speed-up. For example because several input combinations
-might lead to the same next-state. That certainly is a valid objection, it is however questionable if such an optimized simulation-based algorithm can be designed in such an elegant way as \texttt{STLA}. 
-SAT-solvers, on the other hand, can cope with such problems very elegantly.
-
 
 \subsection{Optimization: Unsatisfiable Cores}
 The symbolic algorithms allow to compute unsatisfiable cores to reduce the number of variables while unrolling the transition relation. A reduced number of variables speeds up all following SAT-calls,
@@ -258,27 +230,63 @@ In contrast, as Figure \ref{uci-15ts} indicates, the computation of unsatisfiabl
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[scale = 0.64]{img/uci-60ts.eps}
+\includegraphics[scale = 0.57]{img/uci-60ts.eps}
 \centering \caption{Computing an unsatisfiable core for longer test cases (here 60 time steps) increases the performance. The unsatisfiable core is computed at every 5th time step.} 
 \label{uci-30ts}
 \end{figure}
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[scale = 0.64]{img/uci-15ts.eps}
+\includegraphics[scale = 0.57]{img/uci-15ts.eps}
 \centering \caption{Computing an unsatisfiable core for shorter test cases (here 15 time steps) does not help} 
 \label{uci-15ts}
 \end{figure}
+
+\subsection{Amount of Unspecified Input Values} \label{sec_free_inputs}
+Using free input values in test cases allows to be more flexible, whereas concrete input values can be processed faster. In some cases however, free inputs might reduce the 
+length or number of necessary test-cases.
+
+In this section, we compare the run-time of our Symbolic-Time-Location-Analysis (\texttt{STLA}) using free input values with the naive simulation-based approach (\texttt{SIM}).
+Recall, that each free input value in the worst case doubles the run-time when using a naive exhaustive approach.
+
+\begin{figure}[!hbt]
+\centering
+  \begin{subfigure}[b]{0.95\linewidth}  \centering
+    \includegraphics[width=\linewidth]{img/sim_free_inputs.eps}
+    \caption{\texttt{SIM 1} benchmark results for free input values}
+    \label{free_inputs_sim}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.95\linewidth}  \centering
+    \includegraphics[width=\linewidth]{img/stla1_free_inputs.eps}
+    \label{free_inputs_stla}
+    \caption{\texttt{STLA 1}  benchmark results for free inputs}
+  \end{subfigure}
+  \caption{Using free input values scales significantly better for the \texttt{STLA 1} algorithm. Benchmarks are 90\% protected, 3 test cases, each of a lenght of 15 time steps. The free input values are located within the first time step(s). }
+\label{fig_free_inputs}
+\end{figure}
+\todo{SIM benchmarks still running for more than 5 free inputs}
+
+The chart in Figure \ref{fig_free_inputs} shows the effect of free input values on the execution time for both the \texttt{STLA} and the \texttt{SIM} algorithm.
+\texttt{SIM} is the fastest algorithm when using only concrete inputs, as already mentioned in previous chapters. Just for concrete input values, converting a circuit to a CNF transition relation, unrolling it and then
+performing SAT-solver calls seems to be impractical. However, that undoubtedly changes when free input values come into play. The \texttt{STLA} algorithm has the crucial ability to utilize the flexibility of SAT-solvers.
+Because of that, the symbolic algorithm outperforms the simulation approach when it comes to scalability regarding free-input values. Both algorithms roughly have the same performance when using about 5 free input values.
+For more free input values, \texttt{STLA} is the best choice, for fewer to none, \texttt{SIM} is faster.
+
+
+It is arguable that optimizations for \texttt{SIM} could lead to a speed-up. For example because several input combinations
+might lead to the same next-state. That certainly is a valid objection, it is however questionable if such an optimized simulation-based algorithm can be designed in such an elegant way as \texttt{STLA}. 
+SAT-solvers, on the other hand, can cope with such problems very elegantly.
+
 
 \subsection{Comparison with Model Checking}
 In Section \ref{sec_free_inputs} we already discussed the influence of free input values. 
 Model checking carries the idea of free inputs to an extreme: each input value for each time step (up to a specified time step bound) is a free input value. 
 As a consequence, model checking is the most accurate, but also the computationally most expensive way to approach a soft error-analysis.
 
-OpenSEA is capable of onalyzing a circuit in a full model-checking mode, meaning that no concrete input values in a test case are used. 
+OpenSEA is capable of analyzing a circuit in a full model-checking mode, meaning that no concrete input values in a test case are used. 
 Each mode that supports free inputs can be used for that.
 
-Since most model checkers are highly omptimized, this section shows results of a model checker (namely BLIMC) as well.
+Since most model checkers are highly optimized, this section shows results of a model checker (namely BLIMC) as well.
 For this purpose, we wrote a small tool (\texttt{AlarmToMC}) which converts a circuit with protection logic to a model-checking problem, which again is a special type of circuit.
 Model checkers typically take a circuit with exactly one output and try to find an input sequence which sets this error-output to true. 
 
@@ -295,9 +303,11 @@ whereas \texttt{STLA 0} uses only one concrete test case with a length of 15 tim
 \end{figure}
 \todo{STLA 1 and BLIMC benchmarks still running}
 
-\subsection{Conclusion}
+\newpage
+\section{Conclusion}
 Summing up the results, it can be concluded that symbolic algorithms like \texttt{STLA} scale better when it comes to free input values, whereas an analysis using concrete test-cases is carried out best with 
 a simple simulation based approach (\texttt{SIM)} due to the lower computational overhead. In any case, concrete input values can be processed faster than free input values.
 The results indicate that our \texttt{STLA} algorithm with free input values seems to be a good compromise between a simulation based- and a full model-checking approach.
+The execution time for \texttt{SIM} grows only linearly for an increasing test case length, with \texttt{STLA}, it increases faster. Computing an unsatisfiable cores for longer test cases might be beneficial.
 
 \end{document}
