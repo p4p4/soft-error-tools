@@ -264,7 +264,6 @@ Recall, that each free input value in the worst case doubles the run-time when u
   \caption{Using free input values scales significantly better for the \texttt{STLA 1} algorithm. Benchmarks are 90\% protected, 3 test cases, each of a lenght of 15 time steps. The free input values are located within the first time step(s). }
 \label{fig_free_inputs}
 \end{figure}
-\todo{SIM benchmarks still running for more than 5 free inputs}
 
 The chart in Figure \ref{fig_free_inputs} shows the effect of free input values on the execution time for both the \texttt{STLA} and the \texttt{SIM} algorithm.
 \texttt{SIM} is the fastest algorithm when using only concrete inputs, as already mentioned in previous chapters. Just for concrete input values, converting a circuit to a CNF transition relation, unrolling it and then
@@ -301,7 +300,6 @@ Figure \ref{mc-chart} illustrates the enormous differences in execution time bet
 whereas \texttt{STLA 0} uses only one concrete test case with a length of 15 time steps. } 
 \label{mc-chart}
 \end{figure}
-\todo{STLA 1 and BLIMC benchmarks still running}
 
 \newpage
 \section{Conclusion}
