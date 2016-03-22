@@ -1,7 +1,7 @@
 project(immortal)
+cmake_minimum_required(VERSION 2.6)
 set (PROJECT immortal)
 set(VERSION 1.2.0)
-cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pthread")
 
@@ -22,6 +22,8 @@ set(PICOSAT_LIBRARIES  $ENV{IMMORTALTP}/picosat/libpicosat.a)
 set(cppunit_BIN_DIRS     $ENV{IMMORTALTP}/cppunit-1.12.1/bin/ )
 set(cppunit_INCLUDE_DIRS $ENV{IMMORTALTP}/cppunit-1.12.1/include/ )
 set(cppunit_LIBRARIES   $ENV{IMMORTALTP}/cppunit-1.12.1/lib/libcppunit.so )
+set(CUDD_INCLUDE_DIR   $ENV{IMMORTALTP}/cudd/include )
+set(CUDD_LIBRARIES   $ENV{IMMORTALTP}/cudd/obj/libobj.a $ENV{IMMORTALTP}/cudd/cudd/libcudd.a $ENV{IMMORTALTP}/cudd/util/libutil.a $ENV{IMMORTALTP}/cudd/epd/libepd.a $ENV{IMMORTALTP}/cudd/st/libst.a $ENV{IMMORTALTP}/cudd/mtr/libmtr.a)
 
 add_subdirectory(src)
 add_subdirectory(tests)

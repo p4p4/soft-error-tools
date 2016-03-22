@@ -33,6 +33,7 @@
 #include "SymbTimeAnalysis.h"
 #include "SymbTimeLocationAnalysis.h"
 #include "FalsePositives.h"
+#include "BddAnalysis.h"
 #include "Utils.h"
 
 #include <sys/stat.h>
@@ -404,6 +405,10 @@ BackEnd* Options::getBackEnd()
 	else if (back_end_ == "fp")
 	{
 		back_end_instance_ = new FalsePositives(circuit_, num_err_latches_, mode_);
+	}
+	else if (back_end_ == "bdd")
+	{
+		back_end_instance_ = new BddAnalysis(circuit_, num_err_latches_, mode_);
 	}
 	else
 	{
