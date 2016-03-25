@@ -1,5 +1,6 @@
 TestAigSimulator.cpp
 TestAigToCNF.cpp
+TestBdd.cpp
 TestEnvironmentModel.cpp
 TestFalsePositives.cpp
 TestFreeInputs.cpp
