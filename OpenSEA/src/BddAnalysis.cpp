@@ -24,6 +24,8 @@
 // -------------------------------------------------------------------------------------------
 
 #include "BddAnalysis.h"
+
+#include "AigSimulator.h"
 extern "C"
 {
 #include "aiger.h"
@@ -34,21 +36,22 @@ BddAnalysis::BddAnalysis(aiger* circuit, int num_err_latches, int mode) :
 		BackEnd(circuit, num_err_latches, mode)
 {
 
-	cudd = new Cudd();
-	cudd->AutodynEnable(CUDD_REORDER_SIFT);
+
 }
 
 
 
 bool BddAnalysis::analyze(vector<TestCase>& testcases)
 {
-	SatSolver* solver_; // TODO: replace with BDD ;-)
 
-	AigSimulator* sim_ = new AigSimulator(circuit_);
+	Cudd cudd;
+	cudd.AutodynEnable(CUDD_REORDER_SIFT);
+
+	AigSimulator sim_(circuit_);
+
 	// used to store the results of the symbolic simulation
 	int next_free_cnf_var = 2;
 
-	// TODO: move outside of this function ----
 	set<int> latches_to_check_;
 
 	//------------------------------------------------------------------------------------------
@@ -61,10 +64,16 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
 		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
+
 		int cj = next_free_cnf_var++;
+		cudd.bddVar(cj);
+
 		latch_to_cj[circuit_->latches[c_cnt].lit >> 1] = cj;
 		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
 	}
+
+
+	/*
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
@@ -95,29 +104,30 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 		vector<int> odiff_enable_literals;
 
 		// start new incremental SAT-solving session
-		solver_->startIncrementalSession(cj_literals, 0);
-		solver_->addVarToKeep(abs(CNF_TRUE));
-		solver_->incAddUnitClause(CNF_TRUE); // CNF_TRUE= unit-clause representing TRUE constant
+		// TODO
 
 		//----------------------------------------------------------------------------------------
 		// single fault assumption: there might be at most one flipped component
 		map<int, int>::iterator map_iter2;
-		for (map_iter = latch_to_cj.begin(); map_iter != latch_to_cj.end(); map_iter++)
+		map<int, BDD> cj_to_BDD_signal;
+
+		for (map_iter = latch_to_cj.begin(); map_iter != latch_to_cj.end(); map_iter++) // for each latch:
 		{
-			map_iter2 = map_iter;
-			map_iter2++;
-			for (; map_iter2 != latch_to_cj.end(); map_iter2++)
-				solver_->incAdd2LitClause(-map_iter->second, -map_iter2->second);
+			BDD real_c_signal = cudd->bddOne();
+			for (map_iter2 = latch_to_cj.begin(); map_iter2 != latch_to_cj.end(); map_iter2++) // for current latch, go over all latches
+			{
+				if (map_iter == map_iter2) // the one and only cj-signal which can be true for this signal
+					real_c_signal = real_c_signal & map_iter2->second;
+				else
+					real_c_signal = real_c_signal & ~map_iter2->second;
+			}
+			cj_to_BDD_signal[map_iter->second] = real_c_signal;
 		}
 
 		symbsim.initLatches();
 
 		TestCase& testcase = testcases[tc_number];
 
-		// if environment-model: define which output is relevant at which point in time:
-		AigSimulator* environment_sim = 0;
-		if (environment_model_)
-			environment_sim = new AigSimulator(environment_model_);
 
 		for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
@@ -129,7 +139,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 			vector<int> next_state = sim_->getNextLatchValues();
 
 			// switch concrete simulation to next state
-			concrete_state = next_state; // OR: change to sim_->switchToNextState();
+			concrete_state = next_state;
 			//--------------------------------------------------------------------------------------
 
 			// set input values according to TestCase to TRUE or FALSE:
@@ -140,7 +150,6 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 			// fi is a variable that indicates whether the component is flipped in step i or not
 			// there can only be a flip at timestep i if both cj and fi are true.
 			int fi = next_free_cnf_var++;
-			solver_->addVarToKeep(fi);
 
 			set<int>::iterator it;
 			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it)
@@ -150,7 +159,6 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 				int new_value = next_free_cnf_var++;
 				int ci_lit = latch_to_cj[latch_output];
 
-				//solver_->addVarToKeep(new_value);
 
 				solver_->incAdd3LitClause(old_value, ci_lit, -new_value);
 				solver_->incAdd3LitClause(old_value, fi, -new_value);
@@ -271,17 +279,17 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 
 
 		} // -- END "for each timestep in testcase" --
-		if (environment_model_)
-			delete environment_sim;
+
 	} // ------ END 'for each testcase' ---------------
 
 
 	delete sim_;
+	*/
+
 }
 
 
 // -------------------------------------------------------------------------------------------
 BddAnalysis::~BddAnalysis()
 {
-	delete cudd;
 }

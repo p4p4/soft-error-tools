@@ -25,6 +25,8 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+class Cudd;
+class BDD;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -37,7 +39,8 @@ class TestBdd : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestBdd);
   CPPUNIT_TEST(test1);
-  CPPUNIT_TEST(test2);
+  CPPUNIT_TEST(test2_generate_cj_BDDs);
+  CPPUNIT_TEST(test3_modify_BDD_signal);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -54,12 +57,16 @@ public:
 
 protected:
 
+  void getSatAss(const Cudd &cudd, const BDD &bdd, std::vector<int> &dest) const;
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Give brief description of test here.
   void test1();
 
-  void test2();
+  void test2_generate_cj_BDDs();
+
+  void test3_modify_BDD_signal();
 
 };
 
