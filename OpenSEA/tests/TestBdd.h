@@ -41,6 +41,10 @@ class TestBdd : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test1);
   CPPUNIT_TEST(test2_generate_cj_BDDs);
   CPPUNIT_TEST(test3_modify_BDD_signal);
+  CPPUNIT_TEST(test4_analysis_basic);
+  CPPUNIT_TEST(test5_analysis_3latches);
+  CPPUNIT_TEST(test6_analysis_w_1_extra_latch);
+  CPPUNIT_TEST(test7_analysis_compare_with_simulation_1);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -55,6 +59,14 @@ public:
 /// @brief Shuts down the object under test.
   void tearDown();
 
+	void checkVulnerabilities(std::string path_to_aiger_circuit,
+			std::vector<std::string> tc_files, std::set<unsigned> should_be_vulnerable,
+			int num_err_latches, int mode = 0);
+
+	void compareWithSimulation(std::string path_to_aiger_circuit, int num_tc,
+			int num_timesteps, int num_err_latches,
+			int mode = 0);
+
 protected:
 
   void getSatAss(const Cudd &cudd, const BDD &bdd, std::vector<int> &dest) const;
@@ -63,10 +75,13 @@ protected:
 ///
 /// @brief Give brief description of test here.
   void test1();
-
   void test2_generate_cj_BDDs();
-
   void test3_modify_BDD_signal();
+
+  void test4_analysis_basic();
+  void test5_analysis_3latches();
+  void test6_analysis_w_1_extra_latch();
+  void test7_analysis_compare_with_simulation_1();
 
 };
 

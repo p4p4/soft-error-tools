@@ -26,26 +26,27 @@
 #include "BddAnalysis.h"
 
 #include "AigSimulator.h"
-extern "C"
-{
-#include "aiger.h"
-}
+#include "BddSimulator.h"
+#include "ErrorTraceManager.h"
+#include "Options.h"
 
 // -------------------------------------------------------------------------------------------
 BddAnalysis::BddAnalysis(aiger* circuit, int num_err_latches, int mode) :
 		BackEnd(circuit, num_err_latches, mode)
 {
-
-
 }
 
 
 
 bool BddAnalysis::analyze(vector<TestCase>& testcases)
 {
+	vulnerable_elements_.clear();
 
 	Cudd cudd;
 	cudd.AutodynEnable(CUDD_REORDER_SIFT);
+
+	unsigned model_memory_size = 128;
+	char* model = (char*) malloc(model_memory_size * sizeof(char));
 
 	AigSimulator sim_(circuit_);
 
@@ -61,6 +62,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 	map<int, int> latch_to_cj; // maps latch-literals(cnf) to corresponding cj-literals(cnf)
 	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
 
+	int first_cj_var = next_free_cnf_var;
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
 		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
@@ -71,12 +73,12 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 		latch_to_cj[circuit_->latches[c_cnt].lit >> 1] = cj;
 		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
 	}
+	int last_cj_var = next_free_cnf_var - 1;
 
 
-	/*
-	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
-	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
+	BddSimulator bddSim(circuit_, cudd, next_free_cnf_var);
+
 
 	// for each testcase-step
 	for (unsigned tc_number = 0; tc_number < testcases.size(); tc_number++)
@@ -88,6 +90,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 
 		// f = a set of variables fi indicating whether the latch is *flipped in _step_ i* or not
 		vector<int> f;
+		vector<BDD> f_as_bdd;
 		map<int, unsigned> fi_to_timestep;
 
 		// a set of cj-literals indicating whether *the _latch_ C_j is flipped* or not
@@ -97,194 +100,192 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 		{
 			cj_literals.push_back(map_iter->second);
 		}
+		map<int, BDD> cj_to_BDD_signal;
 
-		// a set of literals to enable or disable the represented output_is_different clauses,
-		// necessary for incremental solving. At each sat-solver call only the newest clause
-		// must be active:The newest enable-lit is always set to FALSE, while all other are TRUE
-		vector<int> odiff_enable_literals;
 
-		// start new incremental SAT-solving session
-		// TODO
+		BDD side_constraints = cudd.bddOne();
 
 		//----------------------------------------------------------------------------------------
 		// single fault assumption: there might be at most one flipped component
+		// implemented as 1-hot-encoding
 		map<int, int>::iterator map_iter2;
-		map<int, BDD> cj_to_BDD_signal;
-
 		for (map_iter = latch_to_cj.begin(); map_iter != latch_to_cj.end(); map_iter++) // for each latch:
 		{
-			BDD real_c_signal = cudd->bddOne();
+			BDD real_c_signal = cudd.bddOne();
 			for (map_iter2 = latch_to_cj.begin(); map_iter2 != latch_to_cj.end(); map_iter2++) // for current latch, go over all latches
 			{
 				if (map_iter == map_iter2) // the one and only cj-signal which can be true for this signal
-					real_c_signal = real_c_signal & map_iter2->second;
+					real_c_signal &= cudd.bddVar(map_iter2->second);
 				else
-					real_c_signal = real_c_signal & ~map_iter2->second;
+					real_c_signal &= ~ cudd.bddVar(map_iter2->second);
 			}
 			cj_to_BDD_signal[map_iter->second] = real_c_signal;
 		}
 
-		symbsim.initLatches();
+		bddSim.initLatches();
 
 		TestCase& testcase = testcases[tc_number];
+
 
 
 		for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
+
 			//--------------------------------------------------------------------------------------
 			// Concrete simulations:
-			sim_->simulateOneTimeStep(testcase[timestep], concrete_state);
-			vector<int> outputs_ok = sim_->getOutputs();
-			vector<int> next_state = sim_->getNextLatchValues();
+			sim_.simulateOneTimeStep(testcase[timestep], concrete_state);
+			vector<int> outputs_ok = sim_.getOutputs();
+			vector<int> next_state = sim_.getNextLatchValues();
 
 			// switch concrete simulation to next state
 			concrete_state = next_state;
 			//--------------------------------------------------------------------------------------
 
 			// set input values according to TestCase to TRUE or FALSE:
-			symbsim.setInputValues(testcase[timestep]);
+			bddSim.setInputValues(testcase[timestep]);
 
 			//--------------------------------------------------------------------------------------
-			// cj is a variable that indicatest whether the corresponding latch is flipped
-			// fi is a variable that indicates whether the component is flipped in step i or not
-			// there can only be a flip at timestep i if both cj and fi are true.
+			// cj indicates whether the corresponding latch is flipped
+			// fi indicates whether the component is flipped in step i or not
+			// there can only be a flip at time-step i if both cj and fi are true.
+
 			int fi = next_free_cnf_var++;
+			BDD fi_bdd = cudd.bddVar(fi);
 
 			set<int>::iterator it;
 			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it)
 			{
 				int latch_output = *it >> 1;
-				int old_value = symbsim.getResultValue(latch_output);
-				int new_value = next_free_cnf_var++;
-				int ci_lit = latch_to_cj[latch_output];
 
+				BDD cj_bdd = cj_to_BDD_signal[latch_to_cj[latch_output]];
+				BDD old_value = bddSim.getResultValue(latch_output);
 
-				solver_->incAdd3LitClause(old_value, ci_lit, -new_value);
-				solver_->incAdd3LitClause(old_value, fi, -new_value);
-				solver_->incAdd4LitClause(-old_value, -ci_lit, -fi, -new_value);
-				solver_->incAdd3LitClause(-old_value, ci_lit, new_value);
-				solver_->incAdd3LitClause(-old_value, fi, new_value);
-				solver_->incAdd4LitClause(old_value, -ci_lit, -fi, new_value);
-
-				symbsim.setResultValue(latch_output, new_value);
+				// todo: maybe use Cudd_addIte instead??
+				BDD new_value = (fi_bdd & cj_bdd) ^ old_value; // flip old_value iff both fi and cj are true
+				bddSim.setResultValue(latch_output, new_value);
 			}
 
 			//--------------------------------------------------------------------------------------
 			// single fault assumption: there might be at most one flip in one time-step
-			// if fi is true, all oter f must be false (fi -> -f1, fi -> -f2, ...)
-			for (unsigned cnt = 0; cnt < f.size(); cnt++)
-				solver_->incAdd2LitClause(-fi, -f[cnt]);
+			// if fi is true, all other f must be false
+			for (unsigned cnt = 0; cnt < f_as_bdd.size(); cnt++)
+			{
+				side_constraints &= ~(fi_bdd & f_as_bdd[cnt]);
+			}
 
 			f.push_back(fi);
+			f_as_bdd.push_back(fi_bdd);
+
 			fi_to_timestep[fi] = timestep;
 			//--------------------------------------------------------------------------------------
 
 			// Symbolic simulation of AND gates
-			symbsim.simulateOneTimeStep();
-			// get Outputs and next state values, switch to next state
-			solver_->incAddUnitClause(-symbsim.getAlarmValue());
-			const vector<int> &out_cnf_values = symbsim.getOutputValues();
-			symbsim.switchToNextState();
-			const vector<int> &next_state_cnf_values = symbsim.getLatchValues(); // already next st
-			//--------------------------------------------------------------------------------------
+			bddSim.simulateOneTimeStep();
 
-			vector<int> output_is_relevant;
-			if(environment_model_)
-			{
-				vector<int> env_input;
-				env_input.reserve(testcase[timestep].size() + outputs_ok.size());
-				env_input.insert(env_input.end(),
-						testcase[timestep].begin(), testcase[timestep].end());
-				env_input.insert(env_input.end(), outputs_ok.begin(),
-						outputs_ok.end());
-				environment_sim->simulateOneTimeStep(env_input);
-				output_is_relevant = environment_sim->getOutputs();
-				environment_sim->switchToNextState();
-			}
+			side_constraints &= ~ bddSim.getAlarmValue();
+
+			vector<BDD> output_bdds;
+			bddSim.getOutputValues(output_bdds);
+
+			bddSim.switchToNextState();
 
 			//--------------------------------------------------------------------------------------
-			// clause saying that the outputs_ok o and o' are different
-			vector<int> o_is_diff_clause;
-			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
-			for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
+			// constraints saying that the current outputs_ok o and o' are different
+			BDD output_is_different_bdd = cudd.bddZero();
+			for (unsigned out_idx = 0; out_idx < output_bdds.size(); ++out_idx)
 			{
-				// skip if output is not relevant
-				if (environment_model_ && output_is_relevant[out_idx] == AIG_FALSE)
-					continue;
-
 				if (outputs_ok[out_idx] == AIG_TRUE) // simulation result of output is true
-					o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add negated output
+					output_is_different_bdd |= ~ output_bdds[out_idx];
 				else if (outputs_ok[out_idx] == AIG_FALSE)
-					o_is_diff_clause.push_back(out_cnf_values[out_idx]);
+					output_is_different_bdd |= output_bdds[out_idx];
 			}
-			int o_is_diff_enable_literal = next_free_cnf_var++;
-			o_is_diff_clause.push_back(o_is_diff_enable_literal);
-			odiff_enable_literals.push_back(-o_is_diff_enable_literal);
-			solver_->addVarToKeep(o_is_diff_enable_literal);
-			solver_->incAddClause(o_is_diff_clause);
 			//--------------------------------------------------------------------------------------
 
+
 			//--------------------------------------------------------------------------------------
-			// call SAT-solver
-			vector<int> model;
-			ErrorTrace* trace = 0;
-			bool useDiagnostic = Options::instance().isUseDiagnosticOutput();
-
-			vector<int> &vars_of_interest = cj_literals;
-			if (useDiagnostic)
+			// check satisfiability
+			BDD check = side_constraints & output_is_different_bdd;
+			while (!check.IsZero())
 			{
-				vector<int> cj_and_f = f;
-				cj_and_f.insert(cj_and_f.end(), cj_literals.begin(), cj_literals.end());
-
-				vars_of_interest = cj_and_f;
-			}
-
-			while (solver_->incIsSatModelOrCore(odiff_enable_literals, vars_of_interest, model))
-			{
-				if (useDiagnostic)
+				cout << "minterm ";
+				check.PrintMinterm();
+				// resize model size if necessary
+				if(cudd.ReadSize() > model_memory_size)
 				{
-					trace = new ErrorTrace;
+					while (cudd.ReadSize() > model_memory_size)
+						model_memory_size *= 2;
+
+					char* new_model = (char*) realloc(model, model_memory_size);
+					if(new_model == NULL)
+					{
+						free(model);
+						MASSERT(false, "out of memory")
+					}
+					model = new_model;
+				}
+
+				check.PickOneCube(model); // store model
+				for (size_t j = 0; j < next_free_cnf_var; j++)
+				{
+					std::cout << "var " << j << " has value " << static_cast<int>(model[j]) << std::endl;
+				}
+
+				// find the one and only true c-signal in model
+				int cj = 0;
+				for(unsigned i = first_cj_var; i <= last_cj_var; i++)
+				{
+					if(model[i] == 1)
+					{
+						cj = i;
+						break;
+					}
+				}
+
+				cout << "cj = " << cj << endl;
+
+				cj_to_BDD_signal[cj] = cudd.bddZero(); // free the memory
+				// TODO: set cudd.bddVar(cj) to constant false/remove ??
+
+				// find the one and only true f-signal from model
+				int fi = 0;
+				for (unsigned i = 0; i < f.size(); i++)
+				{
+					if(model[f[i]] == 1)
+					{
+						fi = f[i];
+						break;
+					}
+				}
+				cout << "fi = " << fi << endl;
+
+
+				if (Options::instance().isUseDiagnosticOutput())
+				{
+					ErrorTrace* trace = new ErrorTrace;
 
 					trace->error_timestep_ = timestep;
 					trace->input_trace_ = testcase;
+					trace->latch_index_ = cj_to_latch[cj];
+					trace->flipped_timestep_ = fi_to_timestep[fi];
+
 					ErrorTraceManager::instance().error_traces_.push_back(trace);
 				}
-				vector<int>::iterator model_iter;
-				for (model_iter = model.begin(); model_iter != model.end(); ++model_iter)
-				{
-					int lit = *model_iter;
-					if (lit > 0 && lit < next_cnf_var_after_ci_vars) // we have found the one and only active cj signal
-					{
-						// Add vulnerable latch (represented by cj) to list of vulnerabilities
-						// Add blocking clause so that the sat-solver can report other vulnerabilities
-						vulnerable_elements_.insert(cj_to_latch[lit]);
-						latches_to_check_.erase(cj_to_latch[lit]);
-						solver_->incAddUnitClause(-lit); // blocking clause
-						if (!useDiagnostic)
-							break; // we are done here
-						else
-							trace->latch_index_ = cj_to_latch[lit];
-					}
-					else if (useDiagnostic && lit >= next_cnf_var_after_ci_vars) // we have found the one and only active fi signal
-					{
-						trace->flipped_timestep_ = fi_to_timestep[lit];
-					}
-				}
+
+				cout << "ts=" << timestep << ", latch = " <<  cj_to_latch[cj] << " fi = " << fi_to_timestep[fi] << endl;
+
+				vulnerable_elements_.insert(cj_to_latch[cj]);
+				side_constraints &= ~cudd.bddVar(cj);
+				check = side_constraints & output_is_different_bdd;
+
 			}
 
-			// negate (=set to positive face) newest odiff_enable_literal to disable
-			// the previous o_is_diff_clausefor the next iterations
-			odiff_enable_literals.back() = -odiff_enable_literals.back();
-
-
 		} // -- END "for each timestep in testcase" --
-
 	} // ------ END 'for each testcase' ---------------
 
+	free(model);
 
-	delete sim_;
-	*/
+	return vulnerable_elements_.size() > 0;
 
 }
 
