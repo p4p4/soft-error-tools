@@ -24,8 +24,8 @@ extern "C" {
 #include "aiger.h"
 #include "cudd.h"
 };
-
 #include "cuddObj.hh"
+
 #include "../src/Utils.h"
 
 
@@ -80,9 +80,10 @@ void TestBdd::getSatAss(const Cudd &cudd, const BDD &bdd, std::vector<int> &dest
 // -------------------------------------------------------------------------------------------
 void TestBdd::test1()
 {
-
 	Cudd cudd;
 	cudd.AutodynEnable(CUDD_REORDER_SIFT);
+
+	CPPUNIT_ASSERT(cudd.bddZero() == ~ cudd.bddOne());
 
 	std::cout << std::endl;
 
@@ -111,22 +112,18 @@ void TestBdd::test1()
 
 	res = foo & bar;
 	res.PrintMinterm();
-	res.PrintCover();
 	CPPUNIT_ASSERT(!res.IsZero());
 
 	res = foo & ~bar;
 	res.PrintMinterm();
-	res.PrintCover();
 	CPPUNIT_ASSERT(!res.IsZero());
 
 	res = ~foo & bar;
 	res.PrintMinterm();
-	res.PrintCover();
 	CPPUNIT_ASSERT(!res.IsZero());
 
 	res = ~foo & ~bar;
 	res.PrintMinterm();
-	res.PrintCover();
 	CPPUNIT_ASSERT(!res.IsZero());
 
 	//-------------------
@@ -249,7 +246,7 @@ void TestBdd::test3_modify_BDD_signal()
 	// how can we achieve an updated behavior when modifying an intermediate node?
 
 	// I need this as an equivalent of SAT-solver blocking clauses and when I add new f variables.
-	//
+	// solution: use side-constraints
 
 
 }

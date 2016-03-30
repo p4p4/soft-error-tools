@@ -26,6 +26,7 @@
 #include "BddAnalysis.h"
 
 #include "AigSimulator.h"
+#include "BddSimulator.h"
 extern "C"
 {
 #include "aiger.h"
@@ -73,10 +74,12 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 	}
 
 
-	/*
+
+
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
-	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
+	BddSimulator bddSim(circuit_, cudd, next_free_cnf_var);
+
 
 	// for each testcase-step
 	for (unsigned tc_number = 0; tc_number < testcases.size(); tc_number++)
@@ -97,41 +100,41 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 		{
 			cj_literals.push_back(map_iter->second);
 		}
+		map<int, BDD> cj_to_BDD_signal;
 
-		// a set of literals to enable or disable the represented output_is_different clauses,
-		// necessary for incremental solving. At each sat-solver call only the newest clause
-		// must be active:The newest enable-lit is always set to FALSE, while all other are TRUE
-		vector<int> odiff_enable_literals;
 
-		// start new incremental SAT-solving session
+
+		// start new incremental BDD session
 		// TODO
+		BDD side_constraints = cudd.bddOne();
 
 		//----------------------------------------------------------------------------------------
 		// single fault assumption: there might be at most one flipped component
 		map<int, int>::iterator map_iter2;
-		map<int, BDD> cj_to_BDD_signal;
-
 		for (map_iter = latch_to_cj.begin(); map_iter != latch_to_cj.end(); map_iter++) // for each latch:
 		{
-			BDD real_c_signal = cudd->bddOne();
+			BDD real_c_signal = cudd.bddOne();
 			for (map_iter2 = latch_to_cj.begin(); map_iter2 != latch_to_cj.end(); map_iter2++) // for current latch, go over all latches
 			{
 				if (map_iter == map_iter2) // the one and only cj-signal which can be true for this signal
-					real_c_signal = real_c_signal & map_iter2->second;
+					real_c_signal &= cudd.bddVar(map_iter2->second);
 				else
-					real_c_signal = real_c_signal & ~map_iter2->second;
+					real_c_signal &= ~ cudd.bddVar(map_iter2->second);
 			}
 			cj_to_BDD_signal[map_iter->second] = real_c_signal;
 		}
 
-		symbsim.initLatches();
+		bddSim.initLatches();
 
 		TestCase& testcase = testcases[tc_number];
+
 
 
 		for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
+			// ;;;;;;;
+			/*
 			//--------------------------------------------------------------------------------------
 			// Concrete simulations:
 			sim_->simulateOneTimeStep(testcase[timestep], concrete_state);
@@ -190,18 +193,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 			//--------------------------------------------------------------------------------------
 
 			vector<int> output_is_relevant;
-			if(environment_model_)
-			{
-				vector<int> env_input;
-				env_input.reserve(testcase[timestep].size() + outputs_ok.size());
-				env_input.insert(env_input.end(),
-						testcase[timestep].begin(), testcase[timestep].end());
-				env_input.insert(env_input.end(), outputs_ok.begin(),
-						outputs_ok.end());
-				environment_sim->simulateOneTimeStep(env_input);
-				output_is_relevant = environment_sim->getOutputs();
-				environment_sim->switchToNextState();
-			}
+
 
 			//--------------------------------------------------------------------------------------
 			// clause saying that the outputs_ok o and o' are different
@@ -209,9 +201,6 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 			o_is_diff_clause.reserve(out_cnf_values.size() + 1);
 			for (unsigned out_idx = 0; out_idx < out_cnf_values.size(); ++out_idx)
 			{
-				// skip if output is not relevant
-				if (environment_model_ && output_is_relevant[out_idx] == AIG_FALSE)
-					continue;
 
 				if (outputs_ok[out_idx] == AIG_TRUE) // simulation result of output is true
 					o_is_diff_clause.push_back(-out_cnf_values[out_idx]); // add negated output
@@ -277,14 +266,9 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 			// the previous o_is_diff_clausefor the next iterations
 			odiff_enable_literals.back() = -odiff_enable_literals.back();
 
-
+*/
 		} // -- END "for each timestep in testcase" --
-
 	} // ------ END 'for each testcase' ---------------
-
-
-	delete sim_;
-	*/
 
 }
 
