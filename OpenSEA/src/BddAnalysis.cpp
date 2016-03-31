@@ -48,9 +48,9 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 
 
 	// TODO modes...
-	//analyze_one_hot_enc_sig(testcases);
-	//analyze_one_hot_enc_constr(testcases);
-	analyze_binary_enc_sig(testcases);
+	analyze_one_hot_enc_sig(testcases);
+//	analyze_one_hot_enc_constr(testcases);
+//	analyze_binary_enc_sig(testcases);
 	// ...
 
 
@@ -776,6 +776,7 @@ void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 
 				stopWatchStart();
 				// find the one and only true c-signal in model
+				vector<unsigned> irrelevant_c_bits;
 				unsigned cj = 0;
 				unsigned bit_counter = num_of_c_vars - 1;
 				BDD blocking_cube = cudd.bddOne();
@@ -788,18 +789,38 @@ void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 						cj |= (1 << bit_counter);
 						blocking_cube &= c_vars[num_of_c_vars-1-bit_counter];
 					}
-					else // false or irrelevant
+					else if(model[i] == 0)
 					{
 						blocking_cube &= ~ c_vars[num_of_c_vars-1-bit_counter];
+					}
+					else // input is irrelevant
+					{
+						irrelevant_c_bits.push_back(bit_counter);
 					}
 
 //					MASSERT(model[i] <= 1, "WRONG")
 
 					bit_counter--;
 				}
-				cout << "cj = " << cj << endl;
-				latch_to_BDD_signal[cj] = cudd.bddZero(); // free the memory
-				// TODO: set cudd.bddVar(cj) to constant false/remove ??
+				vector<unsigned> vulnerable_cj_combinations;
+
+				if (irrelevant_c_bits.size() == 0) // is already concrete
+				{
+					vulnerable_cj_combinations.push_back(cj);
+				}
+				else // irrelevant input values
+				{
+					for (unsigned  concrete_vals = 0; concrete_vals < pow(2,irrelevant_c_bits.size()); concrete_vals++)
+					{
+						unsigned concrete_cj = cj;
+						for(unsigned i = 0; i < irrelevant_c_bits.size(); i++)
+						{
+							if ((concrete_vals & (1 << i)) > 0 ) // bit set in combination?
+								concrete_cj |= (1 << irrelevant_c_bits[i]); // set the bit
+						}
+						vulnerable_cj_combinations.push_back(concrete_cj);
+					}
+				}
 
 				// find the one and only true f-signal from model
 				int fi = 0;
@@ -812,22 +833,29 @@ void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 					}
 				}
 				stopWatchStore(PARSE_MODEL);
-
-				if (Options::instance().isUseDiagnosticOutput())
+				for(unsigned i = 0; i < vulnerable_cj_combinations.size(); i++)
 				{
-					ErrorTrace* trace = new ErrorTrace;
+					cj = vulnerable_cj_combinations[i];
+					cout << "cj = " << cj << endl;
+					latch_to_BDD_signal[cj] = cudd.bddZero(); // free the memory
 
-					trace->error_timestep_ = timestep;
-					trace->input_trace_ = testcase;
-					trace->latch_index_ = circuit_->latches[cj].lit;
-					trace->flipped_timestep_ = fi_to_timestep[fi];
+					if (Options::instance().isUseDiagnosticOutput())
+					{
+						ErrorTrace* trace = new ErrorTrace;
 
-					ErrorTraceManager::instance().error_traces_.push_back(trace);
+						trace->error_timestep_ = timestep;
+						trace->input_trace_ = testcase;
+						trace->latch_index_ = circuit_->latches[cj].lit;
+						trace->flipped_timestep_ = fi_to_timestep[fi];
+
+						ErrorTraceManager::instance().error_traces_.push_back(trace);
+					}
+
+					cout << "latch " << circuit_->latches[cj].lit << endl;
+
+					vulnerable_elements_.insert(circuit_->latches[cj].lit);
 				}
 
-				cout << "latch " << circuit_->latches[cj].lit << endl;
-
-				vulnerable_elements_.insert(circuit_->latches[cj].lit);
 				stopWatchStart();
 				side_constraints &= ~blocking_cube;
 				check = side_constraints & output_is_different_bdd;
