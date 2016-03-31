@@ -80,6 +80,27 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 	int last_cj_var = next_free_cnf_var - 1;
 	stopWatchStore(CREATE_C_SIGNALS);
 
+	//----------------------------------------------------------------------------------------
+	// single fault assumption: there might be at most one flipped component
+	// implemented as 1-hot-encoding
+	stopWatchStart();
+	map<int, BDD> cj_to_BDD_signal;
+	map<int, int>::iterator map_iter;
+	map<int, int>::iterator map_iter2;
+	for (map_iter = latch_to_cj.begin(); map_iter != latch_to_cj.end(); map_iter++) // for each latch:
+	{
+		BDD real_c_signal = cudd.bddOne();
+		for (map_iter2 = latch_to_cj.begin(); map_iter2 != latch_to_cj.end(); map_iter2++) // for current latch, go over all latches
+		{
+			if (map_iter == map_iter2) // the one and only cj-signal which can be true for this signal
+				real_c_signal &= cudd.bddVar(map_iter2->second);
+			else
+				real_c_signal &= ~ cudd.bddVar(map_iter2->second);
+		}
+		cj_to_BDD_signal[map_iter->second] = real_c_signal;
+	}
+	stopWatchStore(CREATE_C_SIGNALS);
+
 
 
 	//------------------------------------------------------------------------------------------
@@ -99,36 +120,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 		vector<BDD> f_prime_bdd;
 		map<int, unsigned> fi_to_timestep;
 
-		// a set of cj-literals indicating whether *the _latch_ C_j is flipped* or not
-		vector<int> cj_literals;
-		map<int, int>::iterator map_iter;
-		for (map_iter = latch_to_cj.begin(); map_iter != latch_to_cj.end(); map_iter++)
-		{
-			cj_literals.push_back(map_iter->second);
-		}
-		map<int, BDD> cj_to_BDD_signal;
-
-
 		BDD side_constraints = cudd.bddOne();
-
-		//----------------------------------------------------------------------------------------
-		// single fault assumption: there might be at most one flipped component
-		// implemented as 1-hot-encoding
-		stopWatchStart();
-		map<int, int>::iterator map_iter2;
-		for (map_iter = latch_to_cj.begin(); map_iter != latch_to_cj.end(); map_iter++) // for each latch:
-		{
-			BDD real_c_signal = cudd.bddOne();
-			for (map_iter2 = latch_to_cj.begin(); map_iter2 != latch_to_cj.end(); map_iter2++) // for current latch, go over all latches
-			{
-				if (map_iter == map_iter2) // the one and only cj-signal which can be true for this signal
-					real_c_signal &= cudd.bddVar(map_iter2->second);
-				else
-					real_c_signal &= ~ cudd.bddVar(map_iter2->second);
-			}
-			cj_to_BDD_signal[map_iter->second] = real_c_signal;
-		}
-		stopWatchStore(CREATE_C_SIGNALS);
 
 		stopWatchStart();
 		bddSim.initLatches();
