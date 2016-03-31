@@ -28,6 +28,8 @@
 
 #include "defines.h"
 #include "BackEnd.h"
+#include "Stopwatch.h"
+
 
 extern "C" {
 #include "aiger.h"
@@ -72,6 +74,13 @@ using BackEnd::analyze;
 
 
 protected:
+  bool useStatistics_ = true;
+  enum Statistic { CREATE_C_SIGNALS, SIM_ANDs, SWITCH_NXT_ST, OUT_IS_DIFF, SATISFIABILITY, STORE_MODEL, INIT_Latches, SIDE_CONSTRAINTS, MODIFY_LATCHES };
+  map<Statistic, double> accumulated_durations_;
+  PointInTime start_time_;
+  void stopWatchStart();
+  void stopWatchStore(Statistic statistic);
+  void printStatistics(PointInTime begin);
 
 private:
 

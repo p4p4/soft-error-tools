@@ -40,10 +40,12 @@ BddAnalysis::BddAnalysis(aiger* circuit, int num_err_latches, int mode) :
 
 bool BddAnalysis::analyze(vector<TestCase>& testcases)
 {
+	PointInTime begin = Stopwatch::start();
+	accumulated_durations_.clear();
 	vulnerable_elements_.clear();
 
 	Cudd cudd;
-	cudd.AutodynEnable(CUDD_REORDER_SIFT);
+	//cudd.AutodynEnable(CUDD_REORDER_SIFT);  // it is better to turn off automatic reordering
 
 	unsigned model_memory_size = 128;
 	char* model = (char*) malloc(model_memory_size * sizeof(char));
@@ -62,6 +64,8 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 	map<int, int> latch_to_cj; // maps latch-literals(cnf) to corresponding cj-literals(cnf)
 	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
 
+
+	stopWatchStart();
 	int first_cj_var = next_free_cnf_var;
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
@@ -74,6 +78,8 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
 	}
 	int last_cj_var = next_free_cnf_var - 1;
+	stopWatchStore(CREATE_C_SIGNALS);
+
 
 
 	//------------------------------------------------------------------------------------------
@@ -89,8 +95,8 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 		concrete_state.resize(circuit_->num_latches);
 
 		// f = a set of variables fi indicating whether the latch is *flipped in _step_ i* or not
-		vector<int> f;
-		vector<BDD> f_as_bdd;
+		vector<int> f_inputs;
+		vector<BDD> f_prime_bdd;
 		map<int, unsigned> fi_to_timestep;
 
 		// a set of cj-literals indicating whether *the _latch_ C_j is flipped* or not
@@ -108,6 +114,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 		//----------------------------------------------------------------------------------------
 		// single fault assumption: there might be at most one flipped component
 		// implemented as 1-hot-encoding
+		stopWatchStart();
 		map<int, int>::iterator map_iter2;
 		for (map_iter = latch_to_cj.begin(); map_iter != latch_to_cj.end(); map_iter++) // for each latch:
 		{
@@ -121,8 +128,11 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 			}
 			cj_to_BDD_signal[map_iter->second] = real_c_signal;
 		}
+		stopWatchStore(CREATE_C_SIGNALS);
 
+		stopWatchStart();
 		bddSim.initLatches();
+		stopWatchStore(INIT_Latches);
 
 		TestCase& testcase = testcases[tc_number];
 
@@ -153,6 +163,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 			int fi = next_free_cnf_var++;
 			BDD fi_bdd = cudd.bddVar(fi);
 
+			stopWatchStart();
 			set<int>::iterator it;
 			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it)
 			{
@@ -165,31 +176,40 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 				BDD new_value = (fi_bdd & cj_bdd) ^ old_value; // flip old_value iff both fi and cj are true
 				bddSim.setResultValue(latch_output, new_value);
 			}
+			stopWatchStore(MODIFY_LATCHES);
 
 			//--------------------------------------------------------------------------------------
 			// single fault assumption: there might be at most one flip in one time-step
 			// if fi is true, all other f must be false
-			for (unsigned cnt = 0; cnt < f_as_bdd.size(); cnt++)
+			stopWatchStart();
+			for (unsigned cnt = 0; cnt < f_prime_bdd.size(); cnt++)
 			{
-				side_constraints &= ~(fi_bdd & f_as_bdd[cnt]);
+				side_constraints &= ~(fi_bdd & f_prime_bdd[cnt]);
 			}
+			stopWatchStore(SIDE_CONSTRAINTS);
 
-			f.push_back(fi);
-			f_as_bdd.push_back(fi_bdd);
+			f_inputs.push_back(fi);
+			f_prime_bdd.push_back(fi_bdd);
 
 			fi_to_timestep[fi] = timestep;
 			//--------------------------------------------------------------------------------------
 
 			// Symbolic simulation of AND gates
-			bddSim.simulateOneTimeStep();
 
+			stopWatchStart();
+			bddSim.simulateOneTimeStep();
+			stopWatchStore(SIM_ANDs);
 			side_constraints &= ~ bddSim.getAlarmValue();
 
 			vector<BDD> output_bdds;
 			bddSim.getOutputValues(output_bdds);
 
+			stopWatchStart();
 			bddSim.switchToNextState();
+			stopWatchStore(SWITCH_NXT_ST);
 
+
+			stopWatchStart();
 			//--------------------------------------------------------------------------------------
 			// constraints saying that the current outputs_ok o and o' are different
 			BDD output_is_different_bdd = cudd.bddZero();
@@ -201,35 +221,40 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 					output_is_different_bdd |= output_bdds[out_idx];
 			}
 			//--------------------------------------------------------------------------------------
+			stopWatchStore(OUT_IS_DIFF);
 
+
+			// resize model size if necessary
+			if(cudd.ReadSize() > model_memory_size)
+			{
+				while (cudd.ReadSize() > model_memory_size)
+					model_memory_size *= 2;
+
+				char* new_model = (char*) realloc(model, model_memory_size);
+				if(new_model == NULL)
+				{
+					free(model);
+					MASSERT(false, "out of memory")
+				}
+				model = new_model;
+			}
 
 			//--------------------------------------------------------------------------------------
 			// check satisfiability
 			BDD check = side_constraints & output_is_different_bdd;
+
+			stopWatchStart();
 			while (!check.IsZero())
 			{
-				cout << "minterm ";
-				check.PrintMinterm();
-				// resize model size if necessary
-				if(cudd.ReadSize() > model_memory_size)
-				{
-					while (cudd.ReadSize() > model_memory_size)
-						model_memory_size *= 2;
+				stopWatchStore(SATISFIABILITY);
 
-					char* new_model = (char*) realloc(model, model_memory_size);
-					if(new_model == NULL)
-					{
-						free(model);
-						MASSERT(false, "out of memory")
-					}
-					model = new_model;
-				}
-
+				stopWatchStart();
 				check.PickOneCube(model); // store model
-				for (size_t j = 0; j < next_free_cnf_var; j++)
-				{
-					std::cout << "var " << j << " has value " << static_cast<int>(model[j]) << std::endl;
-				}
+				stopWatchStore(STORE_MODEL);
+//				for (size_t j = 0; j < next_free_cnf_var; j++)
+//				{
+//					std::cout << "var " << j << " has value " << static_cast<int>(model[j]) << std::endl;
+//				}
 
 				// find the one and only true c-signal in model
 				int cj = 0;
@@ -241,23 +266,22 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 						break;
 					}
 				}
-
-				cout << "cj = " << cj << endl;
+//				cout << "cj = " << cj << endl;
 
 				cj_to_BDD_signal[cj] = cudd.bddZero(); // free the memory
 				// TODO: set cudd.bddVar(cj) to constant false/remove ??
 
 				// find the one and only true f-signal from model
 				int fi = 0;
-				for (unsigned i = 0; i < f.size(); i++)
+				for (unsigned i = 0; i < f_inputs.size(); i++)
 				{
-					if(model[f[i]] == 1)
+					if(model[f_inputs[i]] == 1)
 					{
-						fi = f[i];
+						fi = f_inputs[i];
 						break;
 					}
 				}
-				cout << "fi = " << fi << endl;
+//				cout << "fi = " << fi << endl;
 
 
 				if (Options::instance().isUseDiagnosticOutput())
@@ -271,13 +295,15 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 
 					ErrorTraceManager::instance().error_traces_.push_back(trace);
 				}
-
-				cout << "ts=" << timestep << ", latch = " <<  cj_to_latch[cj] << " fi = " << fi_to_timestep[fi] << endl;
+//				cout << "ts=" << timestep << ", latch = " <<  cj_to_latch[cj] << " fi = " << fi_to_timestep[fi] << endl;
 
 				vulnerable_elements_.insert(cj_to_latch[cj]);
+				stopWatchStart();
 				side_constraints &= ~cudd.bddVar(cj);
 				check = side_constraints & output_is_different_bdd;
+				stopWatchStore(SIDE_CONSTRAINTS);
 
+				stopWatchStart(); // SATISFIABILITY
 			}
 
 		} // -- END "for each timestep in testcase" --
@@ -285,6 +311,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 
 	free(model);
 
+	printStatistics(begin);
 	return vulnerable_elements_.size() > 0;
 
 }
@@ -293,4 +320,49 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 // -------------------------------------------------------------------------------------------
 BddAnalysis::~BddAnalysis()
 {
+}
+
+void BddAnalysis::stopWatchStart()
+{
+	if(!useStatistics_)
+		return;
+
+	start_time_ = Stopwatch::start();
+}
+
+void BddAnalysis::stopWatchStore(Statistic statistic)
+{
+	if(!useStatistics_)
+		return;
+
+	map<Statistic,double>::iterator it = accumulated_durations_.find(statistic);
+	double duration = Stopwatch::getCPUTimeMilliSec(start_time_);
+	if(it != accumulated_durations_.end())
+	{
+	   it->second += duration;
+	}
+	else
+	{
+		accumulated_durations_[statistic] = duration;
+	}
+}
+
+void BddAnalysis::printStatistics(PointInTime begin)
+{
+	if(!useStatistics_)
+		return;
+
+	const string stat_name[] = {"CREATE_C_SIGNALS", "SIM_ANDs", "SWITCH_NXT_ST", "OUT_IS_DIFF", "SATISFIABILITY", "STORE_MODEL", "INIT_Latches", "SIDE_CONSTRAINTS", "MODIFY_LATCHES"};
+
+	double total_time = Stopwatch::getCPUTimeMilliSec(begin);
+	double in_stats = 0.0;
+	cout << endl << "--------------------------" << endl;
+	cout << "Total execution time: " << total_time << endl;
+	map<Statistic,double>::iterator it = accumulated_durations_.begin();
+	for(;it !=accumulated_durations_.end(); ++it)
+	{
+		cout << stat_name[it->first] <<" " << it->second << endl;
+		in_stats += it->second;
+	}
+	cout << "uncategorized " << (total_time - in_stats) << endl;
 }

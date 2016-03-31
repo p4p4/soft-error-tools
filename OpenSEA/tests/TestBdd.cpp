@@ -398,7 +398,7 @@ void TestBdd::test7_analysis_compare_with_simulation_1()
 	compareWithSimulation("inputs/toggle.2vulnerabilities.aag", 1, 2, 1,
 			0);
 //	Logger::instance().enable(Logger::INF);
-//	Logger::instance().disable(Logger::INF);
+	Logger::instance().disable(Logger::INF);
 	compareWithSimulation("inputs/toggle.3vulnerabilities.aag", 1, 2, 0,
 			0);
 	compareWithSimulation("inputs/iwls02texasa.2vul.1l.aag", 5, 5, 1,
