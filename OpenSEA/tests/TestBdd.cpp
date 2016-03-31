@@ -189,10 +189,10 @@ void TestBdd::test2_generate_cj_BDDs()
 	// --------------------------------------------------------------------------------------------------
 	// test 1 hot encoding for correctness
 	char sat_ass_string[num_of_cj_signals];
-	for(int i = 0; i < num_of_cj_signals; i++)
+	for(unsigned i = 0; i < num_of_cj_signals; i++)
 	{
 		cj_to_BDD_signal[i].PickOneCube(sat_ass_string);
-		for (size_t j = 0; j < num_of_cj_signals; j++)
+		for (unsigned j = 0; j < num_of_cj_signals; j++)
 		{
 			std::cout << "c[" << i <<"]  var " << j << " has value " << static_cast<int>(sat_ass_string[j]) << std::endl;
 			CPPUNIT_ASSERT(i == j ? sat_ass_string[j] == 1 : sat_ass_string[j] == 0);
@@ -345,6 +345,18 @@ void TestBdd::compareWithSimulation(string path_to_aiger_circuit,
 
 	aiger_reset(circuit);
 
+	std::set<int> result;
+	std::set_difference(sim_vulnerabilities.begin(), sim_vulnerabilities.end(), symb_vulnerabilities.begin(), symb_vulnerabilities.end(),
+	    std::inserter(result, result.end()));
+	std::cout << "result size:" << result.size() << std::endl;
+	std::set<int>::iterator it;
+	for (it = result.begin(); it != result.end(); ++it)
+	{
+		std::cout << "     VULNERABILITY latch DIFF: " << *it << std::endl;
+	}
+
+	std::cout << "sim: "<< sim_vulnerabilities.size() << " vs symb: " << symb_vulnerabilities.size() << std::endl;
+	CPPUNIT_ASSERT(sim_vulnerabilities.size() == symb_vulnerabilities.size());
 	CPPUNIT_ASSERT_MESSAGE(path_to_aiger_circuit,
 			sim_vulnerabilities == symb_vulnerabilities);
 }

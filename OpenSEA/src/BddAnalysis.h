@@ -62,6 +62,11 @@ using BackEnd::analyze;
 /// @brief Destructor.
   virtual ~BddAnalysis();
 
+	enum AnalysisMode
+	{
+		C_ONE_HOT_ENCODING = 0, C_BINARY_ENCODING = 1, NOT_IMPLEMENTED = 2
+	};
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief tries to find vulnerabilities using the provided TestCases
@@ -74,8 +79,12 @@ using BackEnd::analyze;
 
 
 protected:
+  void analyze_one_hot_enc_sig(vector<TestCase> &testcases);
+  void analyze_one_hot_enc_constr(vector<TestCase> &testcases);
+  void analyze_binary_enc_sig(vector<TestCase> &testcases);
+
   bool useStatistics_ = true;
-  enum Statistic { CREATE_C_SIGNALS, SIM_ANDs, SWITCH_NXT_ST, OUT_IS_DIFF, SATISFIABILITY, STORE_MODEL, INIT_Latches, SIDE_CONSTRAINTS, MODIFY_LATCHES };
+  enum Statistic { CREATE_C_SIGNALS, SIM_ANDs, SWITCH_NXT_ST, OUT_IS_DIFF, SATISFIABILITY, STORE_MODEL, INIT_Latches, SIDE_CONSTRAINTS, MODIFY_LATCHES, PARSE_MODEL };
   map<Statistic, double> accumulated_durations_;
   PointInTime start_time_;
   void stopWatchStart();
