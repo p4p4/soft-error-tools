@@ -28,6 +28,7 @@
 #include "AigSimulator.h"
 #include "BddSimulator.h"
 #include "ErrorTraceManager.h"
+#include "Logger.h"
 #include "Options.h"
 
 #include <math.h> // ceil, log2
@@ -912,13 +913,13 @@ void BddAnalysis::printStatistics(PointInTime begin)
 
 	double total_time = Stopwatch::getCPUTimeMilliSec(begin);
 	double in_stats = 0.0;
-	cout << endl << "--------------------------" << endl;
-	cout << "Total execution time: " << total_time << endl;
+	L_DBG(endl << "--------------------------")
+	L_DBG("Total execution time: " << total_time);
 	map<Statistic,double>::iterator it = accumulated_durations_.begin();
 	for(;it !=accumulated_durations_.end(); ++it)
 	{
-		cout << stat_name[it->first] <<" " << it->second << endl;
+		L_DBG(stat_name[it->first] <<" " << it->second);
 		in_stats += it->second;
 	}
-	cout << "uncategorized " << (total_time - in_stats) << endl;
+	L_DBG("uncategorized " << (total_time - in_stats));
 }
