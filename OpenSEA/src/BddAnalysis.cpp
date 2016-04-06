@@ -63,7 +63,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 void BddAnalysis::analyze_one_hot_enc_sig(vector<TestCase>& testcases)
 {
 	Cudd cudd;
-	//cudd.AutodynEnable(CUDD_REORDER_SIFT);  // it is better to turn off automatic reordering
+	cudd.AutodynEnable(CUDD_REORDER_SIFT);  // it is better to turn off automatic reordering
 
 	int model_memory_size = 128;
 	char* model = (char*) malloc(model_memory_size * sizeof(char));
