@@ -5,6 +5,7 @@ AndCacheMap.cpp
 BackEnd.cpp
 BddAnalysis.cpp
 BddSimulator.cpp
+BddSimulator2.cpp
 CNF.cpp
 ErrorTraceManager.cpp
 FalsePositives.cpp
