@@ -27,6 +27,7 @@
 
 #include "AigSimulator.h"
 #include "BddSimulator.h"
+#include "BddSimulator2.h"
 #include "ErrorTraceManager.h"
 #include "Logger.h"
 #include "Options.h"
@@ -63,7 +64,9 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 void BddAnalysis::analyze_one_hot_enc_sig(vector<TestCase>& testcases)
 {
 	Cudd cudd;
+
 	cudd.AutodynEnable(CUDD_REORDER_SIFT);  // it is better to turn off automatic reordering
+	cudd.EnableReorderingReporting();
 
 	int model_memory_size = 128;
 	char* model = (char*) malloc(model_memory_size * sizeof(char));
@@ -114,10 +117,8 @@ void BddAnalysis::analyze_one_hot_enc_sig(vector<TestCase>& testcases)
 	}
 	stopWatchStore(CREATE_C_SIGNALS);
 
-
-
 	//------------------------------------------------------------------------------------------
-	BddSimulator bddSim(circuit_, cudd, next_free_cnf_var);
+	BddSimulator2 bddSim(circuit_, cudd, next_free_cnf_var);
 
 
 	// for each testcase-step
