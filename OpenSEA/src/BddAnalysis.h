@@ -82,9 +82,10 @@ protected:
   Cudd cudd_;
   int next_free_cnf_var_ = 2;
 
-  void analyze_one_hot_enc_sig(vector<TestCase> &testcases);
-  void analyze_one_hot_enc_constr(vector<TestCase> &testcases);
-  void analyze_binary_enc_sig(vector<TestCase> &testcases);
+  void analyze_one_hot_enc_c_signals(vector<TestCase> &testcases);
+  void analyze_one_hot_enc_c_constraints(vector<TestCase> &testcases);
+  void analyze_binary_enc_c_signals(vector<TestCase> &testcases);
+  void analyze_binary_enc_c_and_f_signals(vector<TestCase> &testcases);
 
   bool useStatistics_ = true;
   enum Statistic { CREATE_C_SIGNALS, SIM_ANDs, SWITCH_NXT_ST, OUT_IS_DIFF, SATISFIABILITY, STORE_MODEL, INIT_Latches, SIDE_CONSTRAINTS, MODIFY_LATCHES, PARSE_MODEL };
@@ -95,6 +96,7 @@ protected:
   void printStatistics(PointInTime begin);
 	void create_binary_encoded_c_BDDs(const vector<BDD>& c_vars,
 			map<unsigned, BDD>& latch_to_BDD_signal, set<int>& latches_to_check_);
+	BDD binary_conjunct(unsigned binary_encoding, const vector<BDD>& input_vars);
 
 private:
 
