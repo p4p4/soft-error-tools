@@ -79,6 +79,9 @@ using BackEnd::analyze;
 
 
 protected:
+  Cudd cudd_;
+  int next_free_cnf_var_ = 2;
+
   void analyze_one_hot_enc_sig(vector<TestCase> &testcases);
   void analyze_one_hot_enc_constr(vector<TestCase> &testcases);
   void analyze_binary_enc_sig(vector<TestCase> &testcases);
@@ -90,6 +93,8 @@ protected:
   void stopWatchStart();
   void stopWatchStore(Statistic statistic);
   void printStatistics(PointInTime begin);
+	void create_binary_encoded_c_BDDs(const vector<BDD>& c_vars,
+			map<unsigned, BDD>& latch_to_BDD_signal, set<int>& latches_to_check_);
 
 private:
 
