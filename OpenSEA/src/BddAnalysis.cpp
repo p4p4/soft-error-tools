@@ -50,9 +50,9 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 
 
 	// TODO modes...
-	analyze_one_hot_enc_sig(testcases);
+//	analyze_one_hot_enc_sig(testcases);
 //	analyze_one_hot_enc_constr(testcases);
-//	analyze_binary_enc_sig(testcases);
+	analyze_binary_enc_sig(testcases);
 	// ...
 
 
@@ -350,6 +350,7 @@ void BddAnalysis::analyze_one_hot_enc_constr(vector<TestCase>& testcases)
 
 		for (unsigned cnt = first_cj_var; cnt < cj; cnt++)
 		{
+//			cout << cj << " and " << cnt << endl;
 			c_cardinality_constraints &= ~(cudd.bddVar(cj) & cudd.bddVar(cnt));
 		}
 	}
@@ -571,7 +572,7 @@ void BddAnalysis::analyze_one_hot_enc_constr(vector<TestCase>& testcases)
 void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 {
 	Cudd cudd;
-	//cudd.AutodynEnable(CUDD_REORDER_SIFT);  // it is better to turn off automatic reordering
+//	cudd.AutodynEnable(CUDD_REORDER_SIFT);  // it is better to turn off automatic reordering
 
 	int model_memory_size = 128;
 	char* model = (char*) malloc(model_memory_size * sizeof(char));
@@ -633,7 +634,7 @@ void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 
 
 	//------------------------------------------------------------------------------------------
-	BddSimulator bddSim(circuit_, cudd, next_free_cnf_var);
+	BddSimulator2 bddSim(circuit_, cudd, next_free_cnf_var);
 
 
 	// for each testcase-step
@@ -768,8 +769,6 @@ void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 			while (!check.IsZero())
 			{
 				stopWatchStore(SATISFIABILITY);
-				cout << "SATIisfiable!" << endl;
-//				check.PrintMinterm();
 
 				stopWatchStart();
 				check.PickOneCube(model); // store model
@@ -785,7 +784,7 @@ void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 //				cout << "first " << first_cj_var << ", last " << last_cj_var << endl;
 				for(int i = first_cj_var; i <= last_cj_var; i++)
 				{
-					cout << "model["<<i<<"]" << static_cast<int>(model[i]) << endl;
+//					cout << "model["<<i<<"]" << static_cast<int>(model[i]) << endl;
 					if(model[i] == 1)
 					{
 						cj |= (1 << bit_counter);
@@ -838,8 +837,8 @@ void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 				for(unsigned i = 0; i < vulnerable_cj_combinations.size(); i++)
 				{
 					cj = vulnerable_cj_combinations[i];
-					cout << "cj = " << cj << endl;
-					latch_to_BDD_signal[cj] = cudd.bddZero(); // free the memory
+//					cout << "cj = " << cj << endl;
+//					latch_to_BDD_signal[cj] = cudd.bddZero(); // free the memory, NO, DON't do this!!
 
 					if (Options::instance().isUseDiagnosticOutput())
 					{
@@ -853,13 +852,15 @@ void BddAnalysis::analyze_binary_enc_sig(vector<TestCase>& testcases)
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
 					}
 
-					cout << "latch " << circuit_->latches[cj].lit << endl;
+//					cout << "latch " << circuit_->latches[cj].lit << ", cj=" << cj <<  endl;
 
 					vulnerable_elements_.insert(circuit_->latches[cj].lit);
+//					side_constraints &= ~latch_to_BDD_signal[cj];
 				}
 
 				stopWatchStart();
 				side_constraints &= ~blocking_cube;
+
 				check = side_constraints & output_is_different_bdd;
 				stopWatchStore(SIDE_CONSTRAINTS);
 
