@@ -894,7 +894,7 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals(vector<TestCase>& testcases
 			bddSim.getOutputValues(output_bdds);
 
 			stopWatchStart();
-			bddSim.switchToNextState();
+			bddSim.switchToNextState(side_constraints);
 			stopWatchStore(SWITCH_NXT_ST);
 
 			stopWatchStart();

@@ -129,10 +129,9 @@ class BddSimulator2
 //
 /// @brief Switch to next State: Latch-outputs get their next-state values
 ///
-/// Computes all outputs of a circuit according to the current input-vector
-/// and the current latch values
 ///
 	void switchToNextState();
+	void switchToNextState(const BDD &restriction);
 
 
 // -------------------------------------------------------------------------------------------

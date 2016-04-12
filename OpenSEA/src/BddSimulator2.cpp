@@ -119,7 +119,24 @@ void BddSimulator2::switchToNextState()
 		results_[(circuit_->latches[b].lit >> 1)] = latch_values[b];
 	}
 
+}
 
+
+void BddSimulator2::switchToNextState(const BDD &restriction)
+{
+	vector<BDD>latch_values;
+	latch_values.reserve(circuit_->num_latches);
+	for (unsigned b = 0; b < circuit_->num_latches; ++b)
+	{
+		BDD next_state = readCnfValue(results_, circuit_->latches[b].next);
+		decrementReference(circuit_->latches[b].next);
+		latch_values.push_back(next_state);
+	}
+
+	for (unsigned b = 0; b < circuit_->num_latches; ++b)
+	{
+		results_[(circuit_->latches[b].lit >> 1)] = latch_values[b].Restrict(restriction);
+	}
 }
 
 /*
@@ -256,3 +273,4 @@ BDD BddSimulator2::getAlarmValue()
 	decrementReference(circuit_->outputs[circuit_->num_outputs - 1].lit);
 	return readCnfValue(results_, circuit_->outputs[circuit_->num_outputs - 1].lit);
 }
+
