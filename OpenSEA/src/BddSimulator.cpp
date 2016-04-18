@@ -112,24 +112,22 @@ const vector<int> &BddSimulator::getOutputValues()
 	return output_values_;
 
 }
-
+*/
 // -------------------------------------------------------------------------------------------
-const vector<int>& BddSimulator::getInputValues()
+const vector<BDD>& BddSimulator::getInputValues()
 {
-	if (true) // TODO
+
+	input_values_.clear();
+	input_values_.reserve(circuit_->num_inputs);
+	for (unsigned b = 0; b < circuit_->num_inputs; ++b)
 	{
-		input_values_.clear();
-		input_values_.reserve(circuit_->num_inputs);
-		for (unsigned b = 0; b < circuit_->num_inputs; ++b)
-		{
-			input_values_.push_back(results_[(circuit_->inputs[b].lit >> 1)]);
-		}
-		//input_values_is_latest_ = true;
+		input_values_.push_back(results_[(circuit_->inputs[b].lit >> 1)]);
 	}
+
 
 	return input_values_;
 }
-
+/*
 // -------------------------------------------------------------------------------------------
 const vector<int> &BddSimulator::getLatchValues()
 {
@@ -186,8 +184,24 @@ void BddSimulator::setInputValues(const vector<int>& input_values)
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = cudd_.bddZero();
 		else // (if LIT_FREE) handle '?' input:
 		{
-			MASSERT(false, "TODO: implement open input vars for BDDs")
+			results_[(circuit_->inputs[cnt_i].lit >> 1)] = cudd_.bddVar(next_free_cnf_var_);
+			next_free_cnf_var_++;
+			//TODO: add to vector open_input_vars
 		}
+	}
+
+}
+
+
+// -------------------------------------------------------------------------------------------
+void BddSimulator::setBddInputValues(const vector<BDD>& input_values)
+{
+	MASSERT(input_values.size() == circuit_->num_inputs, "Input vector has wrong length!");
+
+	// set input values according to TestCase to TRUE or FALSE:
+	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
+	{
+		results_[(circuit_->inputs[cnt_i].lit >> 1)] = input_values[cnt_i];
 	}
 
 }

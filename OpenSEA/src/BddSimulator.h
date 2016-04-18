@@ -97,7 +97,6 @@ class BddSimulator
 /// @param input_values The input vector
 	void setInputValues(const vector<int> &input_values);
 
-
 	void setBddInputValues(const vector<BDD> &input_values_as_bdd);
 
 // -------------------------------------------------------------------------------------------
@@ -181,6 +180,8 @@ class BddSimulator
 	const vector<BDD>& getOpenInputVars() const;
 
 	protected:
+
+	vector<BDD> input_values_;
 
   static inline BDD readCnfValue(const vector<BDD> results, unsigned aigerlit)
   {

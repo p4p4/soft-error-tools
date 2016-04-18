@@ -55,7 +55,8 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 //	analyze_one_hot_enc_c_signals(testcases);
 //	analyze_one_hot_enc_c_constraints(testcases);
 //	analyze_binary_enc_c_signals(testcases);
-	analyze_binary_enc_c_and_f_signals(testcases);
+	//analyze_binary_enc_c_and_f_signals(testcases);
+	analyze_binary_enc_c_and_f_signals_FREE_INPUTS(testcases);
 	// ...
 
 	printStatistics(begin);
@@ -302,7 +303,6 @@ void BddAnalysis::analyze_one_hot_enc_c_signals(vector<TestCase>& testcases)
 
 void BddAnalysis::analyze_one_hot_enc_c_constraints(vector<TestCase>& testcases)
 {
-
 	int model_memory_size = 128;
 	char* model = (char*) malloc(model_memory_size * sizeof(char));
 
@@ -1031,9 +1031,248 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals(vector<TestCase>& testcases
 	free(model);
 }
 
+
+void BddAnalysis::analyze_binary_enc_c_and_f_signals_FREE_INPUTS(vector<TestCase>& testcases)
+{
+
+
+	int model_memory_size = 128;
+	char* model = (char*) malloc(model_memory_size * sizeof(char));
+
+	stopWatchStart();
+
+	// the binary logarithm of the number of latches is the number of c signals
+	unsigned num_latches_to_check = circuit_->num_latches - num_err_latches_;
+	unsigned num_of_c_vars = ceil(log2(num_latches_to_check));
+
+	int first_cj_var = next_free_cnf_var_;
+	int last_cj_var = first_cj_var + num_of_c_vars - 1;
+
+	vector<BDD> c_vars;
+	c_vars.reserve(num_of_c_vars);
+	for (unsigned c_cnt = 0; c_cnt < num_of_c_vars; ++c_cnt)
+		c_vars.push_back(cudd_.bddVar(next_free_cnf_var_++));
+
+	// create the binary encoding for c vars
+	map<unsigned, BDD> latch_to_BDD_signal;
+	set<int> latches_to_check_;
+	create_binary_encoded_c_BDDs(c_vars, latch_to_BDD_signal, latches_to_check_);
+	stopWatchStore(CREATE_C_SIGNALS);
+
+	BddSimulator sim_ok(circuit_,cudd_,next_free_cnf_var_);
+	BddSimulator bddSim(circuit_, cudd_, next_free_cnf_var_);
+
+	// for each testcase-step
+	for (unsigned tc_number = 0; tc_number < testcases.size(); tc_number++)
+	{
+		BDD side_constraints = cudd_.bddOne();
+
+		sim_ok.initLatches();
+		stopWatchStart();
+		bddSim.initLatches();
+		stopWatchStore(INIT_Latches);
+
+		TestCase& testcase = testcases[tc_number];
+
+		unsigned num_of_f_vars = ceil(log2(testcase.size() + 1));
+		int first_f_var = next_free_cnf_var_;
+		int last_f_var = first_f_var + num_of_f_vars - 1;
+		vector<BDD> f_vars;
+		f_vars.reserve(num_of_f_vars);
+		for (unsigned f_cnt = 0; f_cnt < num_of_f_vars; ++f_cnt)
+			f_vars.push_back(cudd_.bddVar(next_free_cnf_var_++));
+
+		for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
+		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
+
+			//--------------------------------------------------------------------------------------
+			// Concrete simulations:
+			sim_ok.simulateOneTimeStep(testcase[timestep]);
+			vector<BDD> outputs_ok;
+			sim_ok.getOutputValues(outputs_ok);
+
+			// switch concrete simulation to next state
+			sim_ok.switchToNextState();
+			//--------------------------------------------------------------------------------------
+
+			// set input values according to TestCase to TRUE or FALSE:
+			bddSim.setBddInputValues(sim_ok.getInputValues());
+
+			//--------------------------------------------------------------------------------------
+			// cj indicates whether the corresponding latch is flipped
+			// fi indicates whether the component is flipped in step i or not
+			// there can only be a flip at time-step i if both cj and fi are true.
+
+			BDD fi_bdd = binary_conjunct(timestep, f_vars);
+
+			stopWatchStart();
+			set<int>::iterator it;
+			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it)
+			{
+				int latch_output = *it >> 1;
+
+				BDD cj_bdd = latch_to_BDD_signal[*it];
+				BDD old_value = bddSim.getResultValue(latch_output);
+
+				BDD new_value = (fi_bdd & cj_bdd) ^ old_value; // flip old_value iff both fi and cj are true
+				bddSim.setResultValue(latch_output, new_value);
+			}
+			stopWatchStore(MODIFY_LATCHES);
+
+			//--------------------------------------------------------------------------------------
+			// Symbolic simulation of AND gates
+			stopWatchStart();
+			bddSim.simulateOneTimeStep();
+			stopWatchStore(SIM_ANDs);
+			side_constraints &= ~bddSim.getAlarmValue();
+
+			vector<BDD> output_bdds;
+			bddSim.getOutputValues(output_bdds);
+
+			stopWatchStart();
+			bddSim.switchToNextState();
+			stopWatchStore(SWITCH_NXT_ST);
+
+			stopWatchStart();
+			//--------------------------------------------------------------------------------------
+			// constraints saying that the current outputs_ok o and o' are different
+			BDD output_is_different_bdd = cudd_.bddZero();
+			for (unsigned out_idx = 0; out_idx < output_bdds.size(); ++out_idx)
+			{
+				//				if (outputs_ok[out_idx] == cudd_.bddOne()) // simulation result of output is true
+				//					output_is_different_bdd |= ~output_bdds[out_idx];
+				//				else if (outputs_ok[out_idx] == cudd_.bddZero())
+				//					output_is_different_bdd |= output_bdds[out_idx];
+				//				else
+					output_is_different_bdd |= output_bdds[out_idx] ^ outputs_ok[out_idx];
+			}
+			//--------------------------------------------------------------------------------------
+			stopWatchStore(OUT_IS_DIFF);
+
+			// resize model size if necessary
+			if (cudd_.ReadSize() > model_memory_size)
+			{
+				while (cudd_.ReadSize() > model_memory_size)
+					model_memory_size *= 2;
+
+				char* new_model = (char*) realloc(model, model_memory_size);
+				if (new_model == 0)
+				{
+					free(model);
+					MASSERT(false, "out of memory")
+				}
+				model = new_model;
+			}
+
+			//--------------------------------------------------------------------------------------
+			// check satisfiability
+			BDD check = side_constraints & output_is_different_bdd;
+
+			stopWatchStart();
+			while (!check.IsZero())
+			{
+				stopWatchStore(SATISFIABILITY);
+
+				stopWatchStart();
+				check.PickOneCube(model); // store model
+				stopWatchStore(STORE_MODEL);
+
+				stopWatchStart();
+				// find the one and only true c-signal in model
+				vector<unsigned> dontcare_c_bits;
+				unsigned cj = 0;
+				unsigned bit_index = num_of_c_vars - 1;
+				BDD blocking_cube = cudd_.bddOne();
+				for (int i = first_cj_var; i <= last_cj_var; i++)
+				{
+					if (model[i] == 1)
+					{
+						cj |= (1 << bit_index);
+						blocking_cube &= c_vars[num_of_c_vars - 1 - bit_index];
+					}
+					else if (model[i] == 0)
+					{
+						blocking_cube &= ~c_vars[num_of_c_vars - 1 - bit_index];
+					}
+					else // input is irrelevant
+					{
+						dontcare_c_bits.push_back(bit_index);
+					}
+					bit_index--;
+				}
+				vector<unsigned> vulnerable_cj_combinations;
+				if (dontcare_c_bits.size() == 0) // no bits are irrelevant for satisfiability
+				{
+					vulnerable_cj_combinations.push_back(cj); // use the concrete value
+				}
+				else // create all possible c combinations
+				{
+					for (unsigned concrete_vals = 0;
+							concrete_vals < pow(2, dontcare_c_bits.size()); concrete_vals++)
+					{
+						unsigned concrete_cj = cj;
+						for (unsigned i = 0; i < dontcare_c_bits.size(); i++)
+						{
+							if ((concrete_vals & (1 << i)) > 0) // bit set in combination?
+								concrete_cj |= (1 << dontcare_c_bits[i]); // set the bit
+						}
+						vulnerable_cj_combinations.push_back(concrete_cj);
+					}
+				}
+
+				// find the one and only true f-signal from model
+				int flip_timestep = 0;
+				bit_index = 0;
+				for (int i = first_f_var; i <= last_f_var; i++)
+				{
+					if (model[i] == 1)
+					{
+						flip_timestep |= (1 << (num_of_f_vars - 1 - bit_index));
+					}
+					bit_index++;
+				}
+//				cout << "flip timestep = " << flip_timestep << endl;
+				stopWatchStore(PARSE_MODEL);
+				for (unsigned i = 0; i < vulnerable_cj_combinations.size(); i++)
+				{
+					cj = vulnerable_cj_combinations[i];
+//					latch_to_BDD_signal[cj] = cudd.bddZero(); // NO, DON't do this!!
+
+					if (Options::instance().isUseDiagnosticOutput())
+					{
+						ErrorTrace* trace = new ErrorTrace;
+
+						trace->error_timestep_ = timestep;
+						trace->input_trace_ = testcase;
+						trace->latch_index_ = circuit_->latches[cj].lit;
+						trace->flipped_timestep_ = flip_timestep;
+
+						ErrorTraceManager::instance().error_traces_.push_back(trace);
+					}
+
+					vulnerable_elements_.insert(circuit_->latches[cj].lit);
+				}
+
+				stopWatchStart();
+				side_constraints &= ~blocking_cube;
+
+				check = side_constraints & output_is_different_bdd;
+				stopWatchStore(SIDE_CONSTRAINTS);
+
+				stopWatchStart(); // SATISFIABILITY
+			}
+
+		} // -- END "for each timestep in testcase" --
+	} // ------ END 'for each testcase' ---------------
+
+	free(model);
+}
+
+
 // -------------------------------------------------------------------------------------------
 BddAnalysis::~BddAnalysis()
 {
+
 }
 
 void BddAnalysis::stopWatchStart()

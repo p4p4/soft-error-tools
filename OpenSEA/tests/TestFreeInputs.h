@@ -50,6 +50,9 @@ class TestFreeInputs : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test7_sim);
   CPPUNIT_TEST(test8_sim);
   CPPUNIT_TEST(test9_sim);
+  CPPUNIT_TEST(test10_bdd);
+  CPPUNIT_TEST(test11_bdd);
+  CPPUNIT_TEST(test12_bdd);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -76,11 +79,13 @@ void checkVulnerabilitiesSIM(string path_to_aiger_circuit,
 		vector<string> tc_files, set<unsigned> should_be_vulnerable,
 		int num_err_latches, int mode);
 
+void checkVulnerabilitiesBDD(string path_to_aiger_circuit,
+		vector<string> tc_files, set<unsigned> should_be_vulnerable,
+		int num_err_latches, int mode);
+
 protected:
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief Give brief description of test here.
+
   void test1();
 
   void test2();
@@ -94,6 +99,10 @@ protected:
   void test7_sim();
   void test8_sim();
   void test9_sim();
+
+  void test10_bdd();
+  void test11_bdd();
+  void test12_bdd();
 
 };
 

@@ -232,7 +232,9 @@ void BddSimulator2::setInputValues(const vector<int>& input_values)
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = cudd_.bddZero();
 		else // (if LIT_FREE) handle '?' input:
 		{
-			MASSERT(false, "TODO: implement open input vars for BDDs")
+			results_[(circuit_->inputs[cnt_i].lit >> 1)] = cudd_.bddVar(next_free_cnf_var_);
+			next_free_cnf_var_++;
+			//TODO: add to vector open_input_vars
 		}
 	}
 
