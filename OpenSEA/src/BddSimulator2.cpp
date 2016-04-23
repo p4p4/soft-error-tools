@@ -223,18 +223,26 @@ void BddSimulator2::setInputValues(const vector<int>& input_values)
 {
 	MASSERT(input_values.size() == circuit_->num_inputs, "Input vector has wrong length!");
 
+	current_cnf_input_literals_.clear();
+
 	// set input values according to TestCase to TRUE or FALSE:
 	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
 	{
 		if (input_values[cnt_i] == AIG_TRUE)
+		{
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = cudd_.bddOne();
+			current_cnf_input_literals_.push_back(CNF_TRUE);
+		}
 		else if (input_values[cnt_i] == AIG_FALSE)
+		{
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = cudd_.bddZero();
+			current_cnf_input_literals_.push_back(CNF_FALSE);
+		}
 		else // (if LIT_FREE) handle '?' input:
 		{
 			results_[(circuit_->inputs[cnt_i].lit >> 1)] = cudd_.bddVar(next_free_cnf_var_);
+			current_cnf_input_literals_.push_back(next_free_cnf_var_);
 			next_free_cnf_var_++;
-			//TODO: add to vector open_input_vars
 		}
 	}
 
@@ -276,3 +284,7 @@ BDD BddSimulator2::getAlarmValue()
 	return readCnfValue(results_, circuit_->outputs[circuit_->num_outputs - 1].lit);
 }
 
+const vector<int>& BddSimulator2::getCurrentCnfInputLiterals() const
+{
+	return current_cnf_input_literals_;
+}

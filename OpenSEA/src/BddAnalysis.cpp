@@ -1082,6 +1082,7 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals_FREE_INPUTS(vector<TestCase
 		for (unsigned f_cnt = 0; f_cnt < num_of_f_vars; ++f_cnt)
 			f_vars.push_back(cudd_.bddVar(next_free_cnf_var_++));
 
+		TestCase real_cnf_inputs; // replaces all unknown input values in the test case with cnf literals
 		for (unsigned timestep = 0; timestep < testcase.size(); timestep++)
 		{ // -------- BEGIN "for each timestep in testcase" --------------------------------------
 
@@ -1095,8 +1096,10 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals_FREE_INPUTS(vector<TestCase
 			sim_ok.switchToNextState();
 			//--------------------------------------------------------------------------------------
 
-			// set input values according to TestCase to TRUE or FALSE:
+			// set input values according to TestCase to TRUE or FALSE or same open input literal:
 			bddSim.setBddInputValues(sim_ok.getInputValues());
+			real_cnf_inputs.push_back(sim_ok.getCurrentCnfInputLiterals());
+
 
 			//--------------------------------------------------------------------------------------
 			// cj indicates whether the corresponding latch is flipped
@@ -1243,9 +1246,31 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals_FREE_INPUTS(vector<TestCase
 						ErrorTrace* trace = new ErrorTrace;
 
 						trace->error_timestep_ = timestep;
-						trace->input_trace_ = testcase;
 						trace->latch_index_ = circuit_->latches[cj].lit;
 						trace->flipped_timestep_ = flip_timestep;
+
+						//trace->input_trace_ = testcase;
+						TestCase &real_input_values = trace->input_trace_;
+						real_input_values.reserve(real_cnf_inputs.size());
+						for (TestCase::const_iterator in = real_cnf_inputs.begin();
+								in != real_cnf_inputs.end(); ++in)
+						{
+
+							vector<int> real_input_vector;
+							real_input_vector.reserve(in->size());
+							for (vector<int>::const_iterator iv = in->begin(); iv != in->end();
+									++iv)
+							{
+								if (*iv == CNF_FALSE)
+									real_input_vector.push_back(AIG_FALSE);
+								else if (*iv == CNF_TRUE)
+									real_input_vector.push_back(AIG_TRUE);
+								else
+									real_input_vector.push_back(AIG_FALSE); // set don't cares to false
+									//real_input_vector.push_back(model[*iv]);
+							}
+							real_input_values.push_back(real_input_vector);
+						}
 
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
 					}

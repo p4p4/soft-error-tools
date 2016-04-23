@@ -177,6 +177,7 @@ class BddSimulator2
 /// input value like 0,1. the SAT-Solver can choose the value instead).
 ///
 	const vector<BDD>& getOpenInputVars() const;
+	const vector<int>& getCurrentCnfInputLiterals() const;
 
 	protected:
 
@@ -219,6 +220,8 @@ class BddSimulator2
 /// @brief Array storing the current BDD for each variable
 ///
 	vector<BDD> results_;
+
+	vector<int> current_cnf_input_literals_;
 
 
 	vector<unsigned> ref_counters_;
