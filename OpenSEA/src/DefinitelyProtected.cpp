@@ -67,6 +67,7 @@ bool DefinitelyProtected::analyze(vector<TestCase>& testcases)
 
 bool DefinitelyProtected::findDefinitelyProtected_1()
 {
+	cout << "hello!" << endl;
 
 	vector<int> definitely_protected_latches;
 
@@ -74,8 +75,11 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 	// let's assume we know which latch is not part of the protection logic
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
+		cout << "latch number " << c_cnt << endl;
 		int next_free_cnf_var = 2;
 		SatSolver* solver_ = Options::instance().getSATSolver();
+		vector<int> vars_to_keep; // empty
+		solver_->startIncrementalSession(vars_to_keep);
 		SymbolicSimulator sim_symb(circuit_, solver_, next_free_cnf_var);
 
 
@@ -86,7 +90,7 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 		{
 			int state_current = next_free_cnf_var++;
 			states.push_back(state_current);
-			sim_symb.setResultValue(circuit_->latches[i].lit, state_current);
+			sim_symb.setResultValue(circuit_->latches[i].lit/2, state_current);
 		}
 
 		// variables for the inputs
@@ -96,7 +100,7 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 		{
 			int input_current = next_free_cnf_var++;
 			inputs.push_back(input_current);
-			sim_symb.setResultValue(circuit_->inputs[i].lit, input_current);
+			sim_symb.setResultValue(circuit_->inputs[i].lit/2, input_current);
 		}
 
 		// compute transition relation T(x,i,o,a,x')
@@ -117,13 +121,36 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 		solver_->incAddUnitClause(-sim_symb.getAlarmValue()); // no alarm
 
 
-		//TODO:	create clause(s) saying that
+		// create clauses saying that
 		//		(next_state_normal != next_state_flip) OR (outpus_normal != outpus_flip)
-		//		and add it to the solver
+		vector<int> output_or_next_state_different_clause;
+
+		for(unsigned i = 0; i < circuit_->num_outputs -1; i++)
+		{
+			int out_is_diff_enable = next_free_cnf_var++;
+			output_or_next_state_different_clause.push_back(-out_is_diff_enable);
+			solver_->incAdd3LitClause(out_is_diff_enable, outpus_normal[i], outpus_flip[i]);
+			solver_->incAdd3LitClause(out_is_diff_enable, -outpus_normal[i], -outpus_flip[i]);
+		}
+
+		for(unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
+		{
+			int state_is_diff_enable = next_free_cnf_var++;
+			output_or_next_state_different_clause.push_back(-state_is_diff_enable);
+			solver_->incAdd3LitClause(state_is_diff_enable, next_state_normal[i], next_state_flip[i]);
+			solver_->incAdd3LitClause(state_is_diff_enable, -next_state_normal[i], -next_state_flip[i]);
+		}
+
+		solver_->incAddClause(output_or_next_state_different_clause);
 
 		if(solver_->incIsSat() == false)
 		{
+			cout << "UNSTAT!!!!" << endl;
 			definitely_protected_latches.push_back(circuit_->latches[c_cnt].lit);
+		}
+		else
+		{
+			cout << "SAT.." << endl;
 		}
 
 
