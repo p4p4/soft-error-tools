@@ -294,7 +294,7 @@ const vector<int> &SymbolicSimulator::getLatchValues()
 		latch_values_.reserve(circuit_->num_latches);
 		for (unsigned b = 0; b < circuit_->num_latches; ++b)
 		{
-			int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].next);
+			int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].lit);
 			latch_values_.push_back(next_state_var);
 			if (abs(next_state_var) > 1)
 				solver_->addVarToKeep(next_state_var);
