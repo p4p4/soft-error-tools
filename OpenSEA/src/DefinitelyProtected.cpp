@@ -30,6 +30,7 @@
 #include "Options.h"
 #include "Utils.h"
 #include "Logger.h"
+#include "AndCacheMap.h"
 
 extern "C"
 {
@@ -75,6 +76,7 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 	// let's assume we know which latch is not part of the protection logic
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
+		unsigned component_cnf = circuit_->latches[c_cnt].lit >> 1;
 		int next_free_cnf_var = 2;
 		SatSolver* solver_ = Options::instance().getSATSolver();
 		vector<int> vars_to_keep; // empty
@@ -83,55 +85,39 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 
 
 		// variables for the state
-		vector<int> states;
-		states.reserve(circuit_->num_latches);
 		for(unsigned i = 0; i < circuit_->num_latches; i++)
-		{
-			int state_current = next_free_cnf_var++;
-			states.push_back(state_current);
-			sim_symb.setResultValue(circuit_->latches[i].lit/2, state_current);
-		}
+			sim_symb.setResultValue(circuit_->latches[i].lit/2, next_free_cnf_var++);
+
 
 		// variables for the inputs
-		vector<int> inputs;
-		inputs.reserve(circuit_->num_inputs);
 		for(unsigned i = 0; i < circuit_->num_inputs; i++)
-		{
-			int input_current = next_free_cnf_var++;
-			inputs.push_back(input_current);
-			sim_symb.setResultValue(circuit_->inputs[i].lit/2, input_current);
-		}
+			sim_symb.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
 
 		// compute transition relation T(x,i,o,a,x')
 		sim_symb.simulateOneTimeStep();
 
-		// another time step:
-		//-----------------------------------
-		unsigned num_steps = 3;
+		// additional time steps
+		AndCacheMap cache(solver_);
+		unsigned num_steps = 1;
 		for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
 		{
+			if (s_cnt == num_steps - 1) // last iteration
+				sim_symb.setCache(&cache);
 			sim_symb.switchToNextState();
-			inputs.clear();
 			for(unsigned i = 0; i < circuit_->num_inputs; i++)
-			{
-				int input_current = next_free_cnf_var++;
-				inputs.push_back(input_current);
-				sim_symb.setResultValue(circuit_->inputs[i].lit/2, input_current);
-			}
-			sim_symb.simulateOneTimeStep(inputs);
+				sim_symb.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
+
+			sim_symb.simulateOneTimeStep();
 		}
-
-		//-----------------------------------
-
-		vector<int> state_normal = sim_symb.getLatchValues();
 
 		vector<int> next_state_normal = sim_symb.getNextLatchValues();
 		vector<int> outpus_normal = sim_symb.getOutputValues();
 
 
 		// compute faulty transition relation
-		state_normal[c_cnt] = - state_normal[c_cnt]; // flip
-		sim_symb.simulateOneTimeStep(inputs,state_normal); // TODO: omit state parameter since we are already in that state
+
+		sim_symb.setResultValue(component_cnf, -sim_symb.getResultValue(component_cnf)); // flip latch
+		sim_symb.simulateOneTimeStep();
 
 		vector<int> next_state_flip = sim_symb.getNextLatchValues();
 		vector<int> outpus_flip = sim_symb.getOutputValues();
