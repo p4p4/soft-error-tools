@@ -54,7 +54,7 @@ DefinitelyProtected::~DefinitelyProtected()
 bool DefinitelyProtected::analyze(vector<TestCase>& testcases)
 {
 
-	// TODO: 	remove testcases, we don't need them here. maybe wrong backend?!
+	// TODO: 	remove testcases parameter, we don't need them here. maybe wrong backend?!
 	//			think about architectural changes in OpenSEA ...
 
 	if (mode_ == DefinitelyProtected::STANDARD)	// TODO: split into meaningful BackEnd groups
@@ -75,7 +75,6 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 	// let's assume we know which latch is not part of the protection logic
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
 	{
-		cout << "latch number " << c_cnt << endl;
 		int next_free_cnf_var = 2;
 		SatSolver* solver_ = Options::instance().getSATSolver();
 		vector<int> vars_to_keep; // empty
@@ -106,13 +105,33 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 		// compute transition relation T(x,i,o,a,x')
 		sim_symb.simulateOneTimeStep();
 
+		// another time step:
+		//-----------------------------------
+		unsigned num_steps = 3;
+		for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
+		{
+			sim_symb.switchToNextState();
+			inputs.clear();
+			for(unsigned i = 0; i < circuit_->num_inputs; i++)
+			{
+				int input_current = next_free_cnf_var++;
+				inputs.push_back(input_current);
+				sim_symb.setResultValue(circuit_->inputs[i].lit/2, input_current);
+			}
+			sim_symb.simulateOneTimeStep(inputs);
+		}
+
+		//-----------------------------------
+
+		vector<int> state_normal = sim_symb.getLatchValues();
+
 		vector<int> next_state_normal = sim_symb.getNextLatchValues();
 		vector<int> outpus_normal = sim_symb.getOutputValues();
 
 
 		// compute faulty transition relation
-		states[c_cnt] = - states[c_cnt]; // flip
-		sim_symb.simulateOneTimeStep(inputs,states);
+		state_normal[c_cnt] = - state_normal[c_cnt]; // flip
+		sim_symb.simulateOneTimeStep(inputs,state_normal); // TODO: omit state parameter since we are already in that state
 
 		vector<int> next_state_flip = sim_symb.getNextLatchValues();
 		vector<int> outpus_flip = sim_symb.getOutputValues();
@@ -145,7 +164,7 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 
 		if(solver_->incIsSat() == false)
 		{
-			cout << "UNSTAT!!!!" << endl;
+			cout << "Definitely protected latch "<< circuit_->latches[c_cnt].lit << " found. (UNSAT)" << endl;
 			definitely_protected_latches.push_back(circuit_->latches[c_cnt].lit);
 		}
 		else

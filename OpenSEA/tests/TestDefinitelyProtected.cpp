@@ -46,8 +46,12 @@ void TestDefinitelyProtected::tearDown()
 // -------------------------------------------------------------------------------------------
 void TestDefinitelyProtected::test1()
 {
+	Logger::instance().enable(Logger::DBG);
 	aiger* circuit = Utils::readAiger("inputs/toggle.perfect.aag");
-	DefinitelyProtected dp(circuit, 1);
+//	aiger* circuit = Utils::readAiger("inputs/toggle.1vulnerability.aag");
+//	aiger* circuit = Utils::readAiger("inputs/toggle.2vulnerabilities.aag");
+//	aiger* circuit = Utils::readAiger("inputs/toggle.3vulnerabilities.aag");
+	DefinitelyProtected dp(circuit, 0);
 
 	dp.findDefinitelyProtected_1();
 //  CPPUNIT_FAIL("test not implemented");
