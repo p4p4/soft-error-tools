@@ -61,7 +61,9 @@ public:
 
 
 	void analyze();
-	bool findDefinitelyProtected_1();
+	void findDefinitelyProtected_1();
+
+	void printResults();
 
 
 
@@ -83,6 +85,8 @@ protected:
 	/// @brief the number of error-latches. Error latches are additional latches used for the
 	/// protection circuit.
 	unsigned num_err_latches_;
+
+	vector<unsigned> definitley_protected_latches_;
 
 
 

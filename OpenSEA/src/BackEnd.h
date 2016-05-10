@@ -63,7 +63,7 @@ public:
 /// @return The number of vulnerable elements / number of superfluous traces
 	unsigned int getNumberOfErrors();
 
-	void printResults();
+	virtual void printResults();
 
 	virtual void analyze() = 0;
 

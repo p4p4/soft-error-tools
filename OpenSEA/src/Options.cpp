@@ -342,11 +342,6 @@ bool Options::parse(int argc, char **argv)
 		return true;
 	}
 
-	if (testcase_mode_ == TC_UNDEFINED)
-	{
-		cerr << "No test-case provided." << endl;
-		return true;
-	}
 	initInputCircuit();
 	initLogger();
 
@@ -653,7 +648,7 @@ void Options::initInputCircuit()
 	}
 	L_LOG("Input-File: " << getAigInFileNameOnly())
 	L_LOG(
-			"Inputs: " << circuit_->num_inputs << ", Latches: " << circuit_->num_latches - num_err_latches_ << ", Error Latches: " << num_err_latches_ << ", Outputs: " << circuit_->num_outputs-1)
+			"Inputs: " << circuit_->num_inputs << ", Latches: " << circuit_->num_latches - num_err_latches_ << ", Error Latches: " << num_err_latches_ << ", Outputs: " << circuit_->num_outputs-1 << ", ANDs: " << circuit_->num_ands)
 
 	if (!aig_env_file_name_.empty())
 	{

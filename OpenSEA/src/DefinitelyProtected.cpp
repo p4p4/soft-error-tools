@@ -54,6 +54,7 @@ DefinitelyProtected::~DefinitelyProtected()
 
 void DefinitelyProtected::analyze()
 {
+	definitley_protected_latches_.clear();
 
 	// TODO: 	remove testcases parameter, we don't need them here. maybe wrong backend?!
 	//			think about architectural changes in OpenSEA ...
@@ -65,12 +66,8 @@ void DefinitelyProtected::analyze()
 
 }
 
-bool DefinitelyProtected::findDefinitelyProtected_1()
+void DefinitelyProtected::findDefinitelyProtected_1()
 {
-	cout << "hello!" << endl;
-
-	vector<int> definitely_protected_latches;
-
 	// ---------------- BEGIN 'for each latch' -------------------------
 	// let's assume we know which latch is not part of the protection logic
 	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
@@ -149,19 +146,52 @@ bool DefinitelyProtected::findDefinitelyProtected_1()
 
 		if(solver_->incIsSat() == false)
 		{
-			cout << "Definitely protected latch "<< circuit_->latches[c_cnt].lit << " found. (UNSAT)" << endl;
-			definitely_protected_latches.push_back(circuit_->latches[c_cnt].lit);
+			L_DBG("Definitely protected latch "<< circuit_->latches[c_cnt].lit << " found. (UNSAT)")
+			definitley_protected_latches_.push_back(circuit_->latches[c_cnt].lit);
 		}
 		else
 		{
-			cout << "SAT.." << endl;
+			L_DBG("SAT..")
+			// TODO: are models interesting as counter examples?
 		}
 
 
 	}
 
-
-
-	return false; // TODO
 }
 
+void DefinitelyProtected::printResults()
+{
+	float percentage = (float) definitley_protected_latches_.size() / (circuit_->num_latches - num_err_latches_) * 100;
+	L_LOG("#Definitely protected latches found: " << definitley_protected_latches_.size() << " (" << percentage << " %)");
+
+	if (Options::instance().isUseDiagnosticOutput())
+	{
+		ostringstream oss;
+		if (definitley_protected_latches_.size() > 0)
+			oss << "Definitely protected latches:" << endl;
+
+		for (unsigned i = 0; i < definitley_protected_latches_.size(); i++)
+		{
+			oss << definitley_protected_latches_[i] << "\t";
+
+			if ((i+1)%5 == 0 && i < definitley_protected_latches_.size() - 1)
+				oss << endl;
+		}
+		if (Options::instance().isDiagnosticOutputToFile())
+		{
+		  ofstream out_file;
+		  out_file.open(Options::instance().getDiagnosticOutputPath().c_str());
+			MASSERT(out_file,
+					"could not write diagnostic output file: " + Options::instance().getDiagnosticOutputPath())
+
+		  out_file << oss.str() << endl;
+
+		  out_file.close();
+		}
+		else
+		{
+			cout << endl << oss.str() << endl;
+		}
+	}
+}

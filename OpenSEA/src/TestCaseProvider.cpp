@@ -61,8 +61,7 @@ vector<TestCase> TestCaseProvider::getTestcases()
 		return generateMcTestCase(Options::instance().getLenRandTestcases());
 	}
 	default:
-		MASSERT(false, "wrong/no testcase-mode provided")
-		;
+		MASSERT(false, "No test-case provided.")
 	}
 }
 
