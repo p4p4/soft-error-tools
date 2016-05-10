@@ -30,7 +30,7 @@ extern "C" {
 #include "../src/Utils.h"
 #include "../src/BddAnalysis.h"
 #include "../src/SimulationBasedAnalysis.h"
-
+#include "../src/TestCaseProvider.h"
 
 #include <iostream>
 
@@ -260,13 +260,21 @@ void TestBdd::test4_analysis_basic()
 {
 	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
 	BddAnalysis bddAnalysis(circuit, 1, 0); // TODO change/add mode
-	bddAnalysis.analyzeWithRandomTestCases(1, 3);
+
+	TestCaseProvider::instance().setCircuit(circuit);
+	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(1,3);
+	bddAnalysis.analyze(tcs);
+
 	CPPUNIT_ASSERT(bddAnalysis.getVulnerableElements().size() == 0);
 	aiger_reset(circuit);
 
 	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
 	BddAnalysis bddAnalysis2(circuit2, 0, 0);
-	bddAnalysis2.analyzeWithRandomTestCases(1, 3);
+
+	TestCaseProvider::instance().setCircuit(circuit2);
+	vector<TestCase> tcs2 = TestCaseProvider::instance().generateRandomTestCases(1,3);
+	bddAnalysis2.analyze(tcs2);
+
 	CPPUNIT_ASSERT(bddAnalysis2.getVulnerableElements().size() == 1);
 	aiger_reset(circuit2);
 }
@@ -275,14 +283,22 @@ void TestBdd::test5_analysis_3latches()
 {
 	aiger* circuit = Utils::readAiger("inputs/two_latches.protected.aag");
 	BddAnalysis bddAnalysis(circuit, 1, 0); // TODO Mode
-	bddAnalysis.analyzeWithRandomTestCases(1, 2);
-//	L_DBG("VULNERABLE size = " << bddAnalysis.getVulnerableElements().size());
+
+	TestCaseProvider::instance().setCircuit(circuit);
+	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(1,2);
+	bddAnalysis.analyze(tcs);
+
+	//	L_DBG("VULNERABLE size = " << bddAnalysis.getVulnerableElements().size());
 	CPPUNIT_ASSERT(bddAnalysis.getVulnerableElements().size() == 0);
 	aiger_reset(circuit);
 
 	aiger* circuit2 = Utils::readAiger("inputs/two_latches.unprotected.aag");
 	BddAnalysis bddAnalysis2(circuit2, 0, 0);
-	bddAnalysis2.analyzeWithRandomTestCases(1, 3);
+
+	TestCaseProvider::instance().setCircuit(circuit2);
+	vector<TestCase> tcs2 = TestCaseProvider::instance().generateRandomTestCases(1,3);
+	bddAnalysis2.analyze(tcs2);
+
 	CPPUNIT_ASSERT(bddAnalysis2.getVulnerableElements().size() == 2);
 	aiger_reset(circuit2);
 }
@@ -296,8 +312,10 @@ void TestBdd::checkVulnerabilities(string path_to_aiger_circuit,
 	aiger* circuit = Utils::readAiger(path_to_aiger_circuit);
 	CPPUNIT_ASSERT_MESSAGE("can not open " + path_to_aiger_circuit, circuit != 0);
 
+	TestCaseProvider::instance().setCircuit(circuit);
+	vector<TestCase> tcs = TestCaseProvider::instance().readTestcasesFromFiles(tc_files);
 	BddAnalysis bddAnalysis(circuit, num_err_latches, mode);
-	bddAnalysis.analyze(tc_files);
+	bddAnalysis.analyze(tcs);
 	const set<unsigned> &vulnerabilities = bddAnalysis.getVulnerableElements();
 
 	// DEBUG: print the vulnerable latches
@@ -320,13 +338,15 @@ void TestBdd::compareWithSimulation(string path_to_aiger_circuit,
 	CPPUNIT_ASSERT_MESSAGE("can not open " + path_to_aiger_circuit, circuit != 0);
 
 	srand(0xCAFECAFE);
-	BddAnalysis bddAnalsis(circuit, num_err_latches, mode);
-	bddAnalsis.analyzeWithRandomTestCases(num_tc, num_timesteps);
-	const set<unsigned> &symb_vulnerabilities = bddAnalsis.getVulnerableElements();
+	BddAnalysis bddAnalysis(circuit, num_err_latches, mode);
 
-	srand(0xCAFECAFE); // SymbTimeAnalysis and SimulationBasedAnalysis must have same "random" inputs
+	TestCaseProvider::instance().setCircuit(circuit);
+	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(num_tc,num_timesteps);
+	bddAnalysis.analyze(tcs);
+	const set<unsigned> &symb_vulnerabilities = bddAnalysis.getVulnerableElements();
+
 	SimulationBasedAnalysis sba(circuit, num_err_latches);
-	sba.analyzeWithRandomTestCases(num_tc, num_timesteps);
+	sba.analyze(tcs);
 	const set<unsigned> &sim_vulnerabilities = sba.getVulnerableElements();
 	L_INF("test: " << path_to_aiger_circuit);
 	L_INF(

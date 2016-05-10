@@ -23,6 +23,8 @@
 #include "../src/Utils.h"
 #include "../src/Logger.h"
 #include "../src/defines.h"
+#include "../src/TestCaseProvider.h"
+
 
 extern "C"
 {
@@ -259,7 +261,9 @@ void TestFalsePositives::test8_environment_input_model()
 		falsepos.setEnvironmentModel(environment);
 
 		// a) let the inputs value be selected by the SAT-solver for 3 timesteps
-		falsepos.analyzeModelChecking(3);
+		TestCaseProvider::instance().setCircuit(circuit);
+		vector<TestCase> tcs =  TestCaseProvider::instance().generateMcTestCase(3);
+		falsepos.analyze(tcs);
 
 		CPPUNIT_ASSERT(falsepos.getSuperfluous().size() > 0);
 

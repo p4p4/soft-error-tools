@@ -31,6 +31,7 @@
 #include "ErrorTraceManager.h"
 #include "Logger.h"
 #include "Options.h"
+#include "TestCaseProvider.h"
 
 #include <math.h> // ceil, log2
 
@@ -38,6 +39,12 @@
 BddAnalysis::BddAnalysis(aiger* circuit, int num_err_latches, int mode) :
 		BackEnd(circuit, num_err_latches, mode)
 {
+}
+
+void BddAnalysis::analyze()
+{
+	vector<TestCase> testcases = TestCaseProvider::instance().getTestcases();
+	analyze(testcases);
 }
 
 bool BddAnalysis::analyze(vector<TestCase>& testcases)

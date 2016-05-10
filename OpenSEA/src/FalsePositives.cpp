@@ -30,6 +30,7 @@
 #include "Options.h"
 #include "Utils.h"
 #include "Logger.h"
+#include "TestCaseProvider.h"
 
 extern "C"
 {
@@ -49,6 +50,12 @@ FalsePositives::FalsePositives(aiger* circuit, int num_err_latches, int mode) :
 // -------------------------------------------------------------------------------------------
 FalsePositives::~FalsePositives()
 {
+}
+
+void FalsePositives::analyze()
+{
+	vector<TestCase> testcases = TestCaseProvider::instance().getTestcases();
+	analyze(testcases);
 }
 
 bool FalsePositives::analyze(vector<TestCase>& testcases)

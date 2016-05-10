@@ -34,6 +34,7 @@
 #include "SymbTimeLocationAnalysis.h"
 #include "FalsePositives.h"
 #include "BddAnalysis.h"
+#include "DefinitelyProtected.h"
 #include "Utils.h"
 
 #include <sys/stat.h>
@@ -409,6 +410,10 @@ BackEnd* Options::getBackEnd()
 	else if (back_end_ == "bdd")
 	{
 		back_end_instance_ = new BddAnalysis(circuit_, num_err_latches_, mode_);
+	}
+	else if (back_end_ == "dp")
+	{
+		back_end_instance_ = new DefinitelyProtected(circuit_, num_err_latches_, mode_);
 	}
 	else
 	{

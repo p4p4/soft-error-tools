@@ -28,6 +28,7 @@
 #include "Options.h"
 #include "Utils.h"
 #include "ErrorTraceManager.h"
+#include "TestCaseProvider.h"
 extern "C"
 {
 #include "aiger.h"
@@ -44,6 +45,12 @@ SimulationBasedAnalysis::SimulationBasedAnalysis(aiger* circuit, int num_err_lat
 SimulationBasedAnalysis::~SimulationBasedAnalysis()
 {
 	delete sim_;
+}
+
+void SimulationBasedAnalysis::analyze()
+{
+	vector<TestCase> testcases = TestCaseProvider::instance().getTestcases();
+	analyze(testcases);
 }
 
 // -------------------------------------------------------------------------------------------

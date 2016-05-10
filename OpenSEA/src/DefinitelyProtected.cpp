@@ -52,7 +52,7 @@ DefinitelyProtected::~DefinitelyProtected()
 {
 }
 
-bool DefinitelyProtected::analyze(vector<TestCase>& testcases)
+void DefinitelyProtected::analyze()
 {
 
 	// TODO: 	remove testcases parameter, we don't need them here. maybe wrong backend?!
@@ -63,7 +63,6 @@ bool DefinitelyProtected::analyze(vector<TestCase>& testcases)
 	else
 		MASSERT(false, "unknown mode!");
 
-	return false; // TODO
 }
 
 bool DefinitelyProtected::findDefinitelyProtected_1()

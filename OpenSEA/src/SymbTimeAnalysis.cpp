@@ -34,6 +34,7 @@
 #include "SymbolicSimulator.h"
 #include "AndCacheMap.h"
 #include "ErrorTraceManager.h"
+#include "TestCaseProvider.h"
 
 extern "C"
 {
@@ -52,6 +53,12 @@ SymbTimeAnalysis::SymbTimeAnalysis(aiger* circuit, int num_err_latches, int mode
 SymbTimeAnalysis::~SymbTimeAnalysis()
 {
 	delete solver_;
+}
+
+void SymbTimeAnalysis::analyze()
+{
+	vector<TestCase> testcases = TestCaseProvider::instance().getTestcases();
+	analyze(testcases);
 }
 
 // -------------------------------------------------------------------------------------------

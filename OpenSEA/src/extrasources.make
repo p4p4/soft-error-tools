@@ -23,4 +23,5 @@ SuperFluousTrace.cpp
 SymbTimeAnalysis.cpp
 SymbTimeLocationAnalysis.cpp
 SymbolicSimulator.cpp
+TestCaseProvider.cpp
 Utils.cpp

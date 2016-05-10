@@ -60,7 +60,7 @@ public:
 
 
 
-	bool analyze(vector<TestCase> &testcases);
+	void analyze();
 	bool findDefinitelyProtected_1();
 
 

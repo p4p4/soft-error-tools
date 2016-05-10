@@ -75,6 +75,7 @@ using BackEnd::analyze;
 ///
 /// @param testcases a vector of TestCases.
 /// @return TRUE if vulnerabilities were found.
+  void analyze();
   bool analyze(vector<TestCase> &testcases);
 
 

@@ -30,6 +30,7 @@
 #include "Logger.h"
 #include "LingelingApi.h"
 #include "SimulationBasedAnalysis.h"
+#include "TestCaseProvider.h"
 #include "Utils.h"
 
 extern "C"
@@ -48,51 +49,19 @@ int main(int argc, char *argv[])
 	if (quit)
 		return 0;
 
-	//----------------------------------------------------------------------------
 	BackEnd* error_analysis = Options::instance().getBackEnd();
 	L_LOG(
 			"Back-End: " << Options::instance().getBackEndName() << ", mode = " << Options::instance().getBackEndMode());
-	int tc_mode = Options::instance().getTestcaseMode();
-	switch (tc_mode)
-	{
-	case Options::TC_RANDOM:
-	{
-		error_analysis->analyzeWithRandomTestCases(Options::instance().getNumTestcases(),
-				Options::instance().getLenRandTestcases());
-		break;
-	}
-	case Options::TC_FILES:
-	{
-		error_analysis->analyze(Options::instance().getPathsToTestcases());
-		break;
-	}
-	case Options::TC_MC:
-	{
-		error_analysis->analyzeModelChecking(Options::instance().getLenRandTestcases());
-		break;
-	}
-	default:
-		MASSERT(false, "wrong/no testcase-mode provided")
-		;
-	}
 
-	L_LOG("#Errors found: " << error_analysis->getNumberOfErrors());
-//	for (set<unsigned>::iterator it = vulnerabilities.begin();
-//			it != vulnerabilities.end(); ++it)
-//	{
-//		L_DBG("  Latch " << *it);
-//	}
+	error_analysis->analyze();
+	error_analysis->printResults();
 
-	if (Options::instance().isUseDiagnosticOutput())
-	{
-		error_analysis->printErrorTraces();
-	}
-
-	//----------------------------------------------------------------------------
 	double cpu_time = Stopwatch::getCPUTimeSec(start_time);
 	size_t real_time = Stopwatch::getRealTimeSec(start_time);
 	L_LOG(
 			"Overall execution time: " << cpu_time << " sec CPU time, "<< real_time << " sec real time.");
+
+	delete error_analysis;
 	return 0;
 }
 

@@ -42,15 +42,10 @@ struct aiger;
 class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE (TestSymbTimeAnalysis);
-	CPPUNIT_TEST (test1_one_latch);
-	CPPUNIT_TEST (test2_one_latch_one_and);
-	CPPUNIT_TEST (test3_two_latches);
   CPPUNIT_TEST (test4_analysis_w_1_extra_latch);
   CPPUNIT_TEST (test5_analysis_w_2_extra_latch);
-	CPPUNIT_TEST (test6_analysis_w_random_inputs);
 	CPPUNIT_TEST (test7_compare_with_simulation_1);
 	CPPUNIT_TEST (test8_symbolic_simulation_basic);
-	CPPUNIT_TEST (test9_symbolic_simulation_extended);
 	CPPUNIT_TEST (test10_symbolic_simulation_compare_w_simulation);
 //	CPPUNIT_TEST (test7_analysis_big_w_random_inputs);
 	CPPUNIT_TEST_SUITE_END();
@@ -76,9 +71,6 @@ class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
 
 	protected:
 
-	void test1_one_latch();
-	void test2_one_latch_one_and();
-	void test3_two_latches();
 	// -------------------------------------------------------------------------------------------
 	///
 	/// @brief Tests the found vulnerabilities of a circuit, which is protected with 1 extra latch
@@ -89,11 +81,6 @@ class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
 	/// @brief Tests the found vulnerabilities of a circuit, which is protected with 2 extra latches
 	void test5_analysis_w_2_extra_latch();
 
-	// -------------------------------------------------------------------------------------------
-	///
-	/// @brief Searches for vulnerabilities in a circuit using random input vectors
-	void test6_analysis_w_random_inputs();
-
 
 	void test7_compare_with_simulation_1();
 
@@ -103,11 +90,6 @@ class TestSymbTimeAnalysis: public CPPUNIT_NS::TestFixture
 //	void test7_analysis_big_w_random_inputs();
 
 	void test8_symbolic_simulation_basic();
-
-	// -------------------------------------------------------------------------------------------
-	///
-	/// @brief Searches for vulnerabilities in a *bigger* circuit using random input vectors
-	void test9_symbolic_simulation_extended();
 
 	void test10_symbolic_simulation_compare_w_simulation();
 

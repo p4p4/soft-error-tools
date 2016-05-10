@@ -26,6 +26,7 @@
 #include "../src/SimulationBasedAnalysis.h" // for comparison
 #include "../src/Utils.h"
 #include "../src/Logger.h"
+#include "../src/TestCaseProvider.h"
 
 extern "C"
 {
@@ -57,7 +58,9 @@ void TestSymbTimeAnalysis::checkVulnerabilities(string path_to_aiger_circuit,
 	CPPUNIT_ASSERT_MESSAGE("can not open " + path_to_aiger_circuit, circuit != 0);
 
 	SymbTimeAnalysis sta(circuit, num_err_latches, mode);
-	sta.analyze(tc_files);
+	TestCaseProvider::instance().setCircuit(circuit);
+	vector<TestCase> tcs = TestCaseProvider::instance().readTestcasesFromFiles(tc_files);
+	sta.analyze(tcs);
 	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
 
 	// DEBUG: print the vulnerable latches
@@ -81,12 +84,14 @@ void TestSymbTimeAnalysis::compareWithSimulation(string path_to_aiger_circuit,
 
 	srand(0xCAFECAFE);
 	SymbTimeAnalysis sta(circuit, num_err_latches, mode);
-	sta.analyzeWithRandomTestCases(num_tc, num_timesteps);
+	TestCaseProvider::instance().setCircuit(circuit);
+	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(num_tc, num_timesteps);
+	sta.analyze(tcs);
 	const set<unsigned> &symb_vulnerabilities = sta.getVulnerableElements();
 
 	srand(0xCAFECAFE); // SymbTimeAnalysis and SimulationBasedAnalysis must have same "random" inputs
 	SimulationBasedAnalysis sba(circuit, num_err_latches);
-	sba.analyzeWithRandomTestCases(num_tc, num_timesteps);
+	sba.analyze(tcs);
 	const set<unsigned> &sim_vulnerabilities = sba.getVulnerableElements();
 	L_INF("test: " << path_to_aiger_circuit);
 	L_INF(
@@ -109,63 +114,6 @@ void TestSymbTimeAnalysis::compareWithSimulation(string path_to_aiger_circuit,
 			sim_vulnerabilities == symb_vulnerabilities);
 }
 
-void TestSymbTimeAnalysis::test1_one_latch()
-{
-
-//	Logger::instance().enable(Logger::DBG);
-
-	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
-	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
-	sta.analyzeWithRandomTestCases(1, 3);
-//	Logger::instance().disable(Logger::DBG);
-	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
-	aiger_reset(circuit);
-
-	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
-	SymbTimeAnalysis sta2(circuit2, 0, SymbTimeAnalysis::NAIVE);
-	sta2.analyzeWithRandomTestCases(1, 3);
-	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
-	aiger_reset(circuit2);
-
-}
-
-void TestSymbTimeAnalysis::test2_one_latch_one_and()
-{
-//		Logger::instance().enable(Logger::DBG);
-
-	aiger* circuit = Utils::readAiger("inputs/1latch_1and.protected.aag");
-	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
-	sta.analyzeWithRandomTestCases(1, 3);
-	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
-	aiger_reset(circuit);
-
-//		Logger::instance().disable(Logger::DBG);
-//		Logger::instance().enable(Logger::DBG);
-
-	aiger* circuit2 = Utils::readAiger("inputs/1latch_1and.unprotected.aag");
-	SymbTimeAnalysis sta2(circuit2, 0, SymbTimeAnalysis::NAIVE);
-	sta2.analyzeWithRandomTestCases(1, 3);
-	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
-	aiger_reset(circuit2);
-}
-
-void TestSymbTimeAnalysis::test3_two_latches()
-{
-//		Logger::instance().enable(Logger::DBG);
-
-	aiger* circuit = Utils::readAiger("inputs/two_latches.protected.aag");
-	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
-	sta.analyzeWithRandomTestCases(1, 2);
-//	L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
-	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
-	aiger_reset(circuit);
-
-	aiger* circuit2 = Utils::readAiger("inputs/two_latches.unprotected.aag");
-	SymbTimeAnalysis sta2(circuit2, 0, SymbTimeAnalysis::NAIVE);
-	sta2.analyzeWithRandomTestCases(1, 3);
-	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 2);
-	aiger_reset(circuit2);
-}
 
 // -------------------------------------------------------------------------------------------
 void TestSymbTimeAnalysis::test4_analysis_w_1_extra_latch()
@@ -227,33 +175,6 @@ void TestSymbTimeAnalysis::test5_analysis_w_2_extra_latch()
 			2, SymbTimeAnalysis::NAIVE);
 }
 
-// -------------------------------------------------------------------------------------------
-void TestSymbTimeAnalysis::test6_analysis_w_random_inputs()
-{
-//	Logger::instance().enable(Logger::DBG);
-//	Logger::instance().enable(Logger::LOG);
-
-	// use constant seed, so that we don't have any non-determinism in the test-case ;-)
-	srand(0xCAFECAFE);
-
-	aiger* circuit = Utils::readAiger("inputs/toggle.2vulnerabilities.aag");
-	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::NAIVE);
-	sta.analyzeWithRandomTestCases(1, 2);
-	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
-
-	// DEBUG: print the vulnerable latches
-//	cout << endl;
-//		for (set<unsigned>::iterator it = vulnerabilities.begin();
-//				it != vulnerabilities.end(); ++it)
-//		{
-//			cout << "  Latch " << *it << endl;
-//		}
-
-	set<unsigned> should_be_vulnerable; // empty
-	should_be_vulnerable.insert(10);
-	should_be_vulnerable.insert(12);
-	CPPUNIT_ASSERT(vulnerabilities == should_be_vulnerable);
-}
 
 // -------------------------------------------------------------------------------------------
 void TestSymbTimeAnalysis::test7_compare_with_simulation_1()
@@ -291,23 +212,6 @@ void TestSymbTimeAnalysis::test8_symbolic_simulation_basic()
 {
 
 
-
-	//-------------------------------------------
-	// test 8a: 0 of 1 latches protected
-	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
-	SymbTimeAnalysis sta2(circuit2, 0, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
-	sta2.analyzeWithRandomTestCases(1, 2);
-	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
-	aiger_reset(circuit2);
-
-	//-------------------------------------------
-	// test 8b: 1 of 1 latches protected
-	aiger* circuit = Utils::readAiger("inputs/one_latch.protected.aag");
-	SymbTimeAnalysis sta(circuit, 1, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
-	sta.analyzeWithRandomTestCases(1, 2);
-	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
-	aiger_reset(circuit);
-
 	// Paths to TestCase files
 	// A TestCase file contains vectors of input values
 	vector<string> tc_files;
@@ -341,30 +245,6 @@ void TestSymbTimeAnalysis::test8_symbolic_simulation_basic()
 	should_be_vulnerable.insert(8); // 8, 10, 12 are vulnerable
 	checkVulnerabilities("inputs/toggle.3vulnerabilities.aag", tc_files,
 			should_be_vulnerable, 0, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
-
-}
-
-// -------------------------------------------------------------------------------------------
-void TestSymbTimeAnalysis::test9_symbolic_simulation_extended()
-{
-//	Logger::instance().enable(Logger::DBG);
-
-	// use constant seed, so that we don't have any non-determinism in the test-case ;-)
-	srand(0xCAFECAFE);
-
-	Logger::instance().enable(Logger::LOG);
-	// Test 9
-	//	Source: IWLS_2002_AIG/LGSynth91/smlexamples/s5378_orig.aig:
-	//	Latches: 164, Protected with AddParityTool: 50% (=82 Latches)
-	//	Vulnerabilities: 82 Latches
-
-	aiger* circuit = Utils::readAiger("inputs/s5378.50percent.aag");
-	SymbTimeAnalysis sta(circuit, 2, SymbTimeAnalysis::SYMBOLIC_SIMULATION);
-	sta.analyzeWithRandomTestCases(1, 25); // 1 TC with 2 timesteps would also already work
-	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
-
-//	cout << "found vulnerabilities: " << vulnerabilities.size() << endl;
-	CPPUNIT_ASSERT(vulnerabilities.size() == 69);
 
 }
 

@@ -31,6 +31,7 @@
 #include "AndCacheMap.h"
 #include "AndCacheFor2Simulators.h"
 #include "ErrorTraceManager.h"
+#include "TestCaseProvider.h"
 
 extern "C"
 {
@@ -51,6 +52,12 @@ SymbTimeLocationAnalysis::SymbTimeLocationAnalysis(aiger* circuit, int num_err_l
 SymbTimeLocationAnalysis::~SymbTimeLocationAnalysis()
 {
 	delete solver_;
+}
+
+void SymbTimeLocationAnalysis::analyze()
+{
+	vector<TestCase> testcases = TestCaseProvider::instance().getTestcases();
+	analyze(testcases);
 }
 
 // -------------------------------------------------------------------------------------------

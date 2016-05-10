@@ -67,6 +67,7 @@ enum AnalysisMode {
 /// @param testcases a vector of TestCases.
 /// @return TRUE if vulnerabilities were found.
 	bool analyze(vector<TestCase> &testcases);
+	void analyze();
 
 
 	protected:

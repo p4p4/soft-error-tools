@@ -63,50 +63,9 @@ public:
 /// @return The number of vulnerable elements / number of superfluous traces
 	unsigned int getNumberOfErrors();
 
-	void printErrorTraces();
+	void printResults();
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities using the provided TestCases
-///
-/// tries to find vulnerabilities using the provided TestCases
-///
-/// @param testcases a vector of TestCases.
-/// @return TRUE if vulnerabilities were found.
-	virtual bool analyze(vector<TestCase> &testcases) = 0;
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities using the provided TestCases
-///
-/// tries to find vulnerabilities using the provided TestCases
-///
-/// @param paths_to_TC_files a vector of paths to TestCase files.
-/// @return TRUE if vulnerabilities were found.
-	bool analyze(vector<string> paths_to_TC_files);
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities using random input vectors
-///
-/// tries to find vulnerabilities using num_of_timesteps random input vectors
-///
-/// @param num_of_TCs the number of random testcases to use
-/// @param num_of_timesteps the number random input vectors to test
-/// @return TRUE if vulnerabilities were found.
-	bool analyzeWithRandomTestCases(unsigned num_of_TCs,
-		unsigned num_of_timesteps);
-
-// -------------------------------------------------------------------------------------------
-///
-/// @brief tries to find vulnerabilities using open input vectors (model-checking approach)
-///
-/// tries to find vulnerabilities within num_of_timesteps open input vectors
-/// Attention: This method can only be used with modes which suppurt free inputs!
-///
-/// @param num_of_timesteps the number of timesteps to search for vulnerabilities
-/// @return TRUE if vulnerabilities were found.
-	bool analyzeModelChecking(unsigned num_of_timesteps);
+	virtual void analyze() = 0;
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -118,17 +77,6 @@ public:
 /// @param environmentModel the environment-model
 	void setEnvironmentModel(aiger* environmentModel);
 
-// -------------------------------------------------------------------------------------------
-///
-/// @brief randomly generates 0 or 1
-///
-	struct gen_rand {
-	public:
-	    gen_rand() {}
-	    int operator()() {
-	        return rand() % 2;
-	    }
-	};
 protected:
 // -------------------------------------------------------------------------------------------
 ///
