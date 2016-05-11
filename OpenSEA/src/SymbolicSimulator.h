@@ -215,6 +215,7 @@ class SymbolicSimulator
 /// aiger literals of the current simulation step.
 ///
 	vector<int>& getResults();
+	void setResults(vector<int> & results);
 
 // -------------------------------------------------------------------------------------------
 ///

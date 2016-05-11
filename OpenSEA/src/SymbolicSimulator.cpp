@@ -407,3 +407,8 @@ const vector<int>& SymbolicSimulator::getOpenInputVars() const
 {
 	return open_input_vars_;
 }
+
+void SymbolicSimulator::setResults(vector<int>& results)
+{
+	results_ = results;
+}

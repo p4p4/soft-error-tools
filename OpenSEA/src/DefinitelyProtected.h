@@ -62,6 +62,7 @@ public:
 
 	void analyze();
 	void findDefinitelyProtected_1();
+	void findDefinitelyProtected_2();
 
 	void printResults();
 
