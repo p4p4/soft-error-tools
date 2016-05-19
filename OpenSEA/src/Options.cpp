@@ -207,17 +207,6 @@ bool Options::parse(int argc, char **argv)
 			istringstream iss(arg.substr(14, string::npos));
 			iss >> num_err_latches_;
 		}
-		else if (arg == "-e")
-		{
-			++arg_count;
-			if (arg_count >= argc)
-			{
-				cerr << "Option -e must be followed by an integer number." << endl;
-				return true;
-			}
-			istringstream iss(argv[arg_count]);
-			iss >> num_err_latches_;
-		}
 		else if (arg == "-tc")
 		{
 			if (testcase_mode_ != TC_UNDEFINED)
@@ -350,12 +339,37 @@ bool Options::parse(int argc, char **argv)
 			use_latches_result_ = true;
 			latches_result_path_ = string(argv[arg_count]);
 		}
+		else if (arg.find("--exclude=") == 0)
+		{
+			latches_to_exclude_file_path_ = arg.substr(10, string::npos);
+		}
+		else if (arg == "-e")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr << "Option -e must be followed by a file path." << endl;
+				return true;
+			}
+			latches_to_exclude_file_path_ = string(argv[arg_count]);
+		}
 	}
 
 	if (aig_in_file_name_ == "")
 	{
 		cerr << "No input file given." << endl;
 		return true;
+	}
+
+	if (latches_to_exclude_file_path_ != "")
+	{
+		ifstream infile(latches_to_exclude_file_path_.c_str());
+		// TODO check if open
+		unsigned latch;
+		while (infile >> latch)
+		{
+			latches_to_exclude_.insert(latch);
+		}
 	}
 
 	initInputCircuit();
@@ -586,8 +600,10 @@ void Options::printHelp() const
 	cout << "                      to leave some or all values in the given TestCase" << endl;
 	cout << "                      open (write '?' instead of '0' or '1')" << endl;
 	cout << "                 The default is 0." << endl;
+	cout << "  -e FILE, --exclude=FILE" << endl;
+	cout << "                 excludes the latches listed in FILE from the analysis." << endl;
 	cout << "  -r FILE, --results=FILE" << endl;
-	cout << "                 stores the latches detected by the algorithm to FILE" << endl;
+	cout << "                 stores the latches detected by the algorithm to FILE." << endl;
 	cout << "  -p PRINT, --print=PRINT" << endl;
 	cout << "                 A string indicating which messages to print. Every" << endl;
 	cout << "                 character activates a certain type of message. The" << endl;
@@ -688,9 +704,23 @@ Options::Options() :
 				"ERWIL"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), env_model_(0), num_err_latches_(
 				0), seed_(0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
-				false), diagnostic_output_path_(""), use_latches_result_(false), latches_result_path_(""), num_open_inputs_(0)
+				false), diagnostic_output_path_(""), use_latches_result_(false), latches_result_path_(""), latches_to_exclude_file_path_(""), num_open_inputs_(0)
 {
 	// nothing to be done
+}
+
+vector<unsigned> Options::removeExcludedLatches(aiger* circuit)
+{
+	vector<unsigned> result;
+
+	for(unsigned i=0; i < circuit->num_latches - num_err_latches_; i++)
+	{
+		unsigned latch = circuit->latches[i].lit;
+
+		if (latches_to_exclude_.find(latch) != latches_to_exclude_.end())
+			result.push_back(latch);
+	}
+	return result;
 }
 
 // -------------------------------------------------------------------------------------------

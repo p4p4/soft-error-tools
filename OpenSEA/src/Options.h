@@ -239,6 +239,8 @@ class Options
 	const string& getLatchesResultPath() const;
 	bool isUseLatchesResult() const;
 
+	vector<unsigned> removeExcludedLatches(aiger* circuit);
+
 	int num_open_inputs_; // only for tcr2 testcase mode (for benchmarking open inputs)
 
 	protected:
@@ -368,6 +370,9 @@ class Options
 
 	bool use_latches_result_;
 	string latches_result_path_;
+
+	set<unsigned> latches_to_exclude_;
+	string latches_to_exclude_file_path_;
 
 	private:
 
