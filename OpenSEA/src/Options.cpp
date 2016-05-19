@@ -334,6 +334,22 @@ bool Options::parse(int argc, char **argv)
 				diagnostic_output_path_ = diagnostic_output_path;
 			}
 		}
+		else if (arg.find("--results=") == 0)
+		{
+			use_latches_result_ = true;
+			latches_result_path_ = arg.substr(10, string::npos);
+		}
+		else if (arg == "-r")
+		{
+			++arg_count;
+			if (arg_count >= argc)
+			{
+				cerr << "Option -r must be followed by a file path." << endl;
+				return true;
+			}
+			use_latches_result_ = true;
+			latches_result_path_ = string(argv[arg_count]);
+		}
 	}
 
 	if (aig_in_file_name_ == "")
@@ -570,6 +586,8 @@ void Options::printHelp() const
 	cout << "                      to leave some or all values in the given TestCase" << endl;
 	cout << "                      open (write '?' instead of '0' or '1')" << endl;
 	cout << "                 The default is 0." << endl;
+	cout << "  -r FILE, --results=FILE" << endl;
+	cout << "                 stores the latches detected by the algorithm to FILE" << endl;
 	cout << "  -p PRINT, --print=PRINT" << endl;
 	cout << "                 A string indicating which messages to print. Every" << endl;
 	cout << "                 character activates a certain type of message. The" << endl;
@@ -670,7 +688,7 @@ Options::Options() :
 				"ERWIL"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), env_model_(0), num_err_latches_(
 				0), seed_(0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
-				false), diagnostic_output_path_(""), num_open_inputs_(0)
+				false), diagnostic_output_path_(""), use_latches_result_(false), latches_result_path_(""), num_open_inputs_(0)
 {
 	// nothing to be done
 }
@@ -697,4 +715,14 @@ aiger* Options::getCircuit()
 const string& Options::getAigEnvFileName() const
 {
 	return aig_env_file_name_;
+}
+
+const string& Options::getLatchesResultPath() const
+{
+	return latches_result_path_;
+}
+
+bool Options::isUseLatchesResult() const
+{
+	return use_latches_result_;
 }

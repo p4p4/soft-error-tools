@@ -65,7 +65,7 @@ void SymbTimeAnalysis::analyze()
 bool SymbTimeAnalysis::analyze(vector<TestCase> &testcases)
 {
 	//	vulnerable_latches = empty_set/list
-	vulnerable_elements_.clear();
+	detected_latches_.clear();
 
 	if (mode_ == NAIVE)
 		Analyze1_naive(testcases);
@@ -76,7 +76,7 @@ bool SymbTimeAnalysis::analyze(vector<TestCase> &testcases)
 	else
 		MASSERT(false, "unknown mode!");
 
-	return (vulnerable_elements_.size() != 0);
+	return (detected_latches_.size() != 0);
 }
 
 
@@ -200,7 +200,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 				if (err_found_with_simulation)
 				{
-					vulnerable_elements_.insert(component_aig);
+					detected_latches_.insert(component_aig);
 
 					if (Options::instance().isUseDiagnosticOutput())
 					{
@@ -342,7 +342,7 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 				if (sat)
 				{
-					vulnerable_elements_.insert(component_aig);
+					detected_latches_.insert(component_aig);
 
 					if (Options::instance().isUseDiagnosticOutput())
 						addErrorTrace(component_aig, timestep, fi_to_timestep, model, testcase);
@@ -456,7 +456,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				if (err_found_with_simulation)
 				{
-					vulnerable_elements_.insert(component_aig);
+					detected_latches_.insert(component_aig);
 
 					if (Options::instance().isUseDiagnosticOutput())
 					{
@@ -568,7 +568,7 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				if (sat)
 				{
-					vulnerable_elements_.insert(component_aig);
+					detected_latches_.insert(component_aig);
 
 					if (Options::instance().isUseDiagnosticOutput())
 						addErrorTrace(component_aig, timestep, fi_to_timestep, model, testcase);
@@ -909,7 +909,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 				odiff_enable_literals.back() = -odiff_enable_literals.back();
 				if (sat)
 				{
-					vulnerable_elements_.insert(component_aig);
+					detected_latches_.insert(component_aig);
 					if (Options::instance().isUseDiagnosticOutput())
 					{
 						addErrorTrace(component_aig, timestep, fi_to_timestep, model, real_cnf_inputs,

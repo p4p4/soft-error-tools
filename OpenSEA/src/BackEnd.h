@@ -77,6 +77,8 @@ public:
 /// @param environmentModel the environment-model
 	void setEnvironmentModel(aiger* environmentModel);
 
+	void storeResultingLatches();
+
 protected:
 // -------------------------------------------------------------------------------------------
 ///
@@ -92,8 +94,8 @@ protected:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief the list of vulnerabilities found so for
-	set<unsigned> vulnerable_elements_;
+/// @brief the list of vulnerabilities / protected latches / false positives found so for
+	set<unsigned> detected_latches_;
 
 
 // -------------------------------------------------------------------------------------------

@@ -54,10 +54,7 @@ DefinitelyProtected::~DefinitelyProtected()
 
 void DefinitelyProtected::analyze()
 {
-	definitley_protected_latches_.clear();
-
-	// TODO: 	remove testcases parameter, we don't need them here. maybe wrong backend?!
-	//			think about architectural changes in OpenSEA ...
+	detected_latches_.clear();
 
 	if (mode_ == DefinitelyProtected::STANDARD)
 		findDefinitelyProtected_1();
@@ -149,7 +146,7 @@ void DefinitelyProtected::findDefinitelyProtected_1()
 		if(solver_->incIsSat() == false)
 		{
 			L_DBG("Definitely protected latch "<< circuit_->latches[c_cnt].lit << " found. (UNSAT)")
-			definitley_protected_latches_.push_back(circuit_->latches[c_cnt].lit);
+		detected_latches_.insert(circuit_->latches[c_cnt].lit);
 		}
 		else
 		{
@@ -261,7 +258,7 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 		if(solver->incIsSat() == false)
 		{
 			L_DBG("Definitely protected latch "<< circuit_->latches[c_cnt].lit << " found. (UNSAT)")
-			definitley_protected_latches_.push_back(circuit_->latches[c_cnt].lit);
+		detected_latches_.insert(circuit_->latches[c_cnt].lit);
 		}
 		else
 		{
@@ -282,21 +279,24 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 
 void DefinitelyProtected::printResults()
 {
-	float percentage = (float) definitley_protected_latches_.size() / (circuit_->num_latches - num_err_latches_) * 100;
-	L_LOG("#Definitely protected latches found: " << definitley_protected_latches_.size() << " (" << percentage << " %)");
+	float percentage = (float) detected_latches_.size() / (circuit_->num_latches - num_err_latches_) * 100;
+	L_LOG("#Definitely protected latches found: " << detected_latches_.size() << " (" << percentage << " %)");
 
 	if (Options::instance().isUseDiagnosticOutput())
 	{
 		ostringstream oss;
-		if (definitley_protected_latches_.size() > 0)
+		if (detected_latches_.size() > 0)
 			oss << "Definitely protected latches:" << endl;
 
-		for (unsigned i = 0; i < definitley_protected_latches_.size(); i++)
+		int i = 0;
+		for(set<unsigned>::iterator it = detected_latches_.begin(); it != detected_latches_.end(); ++it)
 		{
-			oss << definitley_protected_latches_[i] << "\t";
+			oss << *it << "\t";
 
-			if ((i+1)%5 == 0 && i < definitley_protected_latches_.size() - 1)
+			if ((i+1)%5 == 0 && i < detected_latches_.size() - 1)
 				oss << endl;
+
+			i++;
 		}
 		if (Options::instance().isDiagnosticOutputToFile())
 		{

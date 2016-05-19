@@ -87,9 +87,6 @@ protected:
 	/// protection circuit.
 	unsigned num_err_latches_;
 
-	vector<unsigned> definitley_protected_latches_;
-
-
 
 private:
 

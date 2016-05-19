@@ -56,7 +56,7 @@ void SimulationBasedAnalysis::analyze()
 // -------------------------------------------------------------------------------------------
 bool SimulationBasedAnalysis::analyze(vector<TestCase> &testcases)
 {
-	vulnerable_elements_.clear();
+	detected_latches_.clear();
 	//for each test case:
 	for (tc_index_ = 0; tc_index_ < testcases.size(); tc_index_++)
 	{
@@ -68,7 +68,7 @@ bool SimulationBasedAnalysis::analyze(vector<TestCase> &testcases)
 			MASSERT(false, "unknown mode!");
 	}
 
-	return (vulnerable_elements_.size() != 0);
+	return (detected_latches_.size() != 0);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -110,8 +110,8 @@ void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 
 		// skip latches where we already know that they are vulnerable
 		if ((tc_index_ != 0)
-				&& (vulnerable_elements_.find(circuit_->latches[l_cnt].lit)
-						!= vulnerable_elements_.end()))
+				&& (detected_latches_.find(circuit_->latches[l_cnt].lit)
+						!= detected_latches_.end()))
 		{
 			continue;
 		}
@@ -171,7 +171,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 				if (wrong_outputs)
 				{
 					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
-					vulnerable_elements_.insert(circuit_->latches[l_cnt].lit);
+					detected_latches_.insert(circuit_->latches[l_cnt].lit);
 
 					if (Options::instance().isUseDiagnosticOutput())
 					{

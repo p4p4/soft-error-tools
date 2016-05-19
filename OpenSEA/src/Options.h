@@ -236,6 +236,8 @@ class Options
 	}
 
 	const string& getAigEnvFileName() const;
+	const string& getLatchesResultPath() const;
+	bool isUseLatchesResult() const;
 
 	int num_open_inputs_; // only for tcr2 testcase mode (for benchmarking open inputs)
 
@@ -363,6 +365,10 @@ class Options
 ///
 /// @brief the path where the ErrorTraces get written to, if diagnostic_output_to_file_ is true
 	string diagnostic_output_path_;
+
+	bool use_latches_result_;
+	string latches_result_path_;
+
 	private:
 
 // -------------------------------------------------------------------------------------------

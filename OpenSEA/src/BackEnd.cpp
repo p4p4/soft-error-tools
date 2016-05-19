@@ -51,12 +51,12 @@ BackEnd::~BackEnd()
 // -------------------------------------------------------------------------------------------
 const set<unsigned>& BackEnd::getVulnerableElements() const
 {
-	return vulnerable_elements_;
+	return detected_latches_;
 }
 
 unsigned int BackEnd::getNumberOfErrors()
 {
-	return vulnerable_elements_.size();
+	return detected_latches_.size();
 }
 
 void BackEnd::printResults()
@@ -71,4 +71,21 @@ void BackEnd::printResults()
 void BackEnd::setEnvironmentModel(aiger* environmentModel)
 {
 	environment_model_ = environmentModel;
+}
+
+void BackEnd::storeResultingLatches()
+{
+	ofstream out_file;
+
+	out_file.open(Options::instance().getLatchesResultPath().c_str());
+			MASSERT(out_file,
+					"could not write latches result file: " + Options::instance().getLatchesResultPath())
+
+	for(set<unsigned>::iterator it = detected_latches_.begin(); it != detected_latches_.end(); ++it)
+	{
+		out_file << *it << endl;
+	}
+
+	out_file.close();
+
 }

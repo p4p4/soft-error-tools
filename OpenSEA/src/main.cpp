@@ -56,6 +56,11 @@ int main(int argc, char *argv[])
 	error_analysis->analyze();
 	error_analysis->printResults();
 
+	if (Options::instance().isUseLatchesResult())
+	{
+		error_analysis->storeResultingLatches();
+	}
+
 	double cpu_time = Stopwatch::getCPUTimeSec(start_time);
 	size_t real_time = Stopwatch::getRealTimeSec(start_time);
 	L_LOG(

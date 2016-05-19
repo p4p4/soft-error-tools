@@ -64,7 +64,7 @@ void SymbTimeLocationAnalysis::analyze()
 bool SymbTimeLocationAnalysis::analyze(vector<TestCase> &testcases)
 {
 	//	vulnerable_latches = empty_set/list
-	vulnerable_elements_.clear();
+	detected_latches_.clear();
 
 	if (mode_ == STANDARD)
 		Analyze2(testcases);
@@ -73,7 +73,7 @@ bool SymbTimeLocationAnalysis::analyze(vector<TestCase> &testcases)
 	else
 		MASSERT(false, "unknown mode!");
 
-	return (vulnerable_elements_.size() != 0);
+	return (detected_latches_.size() != 0);
 }
 
 
@@ -286,7 +286,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 					{
 						// Add vulnerable latch (represented by cj) to list of vulnerabilities
 						// Add blocking clause so that the sat-solver can report other vulnerabilities
-						vulnerable_elements_.insert(cj_to_latch[lit]);
+						detected_latches_.insert(cj_to_latch[lit]);
 						latches_to_check_.erase(cj_to_latch[lit]);
 						solver_->incAddUnitClause(-lit); // blocking clause
 						if (!useDiagnostic)
@@ -685,7 +685,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 					{
 						// Add vulnerable latch (represented by cj) to list of vulnerabilities
 						// Add blocking clause so that the sat-solver can report other vulnerabilities
-						vulnerable_elements_.insert(cj_to_latch[lit]);
+						detected_latches_.insert(cj_to_latch[lit]);
 						latches_to_check_.erase(cj_to_latch[lit]);
 						solver_->incAddUnitClause(-lit); // blocking clause
 

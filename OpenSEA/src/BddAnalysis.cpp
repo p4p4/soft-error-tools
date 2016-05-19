@@ -51,7 +51,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 {
 	PointInTime begin = Stopwatch::start();
 	accumulated_durations_.clear();
-	vulnerable_elements_.clear();
+	detected_latches_.clear();
 
 	next_free_cnf_var_ = 2;
 
@@ -67,7 +67,7 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 	// ...
 
 	printStatistics(begin);
-	return vulnerable_elements_.size() > 0;
+	return detected_latches_.size() > 0;
 
 }
 
@@ -292,7 +292,7 @@ void BddAnalysis::analyze_one_hot_enc_c_signals(vector<TestCase>& testcases)
 					ErrorTraceManager::instance().error_traces_.push_back(trace);
 				}
 
-				vulnerable_elements_.insert(cj_to_latch[cj]);
+				detected_latches_.insert(cj_to_latch[cj]);
 				stopWatchStart();
 				side_constraints &= ~cudd_.bddVar(cj);
 				check = side_constraints & output_is_different_bdd;
@@ -515,7 +515,7 @@ void BddAnalysis::analyze_one_hot_enc_c_constraints(vector<TestCase>& testcases)
 					ErrorTraceManager::instance().error_traces_.push_back(trace);
 				}
 
-				vulnerable_elements_.insert(cj_to_latch[cj]);
+				detected_latches_.insert(cj_to_latch[cj]);
 				stopWatchStart();
 				side_constraints &= ~cudd_.bddVar(cj);
 				check = side_constraints & output_is_different_bdd;
@@ -788,7 +788,7 @@ void BddAnalysis::analyze_binary_enc_c_signals(vector<TestCase>& testcases)
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
 					}
 
-					vulnerable_elements_.insert(circuit_->latches[cj].lit);
+					detected_latches_.insert(circuit_->latches[cj].lit);
 				}
 
 				stopWatchStart();
@@ -1020,7 +1020,7 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals(vector<TestCase>& testcases
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
 					}
 
-					vulnerable_elements_.insert(circuit_->latches[cj].lit);
+					detected_latches_.insert(circuit_->latches[cj].lit);
 				}
 
 				stopWatchStart();
@@ -1282,7 +1282,7 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals_FREE_INPUTS(vector<TestCase
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
 					}
 
-					vulnerable_elements_.insert(circuit_->latches[cj].lit);
+					detected_latches_.insert(circuit_->latches[cj].lit);
 				}
 
 				stopWatchStart();
