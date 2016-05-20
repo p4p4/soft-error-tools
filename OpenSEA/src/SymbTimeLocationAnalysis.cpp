@@ -84,8 +84,8 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 	// used to store the results of the symbolic simulation
 	int next_free_cnf_var = 2;
 
-	// TODO: move outside of this function ----
-	set<int> latches_to_check_;
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	set<int> latches_to_check;
 
 	//------------------------------------------------------------------------------------------
 	// set up ci signals
@@ -94,12 +94,12 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 	map<int, int> latch_to_cj; // maps latch-literals(cnf) to corresponding cj-literals(cnf)
 	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
 
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned c_cnt = 0; c_cnt < l_list.size(); ++c_cnt)
 	{
-		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
+		latches_to_check.insert(l_list[c_cnt]);
 		int cj = next_free_cnf_var++;
-		latch_to_cj[circuit_->latches[c_cnt].lit >> 1] = cj;
-		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
+		latch_to_cj[l_list[c_cnt] >> 1] = cj;
+		cj_to_latch[cj] = l_list[c_cnt];
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 			solver_->addVarToKeep(fi);
 
 			set<int>::iterator it;
-			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it)
+			for (it = latches_to_check.begin(); it != latches_to_check.end(); ++it)
 			{
 				int latch_output = *it >> 1;
 				int old_value = symbsim.getResultValue(latch_output);
@@ -287,7 +287,7 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 						// Add vulnerable latch (represented by cj) to list of vulnerabilities
 						// Add blocking clause so that the sat-solver can report other vulnerabilities
 						detected_latches_.insert(cj_to_latch[lit]);
-						latches_to_check_.erase(cj_to_latch[lit]);
+						latches_to_check.erase(cj_to_latch[lit]);
 						solver_->incAddUnitClause(-lit); // blocking clause
 						if (!useDiagnostic)
 							break; // we are done here
@@ -337,12 +337,12 @@ void SymbTimeLocationAnalysis::Analyze2(vector<TestCase>& testcases)
 				// single fault assumption: there might be at most one flipped component
 				set<int>::iterator l1_it;
 				set<int>::iterator l2_it;
-				for (l1_it = latches_to_check_.begin(); l1_it != latches_to_check_.end();
+				for (l1_it = latches_to_check.begin(); l1_it != latches_to_check.end();
 						l1_it++)
 				{
 					l2_it = l1_it;
 					l2_it++;
-					for (; l2_it != latches_to_check_.end(); l2_it++)
+					for (; l2_it != latches_to_check.end(); l2_it++)
 						solver_->incAdd2LitClause(-latch_to_cj[*l1_it >> 1],
 								-latch_to_cj[*l2_it >> 1]);
 				}
@@ -433,6 +433,7 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	// used to store the results of the symbolic simulation
 	int next_free_cnf_var = 2;
 
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
 	set<int> latches_to_check_;
 
 	//------------------------------------------------------------------------------------------
@@ -442,12 +443,12 @@ void SymbTimeLocationAnalysis::Analyze2_free_inputs(vector<TestCase>& testcases)
 	map<int, int> latch_to_cj; // maps latch-literals(cnf) to corresponding cj-literals(cnf)
 	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
 
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned c_cnt = 0; c_cnt < l_list.size(); ++c_cnt)
 	{
-		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
+		latches_to_check_.insert(l_list[c_cnt]);
 		int cj = next_free_cnf_var++;
-		latch_to_cj[circuit_->latches[c_cnt].lit >> 1] = cj;
-		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
+		latch_to_cj[l_list[c_cnt] >> 1] = cj;
+		cj_to_latch[cj] = l_list[c_cnt];
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------

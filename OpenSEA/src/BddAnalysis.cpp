@@ -58,13 +58,19 @@ bool BddAnalysis::analyze(vector<TestCase>& testcases)
 //	cudd_.AutodynEnable(CUDD_REORDER_SIFT);  // it is better to turn off automatic reordering
 //	cudd_.EnableReorderingReporting();
 
-// TODO modes...
-//	analyze_one_hot_enc_c_signals(testcases);
-//	analyze_one_hot_enc_c_constraints(testcases);
-//	analyze_binary_enc_c_signals(testcases);
-	//analyze_binary_enc_c_and_f_signals(testcases);
-	analyze_binary_enc_c_and_f_signals_FREE_INPUTS(testcases);
-	// ...
+	if (mode_ == C_ONE_HOT_ENCODING)
+		analyze_one_hot_enc_c_signals(testcases);
+	else if (mode_ == C_CONSTR)
+		analyze_one_hot_enc_c_constraints(testcases);
+	else if (mode_ == C_BINARY_ENCODING)
+		analyze_binary_enc_c_signals(testcases);
+	else if (mode_ == C_F_BINARY)
+		analyze_binary_enc_c_and_f_signals(testcases);
+	else if (mode_ == C_F_BINARY_FREE_INPUTS)
+		analyze_binary_enc_c_and_f_signals_FREE_INPUTS(testcases);
+	else
+		MASSERT(false, "unknown mode!")
+
 
 	printStatistics(begin);
 	return detected_latches_.size() > 0;
@@ -79,6 +85,7 @@ void BddAnalysis::analyze_one_hot_enc_c_signals(vector<TestCase>& testcases)
 
 	AigSimulator sim_(circuit_);
 
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
 	set<int> latches_to_check_;
 
 	//------------------------------------------------------------------------------------------
@@ -91,15 +98,15 @@ void BddAnalysis::analyze_one_hot_enc_c_signals(vector<TestCase>& testcases)
 	map<int, BDD> cj_to_BDD_signal; // maps a cj input literal to the actual cj BDD with cardinality constraints
 
 	int first_cj_var = next_free_cnf_var_;
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned c_cnt = 0; c_cnt < l_list.size(); ++c_cnt)
 	{
-		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
+		latches_to_check_.insert(l_list[c_cnt]);
 
 		int cj = next_free_cnf_var_++;
 		cudd_.bddVar(cj);
 
-		latch_to_cj[circuit_->latches[c_cnt].lit >> 1] = cj;
-		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
+		latch_to_cj[l_list[c_cnt] >> 1] = cj;
+		cj_to_latch[cj] = l_list[c_cnt];
 	}
 	int last_cj_var = next_free_cnf_var_ - 1;
 
@@ -315,6 +322,7 @@ void BddAnalysis::analyze_one_hot_enc_c_constraints(vector<TestCase>& testcases)
 
 	AigSimulator sim_(circuit_);
 
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
 	set<int> latches_to_check_;
 
 	//------------------------------------------------------------------------------------------
@@ -328,14 +336,14 @@ void BddAnalysis::analyze_one_hot_enc_c_constraints(vector<TestCase>& testcases)
 
 	int first_cj_var = next_free_cnf_var_;
 	BDD c_cardinality_constraints = cudd_.bddOne();
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned c_cnt = 0; c_cnt < l_list.size(); ++c_cnt)
 	{
-		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
+		latches_to_check_.insert(l_list[c_cnt]);
 
 		int cj = next_free_cnf_var_++;
 		cj_to_BDD_signal[cj] = cudd_.bddVar(cj);
-		latch_to_cj[circuit_->latches[c_cnt].lit >> 1] = cj;
-		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
+		latch_to_cj[l_list[c_cnt] >> 1] = cj;
+		cj_to_latch[cj] = l_list[c_cnt];
 
 		// single fault assumption: there might be at most one flipped component
 		for (unsigned cnt = first_cj_var; cnt < cj; cnt++)
@@ -399,7 +407,6 @@ void BddAnalysis::analyze_one_hot_enc_c_constraints(vector<TestCase>& testcases)
 				BDD cj_bdd = cj_to_BDD_signal[latch_to_cj[latch_output]];
 				BDD old_value = bddSim.getResultValue(latch_output);
 
-				// todo: maybe use Cudd_addIte instead??
 				BDD new_value = (fi_bdd & cj_bdd) ^ old_value; // flip old_value iff both fi and cj are true
 				bddSim.setResultValue(latch_output, new_value);
 			}
@@ -552,16 +559,15 @@ BDD BddAnalysis::binary_conjunct(unsigned binary_encoding,
 }
 
 void BddAnalysis::create_binary_encoded_c_BDDs(const vector<BDD>& c_vars,
-		map<unsigned, BDD>& latch_to_BDD_signal, set<int>& latches_to_check_)
+		map<unsigned, BDD>& latch_to_BDD_signal, set<int>& latches_to_check)
 {
 
-	unsigned num_of_signals_to_encode = circuit_->num_latches - num_err_latches_;
-	for (unsigned binary_encoding = 0; binary_encoding < num_of_signals_to_encode;
-			++binary_encoding)
+	unsigned binary_encoding = 0;
+	for (set<int>::iterator it = latches_to_check.begin(); it != latches_to_check.end();
+			++it)
 	{
-		unsigned current_latch = circuit_->latches[binary_encoding].lit;
-		latches_to_check_.insert(current_latch);
-		latch_to_BDD_signal[current_latch] = binary_conjunct(binary_encoding, c_vars);
+		latch_to_BDD_signal[*it] = binary_conjunct(binary_encoding, c_vars);
+		++binary_encoding;
 	}
 }
 
@@ -572,9 +578,10 @@ void BddAnalysis::analyze_binary_enc_c_signals(vector<TestCase>& testcases)
 
 	stopWatchStart();
 
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+
 	// the binary logarithm of the number of latches is the number of c signals
-	unsigned num_latches_to_check = circuit_->num_latches - num_err_latches_;
-	unsigned num_of_c_vars = ceil(log2(num_latches_to_check));
+	unsigned num_of_c_vars = ceil(log2(l_list.size()));
 
 	int first_cj_var = next_free_cnf_var_;
 	int last_cj_var = first_cj_var + num_of_c_vars - 1;
@@ -586,7 +593,7 @@ void BddAnalysis::analyze_binary_enc_c_signals(vector<TestCase>& testcases)
 
 	// create the binary encoding for c vars
 	map<unsigned, BDD> latch_to_BDD_signal;
-	set<int> latches_to_check_;
+	set<int> latches_to_check_(l_list.begin(), l_list.end());
 	create_binary_encoded_c_BDDs(c_vars, latch_to_BDD_signal, latches_to_check_);
 	stopWatchStore(CREATE_C_SIGNALS);
 
@@ -814,9 +821,10 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals(vector<TestCase>& testcases
 
 	stopWatchStart();
 
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+
 	// the binary logarithm of the number of latches is the number of c signals
-	unsigned num_latches_to_check = circuit_->num_latches - num_err_latches_;
-	unsigned num_of_c_vars = ceil(log2(num_latches_to_check));
+	unsigned num_of_c_vars = ceil(log2(l_list.size()));
 
 	int first_cj_var = next_free_cnf_var_;
 	int last_cj_var = first_cj_var + num_of_c_vars - 1;
@@ -828,7 +836,7 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals(vector<TestCase>& testcases
 
 	// create the binary encoding for c vars
 	map<unsigned, BDD> latch_to_BDD_signal;
-	set<int> latches_to_check_;
+	set<int> latches_to_check_(l_list.begin(), l_list.end());
 	create_binary_encoded_c_BDDs(c_vars, latch_to_BDD_signal, latches_to_check_);
 	stopWatchStore(CREATE_C_SIGNALS);
 
@@ -1048,9 +1056,10 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals_FREE_INPUTS(vector<TestCase
 
 	stopWatchStart();
 
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+
 	// the binary logarithm of the number of latches is the number of c signals
-	unsigned num_latches_to_check = circuit_->num_latches - num_err_latches_;
-	unsigned num_of_c_vars = ceil(log2(num_latches_to_check));
+	unsigned num_of_c_vars = ceil(log2(l_list.size()));
 
 	int first_cj_var = next_free_cnf_var_;
 	int last_cj_var = first_cj_var + num_of_c_vars - 1;
@@ -1062,7 +1071,7 @@ void BddAnalysis::analyze_binary_enc_c_and_f_signals_FREE_INPUTS(vector<TestCase
 
 	// create the binary encoding for c vars
 	map<unsigned, BDD> latch_to_BDD_signal;
-	set<int> latches_to_check_;
+	set<int> latches_to_check_(l_list.begin(), l_list.end());
 	create_binary_encoded_c_BDDs(c_vars, latch_to_BDD_signal, latches_to_check_);
 	stopWatchStore(CREATE_C_SIGNALS);
 

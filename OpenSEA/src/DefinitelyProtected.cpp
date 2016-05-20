@@ -68,10 +68,10 @@ void DefinitelyProtected::analyze()
 void DefinitelyProtected::findDefinitelyProtected_1()
 {
 	// ---------------- BEGIN 'for each latch' -------------------------
-	// let's assume we know which latch is not part of the protection logic
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
-		unsigned component_cnf = circuit_->latches[c_cnt].lit >> 1;
+		unsigned component_cnf = latches_to_check[l_cnt] >> 1;
 		int next_free_cnf_var = 2;
 		SatSolver* solver_ = Options::instance().getSATSolver();
 		vector<int> vars_to_keep; // empty
@@ -145,13 +145,12 @@ void DefinitelyProtected::findDefinitelyProtected_1()
 
 		if(solver_->incIsSat() == false)
 		{
-			L_DBG("Definitely protected latch "<< circuit_->latches[c_cnt].lit << " found. (UNSAT)")
-		detected_latches_.insert(circuit_->latches[c_cnt].lit);
+			L_DBG("Definitely protected latch "<< latches_to_check[l_cnt] << " found. (UNSAT)")
+		detected_latches_.insert(latches_to_check[l_cnt]);
 		}
 		else
 		{
-			L_DBG("SAT..")
-			// TODO: are models interesting as counter examples?
+			L_DBG("SAT.. " << latches_to_check[l_cnt])
 		}
 
 		delete solver_;
@@ -215,10 +214,10 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 	vector<int> results_bakcup = sim_symb.getResults();
 
 	// ---------------- BEGIN 'for each latch' -------------------------
-	// let's assume we know which latch is not part of the protection logic
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
-		unsigned component_cnf = circuit_->latches[c_cnt].lit >> 1;
+		unsigned component_cnf = latches_to_check[l_cnt] >> 1;
 
 		// compute faulty transition relation
 		sim_symb.setResultValue(component_cnf, -sim_symb.getResultValue(component_cnf)); // flip latch
@@ -257,13 +256,12 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 
 		if(solver->incIsSat() == false)
 		{
-			L_DBG("Definitely protected latch "<< circuit_->latches[c_cnt].lit << " found. (UNSAT)")
-		detected_latches_.insert(circuit_->latches[c_cnt].lit);
+			L_DBG("Definitely protected latch "<< latches_to_check[l_cnt] << " found. (UNSAT)")
+		detected_latches_.insert(latches_to_check[l_cnt]);
 		}
 		else
 		{
-			L_DBG("SAT..")
-			// TODO: are models interesting as counter examples?
+			L_DBG("SAT.. " << latches_to_check[l_cnt])
 		}
 
 

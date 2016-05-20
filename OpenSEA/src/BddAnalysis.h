@@ -64,7 +64,7 @@ using BackEnd::analyze;
 
 	enum AnalysisMode
 	{
-		C_ONE_HOT_ENCODING = 0, C_BINARY_ENCODING = 1, NOT_IMPLEMENTED = 2
+		C_ONE_HOT_ENCODING = 0, C_CONSTR = 1, C_BINARY_ENCODING = 2, C_F_BINARY = 3, C_F_BINARY_FREE_INPUTS = 4
 	};
 
 // -------------------------------------------------------------------------------------------

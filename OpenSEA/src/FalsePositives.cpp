@@ -87,16 +87,20 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 	if (environment_model_)
 		sim_env = new AigSimulator(environment_model_);
 
+
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_,
+			num_err_latches_);
+	map<unsigned, unsigned> literal_to_idx;
+	Utils::genLit2IndexMap(latches_to_check, circuit_, literal_to_idx);
+
 	// ---------------- BEGIN 'for each latch' -------------------------
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
 
 		next_free_cnf_var = 2;
 
-		unsigned component_aig = circuit_->latches[c_cnt].lit;
+		unsigned component_aig = latches_to_check[l_cnt];
 		int component_cnf = component_aig >> 1;
-
-//		cout << "==============================" << endl << "latch " << component_aig << endl;
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -144,7 +148,8 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 				// flip latch
 				vector<int> faulty_state = concrete_state_ok;
-				faulty_state[c_cnt] = (faulty_state[c_cnt] == AIG_TRUE) ? AIG_FALSE : AIG_TRUE;
+				unsigned index = literal_to_idx[component_aig];
+				faulty_state[index] = (faulty_state[index] == AIG_TRUE) ? AIG_FALSE : AIG_TRUE;
 
 				// faulty simulation with flipped latch
 				sim_concrete->simulateOneTimeStep(testcase[timestep], faulty_state);
@@ -361,9 +366,8 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 	if (environment_model_)
 		sim_env = new AigSimulator(environment_model_);
 
-
-	// TODO: move outside of this function ----
-	set<int> latches_to_check_; // TODO: always use all latches for the false positives algorithm?
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	set<int> latches_to_check;
 
 	//------------------------------------------------------------------------------------------
 	// set up ci signals
@@ -372,12 +376,12 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 	map<int, int> latch_to_cj; // maps latch-literals(cnf) to corresponding cj-literals(cnf)
 	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
 
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned c_cnt = 0; c_cnt < l_list.size(); ++c_cnt)
 	{
-		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
+		latches_to_check.insert(l_list[c_cnt]);
 		int cj = next_free_cnf_var++;
-		latch_to_cj[circuit_->latches[c_cnt].lit >> 1] = cj;
-		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
+		latch_to_cj[l_list[c_cnt] >> 1] = cj;
+		cj_to_latch[cj] = l_list[c_cnt];
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
@@ -467,7 +471,7 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 			solver_->addVarToKeep(fi);
 
 			set<int>::iterator it;
-			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it) // TODO: for ALL latches
+			for (it = latches_to_check.begin(); it != latches_to_check.end(); ++it)
 			{
 				int latch_output = *it >> 1;
 				int old_value = sim_symb.getResultValue(latch_output);
@@ -566,20 +570,6 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 			// switch concrete simulation to next state
 			concrete_state_ok = next_state_ok;
 
-//			vector<int> output_is_relevant;
-//			if(environment_model_)
-//			{
-//				vector<int> env_input;
-//				env_input.reserve(testcase[timestep].size() + outputs_ok.size());
-//				env_input.insert(env_input.end(),
-//						testcase[timestep].begin(), testcase[timestep].end());
-//				env_input.insert(env_input.end(), outputs_ok.begin(),
-//						outputs_ok.end());
-//				environment_sim->simulateOneTimeStep(env_input);
-//				output_is_relevant = environment_sim->getOutputs();
-//				environment_sim->switchToNextState();
-//			}
-
 			//--------------------------------------------------------------------------------------
 			// call SAT-solver
 
@@ -592,8 +582,6 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 			while (solver_->incIsSatModelOrCore(assumptions, vars_of_interest, model))
 			{
 				Utils::debugPrint(model, "model");
-
-
 
 				unsigned earliest_alarm_timestep = timestep + 1;
 				int fi = CNF_TRUE;
@@ -670,16 +658,15 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 	if (environment_model_)
 		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
 	// ---------------- BEGIN 'for each latch' -------------------------
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
 
 		next_free_cnf_var = 2;
 
-		unsigned component_aig = circuit_->latches[c_cnt].lit;
+		unsigned component_aig = latches_to_check[l_cnt];
 		int component_cnf = component_aig >> 1;
-
-//		cout << "==============================" << endl << "latch " << component_aig << endl;
 
 		for (unsigned tci = 0; tci < testcases.size(); tci++)
 		{
@@ -956,7 +943,7 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 	if (environment_model_)
 		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
-
+	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
 	set<int> latches_to_check_;
 	//------------------------------------------------------------------------------------------
 	// set up ci signals
@@ -965,12 +952,12 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 	map<int, int> latch_to_cj; // maps latch-literals(cnf) to corresponding cj-literals(cnf)
 	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
 
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned c_cnt = 0; c_cnt < l_list.size(); ++c_cnt)
 	{
-		latches_to_check_.insert(circuit_->latches[c_cnt].lit);
+		latches_to_check_.insert(l_list[c_cnt]);
 		int cj = next_free_cnf_var++;
-		latch_to_cj[circuit_->latches[c_cnt].lit >> 1] = cj;
-		cj_to_latch[cj] = circuit_->latches[c_cnt].lit;
+		latch_to_cj[l_list[c_cnt] >> 1] = cj;
+		cj_to_latch[cj] = l_list[c_cnt];
 	}
 	int next_cnf_var_after_ci_vars = next_free_cnf_var;
 	//------------------------------------------------------------------------------------------
