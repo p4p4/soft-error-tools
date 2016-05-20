@@ -29,19 +29,20 @@
 #include "defines.h"
 	class SuperfluousTrace
 	{
-		TestCase empty;
 	public:
-		int component_=0;
-		unsigned flip_timestep_=0;
-		unsigned alarm_timestep_=0;
-		unsigned error_gone_timestep_=0;
-		TestCase& testcase_;
+		int component_ = 0;
+		int component_index_ = 0;
+		unsigned flip_timestep_ = 0;
+		unsigned alarm_timestep_ = 0;
+		unsigned error_gone_timestep_ = 0;
+		TestCase testcase_;
 
-		SuperfluousTrace() : testcase_(empty) {}
-		SuperfluousTrace(TestCase& testcase)  : testcase_(testcase) {}
-		SuperfluousTrace(int component, TestCase& testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts) : testcase_(testcase)
+		SuperfluousTrace() {}
+		SuperfluousTrace(TestCase testcase)  : testcase_(testcase) {}
+		SuperfluousTrace(int component, int component_index, TestCase testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts) : testcase_(testcase)
 		{
 			component_ = component;
+			component_index_ = component_index;
 			flip_timestep_ = flip_timestep;
 			alarm_timestep_ = alarm_timestep;
 			error_gone_timestep_ = error_gone_ts;

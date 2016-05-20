@@ -54,14 +54,9 @@ const set<unsigned>& BackEnd::getVulnerableElements() const
 	return detected_latches_;
 }
 
-unsigned int BackEnd::getNumberOfErrors()
-{
-	return detected_latches_.size();
-}
-
 void BackEnd::printResults()
 {
-	L_LOG("#Errors found: " << getNumberOfErrors());
+	L_LOG("#Errors found: " << detected_latches_.size());
 	if (Options::instance().isUseDiagnosticOutput())
 	{
 		ErrorTraceManager::instance().printErrorTraces();

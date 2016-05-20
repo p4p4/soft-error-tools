@@ -107,11 +107,7 @@ public:
 	/// @return TRUE if vulnerabilities were found.
 	bool findFalsePositives_2b_free_inputs(vector<TestCase> &testcases);
 
-
-/// @return The number of vulnerable elements / number of superfluous traces
-	unsigned int getNumberOfErrors();
-
-	void printErrorTraces();
+	void printResults();
 
 
 	vector<SuperfluousTrace*> getSuperfluous()
@@ -136,7 +132,7 @@ protected:
 	/// protection circuit.
 	unsigned num_err_latches_;
 
-	void addSuperfluousTrace(int component, TestCase& testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts);
+	void addSuperfluousTrace(int component, int component_index, TestCase& testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts);
 
 
 	vector<SuperfluousTrace*> superfluous;

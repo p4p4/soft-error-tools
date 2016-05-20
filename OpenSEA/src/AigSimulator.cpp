@@ -95,7 +95,7 @@ bool AigSimulator::simulateOneTimeStep()
 void AigSimulator::simulateOneTimeStep(const vector<int> &input_values)
 {
 	MASSERT(input_values.size() == circuit_->num_inputs,
-			"Wrong test case provided!");
+			"Wrong test case provided! number of inputs should be " << circuit_->num_inputs << ", but is " << input_values.size() );
 
 	// copy inputs into results_
 	for (size_t cnt = 0; cnt < circuit_->num_inputs; ++cnt)

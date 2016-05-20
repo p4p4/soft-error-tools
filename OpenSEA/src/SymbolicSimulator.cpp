@@ -329,7 +329,6 @@ const vector<int> &SymbolicSimulator::getNextLatchValues()
 void SymbolicSimulator::setInputValues(const vector<int>& input_values)
 {
 	MASSERT(input_values.size() == circuit_->num_inputs, "Input vector has wrong length!");
-
 	// set input values according to TestCase to TRUE or FALSE:
 	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
 	{

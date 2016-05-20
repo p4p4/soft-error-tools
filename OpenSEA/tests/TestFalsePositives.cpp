@@ -268,7 +268,7 @@ void TestFalsePositives::test8_environment_input_model()
 
 		CPPUNIT_ASSERT(falsepos.getSuperfluous().size() > 0);
 
-		falsepos.printErrorTraces();
+		falsepos.printResults();
 
 		// b) the input is hardcoded to 0, which makes it
 		//    irrelevant according to the environment

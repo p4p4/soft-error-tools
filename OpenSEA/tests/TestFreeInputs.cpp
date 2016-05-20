@@ -218,7 +218,7 @@ void TestFreeInputs::test2()
 //		{
 //			cout << "  Latch " << *it << endl;
 //		}
-	cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+//	cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
 	CPPUNIT_ASSERT(vulnerabilities.size() == 65);
 
 	aiger_reset(circuit);
@@ -394,7 +394,7 @@ void TestFreeInputs::test8_sim()
 //		{
 //			cout << "  Latch " << *it << endl;
 //		}
-	cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+//	cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
 	CPPUNIT_ASSERT(vulnerabilities.size() == 65);
 
 	aiger_reset(circuit);
@@ -469,7 +469,7 @@ void TestFreeInputs::test11_bdd()
 	vector<string> tc_files;
 	tc_files.push_back("inputs/35_bit_input_2");
 
-	BddAnalysis bdd(circuit, 2, SimulationBasedAnalysis::FREE_INPUTS); 	     // TODO: change MODES!!
+	BddAnalysis bdd(circuit, 2, BddAnalysis::C_F_BINARY_FREE_INPUTS);
 	TestCaseProvider::instance().setCircuit(circuit);
 	vector<TestCase> tcs = TestCaseProvider::instance().readTestcasesFromFiles(tc_files);
 	bdd.analyze(tcs);
@@ -481,7 +481,7 @@ void TestFreeInputs::test11_bdd()
 //		{
 //			cout << "  Latch " << *it << endl;
 //		}
-	cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
+//	cout << "number of detected vulnerabilities: " << vulnerabilities.size() << endl;
 	CPPUNIT_ASSERT(vulnerabilities.size() == 65);
 
 	aiger_reset(circuit);

@@ -165,7 +165,7 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 				if (equal_concrete_outputs && equal_concrete_states && alarm_faulty)
 				{
-					addSuperfluousTrace(component_aig, testcase, timestep, timestep, timestep + 1);
+					addSuperfluousTrace(component_aig, index, testcase, timestep, timestep, timestep + 1);
 					sim_symb.simulateOneTimeStep();
 					alarm_literals.push_back(sim_symb.getAlarmValue());
 					alarmlit_to_timestep[sim_symb.getAlarmValue()] = timestep;
@@ -296,7 +296,10 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					Utils::debugPrint(model,"model");
 					SuperfluousTrace* sf = new SuperfluousTrace(testcase);
 					sf->component_ = component_aig;
+					detected_latches_.insert(component_aig);
+					sf->component_index_ = index;
 					sf->error_gone_timestep_ = timestep + 1;
+					detected_latches_.insert(component_aig);
 					unsigned earliest_alarm_timestep = timestep + 1;
 					//parse:
 					int fj = 0;
@@ -620,6 +623,7 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 				SuperfluousTrace* sf = new SuperfluousTrace(testcase);
 				sf->error_gone_timestep_ = timestep +1;
 				sf->component_ = cj_to_latch[cj];
+				detected_latches_.insert(sf->component_);
 				sf->flip_timestep_ = fi_to_timestep[fi];
 				if(earliest_alarm_timestep != timestep + 1)
 					sf->alarm_timestep_ = earliest_alarm_timestep;
@@ -659,6 +663,9 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
 	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	map<unsigned, unsigned> literal_to_idx;
+	Utils::genLit2IndexMap(latches_to_check, circuit_, literal_to_idx);
+
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
@@ -859,6 +866,8 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 					sf->testcase_.reserve(testcase_with_cnf_literals.size());
 
 					sf->component_ = component_aig;
+					detected_latches_.insert(component_aig);
+					sf->component_index_ = literal_to_idx[component_aig];
 					sf->error_gone_timestep_ = timestep + 1;
 					unsigned earliest_alarm_timestep = timestep + 1;
 					//parse:
@@ -866,7 +875,8 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 					for (unsigned model_count = 0; model_count < model.size(); model_count++)
 					{
 						int lit = model[model_count];
-						cnf_input_var_to_aig_truth_lit[lit] = (lit > 0) ? AIG_TRUE : AIG_FALSE;
+						if (abs(lit) != 1)
+							cnf_input_var_to_aig_truth_lit[lit] = (lit > 0) ? AIG_TRUE : AIG_FALSE;
 
 						if (lit < 0)
 							continue;
@@ -944,7 +954,9 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
 	vector<unsigned> l_list = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
-	set<int> latches_to_check_;
+	set<int> latches_to_check;
+	map<unsigned, unsigned> literal_to_idx;
+	Utils::genLit2IndexMap(l_list, circuit_, literal_to_idx);
 	//------------------------------------------------------------------------------------------
 	// set up ci signals
 	// maps for latch-literals <=> cj-literals: each latch has a corresponding cj literal,
@@ -954,7 +966,7 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 
 	for (unsigned c_cnt = 0; c_cnt < l_list.size(); ++c_cnt)
 	{
-		latches_to_check_.insert(l_list[c_cnt]);
+		latches_to_check.insert(l_list[c_cnt]);
 		int cj = next_free_cnf_var++;
 		latch_to_cj[l_list[c_cnt] >> 1] = cj;
 		cj_to_latch[cj] = l_list[c_cnt];
@@ -1047,7 +1059,7 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 			solver_->addVarToKeep(fi);
 
 			set<int>::iterator it;
-			for (it = latches_to_check_.begin(); it != latches_to_check_.end(); ++it) // TODO: for ALL latches
+			for (it = latches_to_check.begin(); it != latches_to_check.end(); ++it) // TODO: for ALL latches
 			{
 				int latch_output = *it >> 1;
 				int old_value = sim_symb.getResultValue(latch_output);
@@ -1204,7 +1216,8 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 				for (unsigned model_count = 0; model_count < model.size(); model_count++)
 				{
 					int lit = model[model_count];
-					cnf_input_var_to_aig_truth_lit[lit] = (lit > 0) ? AIG_TRUE : AIG_FALSE;
+					if (abs(lit) != 1)
+						cnf_input_var_to_aig_truth_lit[lit] = (lit > 0) ? AIG_TRUE : AIG_FALSE;
 
 					if (lit > 0 && lit < next_cnf_var_after_ci_vars) // we have found the one and only active cj signal
 					{
@@ -1234,6 +1247,8 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 				SuperfluousTrace* sf = new SuperfluousTrace();
 				sf->error_gone_timestep_ = timestep +1;
 				sf->component_ = cj_to_latch[cj];
+				detected_latches_.insert(sf->component_);
+				sf->component_index_ = literal_to_idx[sf->component_];
 				sf->flip_timestep_ = fi_to_timestep[fi];
 				if(earliest_alarm_timestep != timestep + 1)
 					sf->alarm_timestep_ = earliest_alarm_timestep;
@@ -1273,22 +1288,65 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 	return superfluous.size() != 0;
 }
 
-unsigned int FalsePositives::getNumberOfErrors()
+void FalsePositives::printResults()
 {
-	return superfluous.size();
-}
+	L_LOG("#False positive traces found found: " << superfluous.size());
 
-void FalsePositives::printErrorTraces()
-{
-	cerr << "TODO: implement listing of superfluous traces (similar to error traces for vulnerabilities)" << endl;
-
-	// TODO: only draft listing of superfluous components, integrate into ErrorTraceManager
-	for(unsigned i = 0; i < superfluous.size(); i++)
+	if (Options::instance().isUseDiagnosticOutput())
 	{
-		SuperfluousTrace* sf = superfluous[i];
-		L_LOG("  component="<< sf->component_ << ", flip_timestep=" << sf->flip_timestep_ << ", alarm_timestep=" << sf->alarm_timestep_ << ",error_gone_ts=" << sf->error_gone_timestep_)
+		ostringstream oss;
 
+		for(unsigned i = 0; i < superfluous.size(); i++)
+		{
+			SuperfluousTrace* sf = superfluous[i];
+			oss << "  component=" << sf->component_ << ", flip_timestep=" << sf->flip_timestep_
+					<< ", alarm_timestep=" << sf->alarm_timestep_ << ", error_gone_ts="
+					<< sf->error_gone_timestep_ << endl;
 
+			//---------------
+			AigSimulator sim(Options::instance().getCircuit());
+			AigSimulator sim_ok(Options::instance().getCircuit());
+			oss << "[SIM] i=?: state | inputs | outputs | next state" << endl;
+			oss << "-------------------------------------------------" << endl; // todo: make fancy
+			for (unsigned j = 0; j < sf->error_gone_timestep_; j++)
+			{
+				if (j == sf->flip_timestep_)
+					sim.flipValue(sf->component_);
+
+				sim.simulateOneTimeStep(sf->testcase_[j]);
+				sim_ok.simulateOneTimeStep(sf->testcase_[j]);
+				oss << "[ OK] i=" << j << ": " << sim_ok.getStateString() << endl;
+				if (j >= sf->flip_timestep_)
+				{
+					oss << "[ERR] i=" << j << ": " << sim.getStateString();
+					if (j == sf->flip_timestep_)
+						oss << " <<< flipped in this state!";
+					if (j + 1 == sf->error_gone_timestep_)
+						oss << " <<< error gone in next state!";
+					oss << endl;
+				}
+				sim.switchToNextState();
+				sim_ok.switchToNextState();
+			}
+
+			oss << endl;
+
+		}
+
+		if (Options::instance().isDiagnosticOutputToFile())
+		{
+		  ofstream out_file;
+		  out_file.open(Options::instance().getDiagnosticOutputPath().c_str());
+			MASSERT(out_file,
+					"could not write diagnostic output file: " + Options::instance().getDiagnosticOutputPath())
+
+		  out_file << oss.str() << endl;
+		  out_file.close();
+		}
+		else
+		{
+			cout << endl << oss.str() << endl;
+		}
 	}
 
 }
@@ -1300,11 +1358,11 @@ bool FalsePositives::isEqualN(vector<int> a, vector<int> b, int elements_to_skip
 	return equal(a.begin(), a.begin() + length, b.begin());
 }
 
-void FalsePositives::addSuperfluousTrace(int component, TestCase& testcase, unsigned flip_timestep,
+void FalsePositives::addSuperfluousTrace(int component, int component_index, TestCase& testcase, unsigned flip_timestep,
 		unsigned alarm_timestep, unsigned error_gone_ts)
 {
-	L_DBG("       flip_timestep=" << flip_timestep << ", alarm_timestep=" << alarm_timestep << ",error_gone_ts=" << error_gone_ts)
-	SuperfluousTrace* sf = new SuperfluousTrace(component, testcase, flip_timestep, alarm_timestep,
+	detected_latches_.insert(component);
+	SuperfluousTrace* sf = new SuperfluousTrace(component, component_index, testcase, flip_timestep, alarm_timestep,
 			error_gone_ts);
 	superfluous.push_back(sf);
 }
