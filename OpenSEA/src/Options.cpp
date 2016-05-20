@@ -709,15 +709,15 @@ Options::Options() :
 	// nothing to be done
 }
 
-vector<unsigned> Options::removeExcludedLatches(aiger* circuit)
+vector<unsigned> Options::removeExcludedLatches(aiger* circuit, unsigned num_err_latches)
 {
 	vector<unsigned> result;
 
-	for(unsigned i=0; i < circuit->num_latches - num_err_latches_; i++)
+	for(unsigned i=0; i < circuit->num_latches - num_err_latches; i++)
 	{
 		unsigned latch = circuit->latches[i].lit;
 
-		if (latches_to_exclude_.find(latch) != latches_to_exclude_.end())
+		if (latches_to_exclude_.find(latch) == latches_to_exclude_.end())
 			result.push_back(latch);
 	}
 	return result;

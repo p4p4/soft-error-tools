@@ -104,13 +104,28 @@ void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 		}
 	}
 
+
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+
+	// maps literals of latches to check to the corresponding aiger latch indices
+	map<unsigned, unsigned> literal_to_idx;
+	unsigned j = 0;
+	for (unsigned i = 0; i < circuit_->num_latches && j < latches_to_check.size(); ++i)
+	{
+		while (circuit_->latches[i].lit != latches_to_check[j])
+			i++;
+
+		literal_to_idx[latches_to_check[j]] = i;
+		j++;
+	}
+
 	//  for each latch
-	for (unsigned l_cnt = 0; l_cnt < circuit_->num_latches - num_err_latches_; ++l_cnt)
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
 
 		// skip latches where we already know that they are vulnerable
 		if ((tc_index_ != 0)
-				&& (detected_latches_.find(circuit_->latches[l_cnt].lit)
+				&& (detected_latches_.find(latches_to_check[l_cnt])
 						!= detected_latches_.end()))
 		{
 			continue;
@@ -126,8 +141,10 @@ void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 			// current state
 			vector<int> state = states_ok[timestep];
 
+
+			unsigned idx_of_current_latch = literal_to_idx[latches_to_check[l_cnt]];
 			// flip latch
-			state[l_cnt] = aiger_not(state[l_cnt]); // don't forget to restore state again later
+			state[idx_of_current_latch] = aiger_not(state[idx_of_current_latch]); // don't forget to restore state again later
 			AigSimulator sim_w_flip(circuit_);
 
 			// for all j >= i:
@@ -142,7 +159,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 				// if(alarm)
 				if (outputs_w_flip[circuit_->num_outputs - 1] == AIG_TRUE)
 				{
-					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
+					state[idx_of_current_latch] = aiger_not(state[idx_of_current_latch]); // undo bit-flip
 					break;
 				}
 
@@ -170,15 +187,15 @@ void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 
 				if (wrong_outputs)
 				{
-					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
-					detected_latches_.insert(circuit_->latches[l_cnt].lit);
+					state[idx_of_current_latch] = aiger_not(state[idx_of_current_latch]); // undo bit-flip
+					detected_latches_.insert(circuit_->latches[idx_of_current_latch].lit);
 
 					if (Options::instance().isUseDiagnosticOutput())
 					{
 						ErrorTrace* trace = new ErrorTrace;
 						trace->error_timestep_ = later_timestep;
 						trace->flipped_timestep_ = timestep;
-						trace->latch_index_ = circuit_->latches[l_cnt].lit;
+						trace->latch_index_ = circuit_->latches[idx_of_current_latch].lit;
 						trace->input_trace_ = test_case;
 						ErrorTraceManager::instance().error_traces_.push_back(trace);
 					}
@@ -190,7 +207,7 @@ void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 				// else if (next_state[] == states[later_timestep+1][])
 				if (sim_w_flip.getLatchValues() == states_ok[later_timestep + 1])
 				{
-					state[l_cnt] = aiger_not(state[l_cnt]); // undo bit-flip
+					state[idx_of_current_latch] = aiger_not(state[idx_of_current_latch]); // undo bit-flip
 					break;
 				}
 

@@ -239,7 +239,7 @@ class Options
 	const string& getLatchesResultPath() const;
 	bool isUseLatchesResult() const;
 
-	vector<unsigned> removeExcludedLatches(aiger* circuit);
+	vector<unsigned> removeExcludedLatches(aiger* circuit, unsigned num_err_latches = 0);
 
 	int num_open_inputs_; // only for tcr2 testcase mode (for benchmarking open inputs)
 
