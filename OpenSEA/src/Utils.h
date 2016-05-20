@@ -234,6 +234,9 @@ public:
 
   static aiger* readAiger(string path);
 
+  static void genLit2IndexMap(const vector<unsigned>& latches_to_check, aiger* circuit,
+  			map<unsigned, unsigned>& literal_to_idx);
+
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Prints the current memory usage as debug message.

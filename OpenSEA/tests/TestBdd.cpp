@@ -447,7 +447,7 @@ void TestBdd::test7_analysis_compare_with_simulation_1()
 			0);
 	compareWithSimulation("inputs/traffic-synth.5vul.1l.aig", 5, 14, 1,
 			0);
-	Logger::instance().enable(Logger::DBG);
+//	Logger::instance().enable(Logger::DBG);
 	compareWithSimulation("inputs/s5378.50percent.aag", 3, 5, 2,
 			0); // 164 Latches!
 }

@@ -36,6 +36,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestFalsePositives);
 // -------------------------------------------------------------------------------------------
 void TestFalsePositives::setUp()
 {
+	Logger::instance().disable(Logger::DBG);
   //setup for testcases
 }
 

@@ -38,7 +38,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestEnvironmentModel);
 void TestEnvironmentModel::setUp()
 {
 	//setup for testcases
-	Logger::instance().enable(Logger::ERR);
+//	Logger::instance().enable(Logger::ERR);
 }
 
 // -------------------------------------------------------------------------------------------

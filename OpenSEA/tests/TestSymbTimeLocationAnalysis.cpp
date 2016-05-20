@@ -150,6 +150,7 @@ void TestSymbTimeLocationAnalysis::test3_two_latches()
 	aiger_reset(circuit);
 
 	aiger* circuit2 = Utils::readAiger("inputs/two_latches.unprotected.aag");
+	TestCaseProvider::instance().setCircuit(circuit2);
 	SymbTimeLocationAnalysis sta2(circuit2, 0, SymbTimeLocationAnalysis::STANDARD);
 	tcs = TestCaseProvider::instance().generateRandomTestCases(1, 3);
 	sta2.analyze(tcs);

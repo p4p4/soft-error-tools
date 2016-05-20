@@ -87,10 +87,16 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 	sim_ = new AigSimulator(circuit_);
 
 	AIG2CNF::instance().initFromAig(circuit_);
+
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	map<unsigned, unsigned> literal_to_idx;
+	Utils::genLit2IndexMap(latches_to_check, circuit_, literal_to_idx);
+
+
 // ---------------- BEGIN 'for each latch' -------------------------
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
-		unsigned component_aig = circuit_->latches[c_cnt].lit;
+		unsigned component_aig = latches_to_check[l_cnt];
 		int component_cnf = AIG2CNF::instance().aigLitToCnfLit(component_aig);
 
 		int next_free_cnf_var = AIG2CNF::instance().getMaxCnfVar() + 1;
@@ -162,7 +168,8 @@ void SymbTimeAnalysis::Analyze1_naive(vector<TestCase> &testcases)
 
 				// flip component bit
 				vector<int> faulty_state = concrete_state;
-				faulty_state[c_cnt] = (faulty_state[c_cnt] == 1) ? 0 : 1;
+				int index = literal_to_idx[component_aig];
+				faulty_state[index] = (faulty_state[index] == 1) ? 0 : 1;
 
 				// faulty simulation with flipped bit
 				sim_->simulateOneTimeStep(testcase[timestep], faulty_state);
@@ -371,10 +378,14 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 	int next_free_cnf_var = 2;
 	SymbolicSimulator symbsim(circuit_, solver_, next_free_cnf_var);
 
-// ---------------- BEGIN 'for each latch' -------------------------
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	map<unsigned, unsigned> literal_to_idx;
+	Utils::genLit2IndexMap(latches_to_check, circuit_, literal_to_idx);
+
+	// ---------------- BEGIN 'for each latch' -------------------------
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
-		unsigned component_aig = circuit_->latches[c_cnt].lit;
+		unsigned component_aig = latches_to_check[l_cnt];
 		int component_cnf = component_aig >> 1;
 
 		next_free_cnf_var = 2;
@@ -422,7 +433,8 @@ void SymbTimeAnalysis::Analyze1_symb_sim(vector<TestCase>& testcases)
 
 				// faulty simulation: flip component bit
 				vector<int> faulty_state = concrete_state;
-				faulty_state[c_cnt] = (faulty_state[c_cnt] == AIG_TRUE) ? AIG_FALSE : AIG_TRUE;
+				unsigned index = literal_to_idx[component_aig];
+				faulty_state[index] = (faulty_state[index] == AIG_TRUE) ? AIG_FALSE : AIG_TRUE;
 
 				// faulty simulation with flipped bit
 				sim_->simulateOneTimeStep(testcase[timestep], faulty_state);
@@ -685,10 +697,12 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 	if (environment_model_)
 		sim_env = new SymbolicSimulator(environment_model_, solver_, next_free_cnf_var);
 
-// ---------------- BEGIN 'for each latch' -------------------------
-	for (unsigned c_cnt = 0; c_cnt < circuit_->num_latches - num_err_latches_; ++c_cnt)
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+
+	// ---------------- BEGIN 'for each latch' -------------------------
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
-		unsigned component_aig = circuit_->latches[c_cnt].lit;
+		unsigned component_aig = latches_to_check[l_cnt];
 		int component_cnf = component_aig >> 1;
 
 		next_free_cnf_var = 2;

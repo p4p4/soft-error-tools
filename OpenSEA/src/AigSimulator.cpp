@@ -128,7 +128,7 @@ void AigSimulator::simulateOneTimeStep(const vector<int>& input_values,
 		const vector<int>& latch_values)
 {
 	MASSERT(input_values.size() == circuit_->num_inputs,
-			"Wrong test case (number of inputs) provided!");
+			"Wrong test case (number of inputs) provided!" << input_values.size() << " vs " << circuit_->num_inputs);
 
 	MASSERT(latch_values.size() == circuit_->num_latches,
 			"Wrong test case (number of latches) provided!");

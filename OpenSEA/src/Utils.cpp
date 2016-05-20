@@ -427,3 +427,16 @@ void Utils::generateRandomTestCases(vector<TestCase>& testcases, unsigned num_of
 		}
 
 }
+
+void Utils::genLit2IndexMap(const vector<unsigned>& latches_to_check, aiger* circuit,
+		map<unsigned, unsigned>& literal_to_idx)
+{
+	unsigned j = 0;
+	for (unsigned i = 0; i < circuit->num_latches && j < latches_to_check.size(); ++i)
+	{
+		while (circuit->latches[i].lit != latches_to_check[j])
+			i++;
+		literal_to_idx[latches_to_check[j]] = i;
+		j++;
+	}
+}

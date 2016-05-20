@@ -104,20 +104,11 @@ void SimulationBasedAnalysis::findVulnerabilitiesForTC(TestCase& test_case)
 		}
 	}
 
-
 	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
 
 	// maps literals of latches to check to the corresponding aiger latch indices
 	map<unsigned, unsigned> literal_to_idx;
-	unsigned j = 0;
-	for (unsigned i = 0; i < circuit_->num_latches && j < latches_to_check.size(); ++i)
-	{
-		while (circuit_->latches[i].lit != latches_to_check[j])
-			i++;
-
-		literal_to_idx[latches_to_check[j]] = i;
-		j++;
-	}
+	Utils::genLit2IndexMap(latches_to_check, circuit_, literal_to_idx);
 
 	//  for each latch
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
