@@ -134,12 +134,7 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
 	{
 		sim_symb.switchToNextState();
-		for(unsigned i = 0; i < circuit_->num_inputs; i++)
-		{
-			solver->addVarToKeep(next_free_cnf_var);
-			sim_symb.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
-		}
-
+		sim_symb.setInputValuesOpen();
 		sim_symb.simulateOneTimeStep();
 	}
 
@@ -186,19 +181,14 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
 	{
 		sim_symb.switchToNextState();
-		for(unsigned i = 0; i < circuit_->num_inputs; i++)
-		{
-			solver->addVarToKeep(next_free_cnf_var);
-			sim_symb.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
-		}
-
+		sim_symb.setInputValuesOpen();
 		sim_symb.simulateOneTimeStep();
 	}
 
 
 	//---------------------------------------
 	vector<int> next_state_normal = sim_symb.getNextLatchValues();
-	vector<int> outpus_normal = sim_symb.getOutputValues();
+	vector<int> outputs_normal = sim_symb.getOutputValues();
 
 	//------------------------------------------------------------------------------------------
 	// set up ci signals
@@ -216,18 +206,26 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 		cj_to_latch[cj] = latches_to_check[l_cnt];
 
 		// add multiplexer to flip the latch
-		int old_value = sim_symb.getResultValue(latch_cnf);
-		int new_value = next_free_cnf_var++;
-		sim_symb.setResultValue(latch_cnf, new_value);
-		solver->addVarToKeep(new_value);
 		// new_value == cj ? -old_value : old_value
-		solver->incAdd3LitClause(cj, old_value, -new_value);
-		solver->incAdd3LitClause(cj, -old_value, new_value);
-		solver->incAdd3LitClause(-cj, old_value, new_value);
-		solver->incAdd3LitClause(-cj, -old_value, -new_value);
+		int old_value = sim_symb.getResultValue(latch_cnf);
+		if (old_value == CNF_TRUE) // old value is true
+			sim_symb.setResultValue(latch_cnf, -cj);
+		else if (old_value == CNF_FALSE) // old value is false
+			sim_symb.setResultValue(latch_cnf, cj);
+		else
+		{
+			int new_value = next_free_cnf_var++;
+			solver->incAdd3LitClause(cj, old_value, -new_value);
+			solver->incAdd3LitClause(cj, -old_value, new_value);
+			solver->incAdd3LitClause(-cj, old_value, new_value);
+			solver->incAdd3LitClause(-cj, -old_value, -new_value);
+			sim_symb.setResultValue(latch_cnf, new_value);
+		}
 
 	}
 
+	// one c signal must me true. TODO: this should not be necessary
+	solver->incAddClause(c_vars);
 	//--------------------------------------------------------------------------------------
 	// single fault assumption: there might be at most one flipped component
 	// if c is true, all other c must be false (ci -> -c1, ci -> -c2, ...)
@@ -237,31 +235,37 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 			solver->incAdd2LitClause(-c_vars[i], -c_vars[j]);
 	}
 
-	// T_err(x,i,c,o,x'): faulty transition relation where latches can be flipped by SAT-solver
+	// T_err(x,i,c,o_e,x_e'): faulty transition relation where latches can be flipped by SAT-solver
 	sim_symb.simulateOneTimeStep();
 
 	vector<int> next_state_flip = sim_symb.getNextLatchValues();
-	vector<int> outpus_flip = sim_symb.getOutputValues();
+	vector<int> outputs_flip = sim_symb.getOutputValues();
 
 	// we only care about situations where the alarm is false
 	solver->incAddUnitClause(-sim_symb.getAlarmValue()); // no alarm
 
 
 	// create clauses saying that
-	//		(next_state_normal != next_state_flip) OR (outpus_normal != outpus_flip)
+	//		(next_state_normal != next_state_flip) OR (outputs_normal != outputs_flip)
 	vector<int> output_or_next_state_different_clause;
 
 	for(unsigned i = 0; i < circuit_->num_outputs -1; i++)
 	{
+		if (outputs_normal[i] == outputs_flip[i])
+			continue;
+
 		solver->addVarToKeep(next_free_cnf_var);
 		int out_is_diff_enable = next_free_cnf_var++;
 		output_or_next_state_different_clause.push_back(-out_is_diff_enable);
-		solver->incAdd3LitClause(out_is_diff_enable, outpus_normal[i], outpus_flip[i]);
-		solver->incAdd3LitClause(out_is_diff_enable, -outpus_normal[i], -outpus_flip[i]);
+		solver->incAdd3LitClause(out_is_diff_enable, outputs_normal[i], outputs_flip[i]);
+		solver->incAdd3LitClause(out_is_diff_enable, -outputs_normal[i], -outputs_flip[i]);
 	}
 
 	for(unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
 	{
+		if (next_state_normal[i] == next_state_flip[i])
+			continue;
+
 		solver->addVarToKeep(next_free_cnf_var);
 		int state_is_diff_enable = next_free_cnf_var++;
 		output_or_next_state_different_clause.push_back(-state_is_diff_enable);
@@ -270,6 +274,10 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 	}
 
 	solver->incAddClause(output_or_next_state_different_clause);
+
+	// TODO remove
+	c_vars.insert(c_vars.end(), outputs_normal.begin(), outputs_normal.end());
+	c_vars.insert(c_vars.end(), outputs_flip.begin(), outputs_flip.end());
 
 	vector<int> no_assumptions; // empty
 	vector<int> model;
@@ -284,7 +292,9 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 				solver->incAddUnitClause(-c);
 				detected_latches_.erase(cj_to_latch[c]);
 				L_DBG("latch " << cj_to_latch[c] << " not n-step protected")
+				break;
 			}
+			return;
 		}
 //		detected_latches_.remove(latch_aig);
 	}
