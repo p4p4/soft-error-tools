@@ -228,6 +228,10 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 
 	}
 
+	// require that one c-variable is true
+	// TODO: this should not be necessary, right?
+	solver->incAddClause(c_vars);
+
 	//--------------------------------------------------------------------------------------
 	// single fault assumption: there might be at most one flipped component
 	// if c is true, all other c must be false (ci -> -c1, ci -> -c2, ...)
