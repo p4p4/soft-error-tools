@@ -96,6 +96,9 @@ class SymbolicSimulator
 /// @param input_values The input vector
 	void setInputValues(const vector<int> &input_values);
 
+	void setInputValuesOpen();
+	void setStateValuesOpen();
+
 
 	void setCnfInputValues(const vector<int> &input_values_as_cnf);
 

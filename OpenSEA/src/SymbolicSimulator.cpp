@@ -411,3 +411,20 @@ void SymbolicSimulator::setResults(vector<int>& results)
 {
 	results_ = results;
 }
+
+void SymbolicSimulator::setInputValuesOpen()
+{
+	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
+	{
+//		open_input_vars_.push_back(next_free_cnf_var_);
+		results_[(circuit_->inputs[cnt_i].lit >> 1)] = next_free_cnf_var_++;
+	}
+}
+
+void SymbolicSimulator::setStateValuesOpen()
+{
+	for(unsigned i = 0; i < circuit_->num_latches; i++)
+	{
+		results_[(circuit_->latches[i].lit >> 1)] = next_free_cnf_var_++;
+	}
+}

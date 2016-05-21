@@ -54,7 +54,7 @@ void TestDefinitelyProtected::test1()
 	aiger* circuit = Utils::readAiger("inputs/toggle.perfect.aag");
 	for (unsigned mode = 0; mode <= number_of_modes; mode++)
 	{
-		L_DBG("mode = " << mode)
+		L_DBG(endl << endl << "mode = " << mode)
 		DefinitelyProtected dp(circuit, 0, mode);
 		dp.analyze();
 		CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 4);
@@ -64,7 +64,7 @@ void TestDefinitelyProtected::test1()
 	circuit = Utils::readAiger("inputs/toggle.1vulnerability.aag");
 	for (unsigned mode = 0; mode <= number_of_modes; mode++)
 	{
-		L_DBG("mode = " << mode)
+		L_DBG(endl << endl << "mode = " << mode)
 		DefinitelyProtected dp(circuit, 0, mode);
 		dp.analyze();
 		CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 3);
@@ -74,7 +74,7 @@ void TestDefinitelyProtected::test1()
 	circuit = Utils::readAiger("inputs/toggle.3vulnerabilities.aag");
 	for (unsigned mode = 0; mode <= number_of_modes; mode++)
 	{
-		L_DBG("mode = " << mode)
+		L_DBG(endl << endl << "mode = " << mode)
 		DefinitelyProtected dp(circuit, 0, mode);
 		dp.analyze();
 		CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 0);
