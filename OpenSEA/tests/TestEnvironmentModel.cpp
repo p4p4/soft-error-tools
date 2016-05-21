@@ -83,12 +83,12 @@ void TestEnvironmentModel::basic_test_1(std::string backend_name, int mode)
 	{
 		SimulationBasedAnalysis* backend = new SimulationBasedAnalysis(circuit, 0, mode);
 		backend->analyze(tcs);
-		CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 1);
+		CPPUNIT_ASSERT(backend->getDetectedLatches().size() == 1);
 
 		// in this test the output is always false, i.e. we don't care about the output
 		backend->setEnvironmentModel(environment);
 		backend->analyze(tcs);
-		CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 0);
+		CPPUNIT_ASSERT(backend->getDetectedLatches().size() == 0);
 
 		delete backend;
 	}
@@ -96,12 +96,12 @@ void TestEnvironmentModel::basic_test_1(std::string backend_name, int mode)
 	{
 		SymbTimeAnalysis* backend = new SymbTimeAnalysis(circuit, 0, mode);
 		backend->analyze(tcs);
-		CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 1);
+		CPPUNIT_ASSERT(backend->getDetectedLatches().size() == 1);
 
 		// in this test the output is always false, i.e. we don't care about the output
 		backend->setEnvironmentModel(environment);
 		backend->analyze(tcs);
-		CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 0);
+		CPPUNIT_ASSERT(backend->getDetectedLatches().size() == 0);
 
 		delete backend;
 	}
@@ -109,12 +109,12 @@ void TestEnvironmentModel::basic_test_1(std::string backend_name, int mode)
 	{
 		SymbTimeLocationAnalysis* backend = new SymbTimeLocationAnalysis(circuit, 0, mode);
 		backend->analyze(tcs);
-		CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 1);
+		CPPUNIT_ASSERT(backend->getDetectedLatches().size() == 1);
 
 		// in this test the output is always false, i.e. we don't care about the output
 		backend->setEnvironmentModel(environment);
 		backend->analyze(tcs);
-		CPPUNIT_ASSERT(backend->getVulnerableElements().size() == 0);
+		CPPUNIT_ASSERT(backend->getDetectedLatches().size() == 0);
 
 		delete backend;
 	}

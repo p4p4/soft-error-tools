@@ -72,7 +72,7 @@ void TestSimulationBasedAnalysis::checkVulnerabilities(
 	TestCaseProvider::instance().setCircuit(circuit);
 	vector<TestCase> tcs = TestCaseProvider::instance().readTestcasesFromFiles(tc_files);
 	sba.analyze(tcs);
-	const set<unsigned> &vulnerabilities = sba.getVulnerableElements();
+	const set<unsigned> &vulnerabilities = sba.getDetectedLatches();
 
 	// DEBUG: print the vulnerable latches
 //	for (set<unsigned>::iterator it = vulnerabilities.begin();

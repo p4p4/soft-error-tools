@@ -55,10 +55,10 @@ public:
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @brief Returns the set of vulnerable elements of the circuit
+/// @brief Returns the set of latches detected by analyze()
 ///
-/// @return The set of vulnerable elements of the circuit
-	const set<unsigned>& getVulnerableElements() const;
+/// @return The set of latches detected by analyze()
+	const set<unsigned>& getDetectedLatches() const;
 
 	virtual void printResults();
 

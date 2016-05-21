@@ -49,7 +49,7 @@ BackEnd::~BackEnd()
 }
 
 // -------------------------------------------------------------------------------------------
-const set<unsigned>& BackEnd::getVulnerableElements() const
+const set<unsigned>& BackEnd::getDetectedLatches() const
 {
 	return detected_latches_;
 }

@@ -61,7 +61,7 @@ void TestSymbTimeAnalysis::checkVulnerabilities(string path_to_aiger_circuit,
 	TestCaseProvider::instance().setCircuit(circuit);
 	vector<TestCase> tcs = TestCaseProvider::instance().readTestcasesFromFiles(tc_files);
 	sta.analyze(tcs);
-	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
+	const set<unsigned> &vulnerabilities = sta.getDetectedLatches();
 
 	// DEBUG: print the vulnerable latches
 //	for (set<unsigned>::iterator it = vulnerabilities.begin();
@@ -87,12 +87,12 @@ void TestSymbTimeAnalysis::compareWithSimulation(string path_to_aiger_circuit,
 	TestCaseProvider::instance().setCircuit(circuit);
 	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(num_tc, num_timesteps);
 	sta.analyze(tcs);
-	const set<unsigned> &symb_vulnerabilities = sta.getVulnerableElements();
+	const set<unsigned> &symb_vulnerabilities = sta.getDetectedLatches();
 
 	srand(0xCAFECAFE); // SymbTimeAnalysis and SimulationBasedAnalysis must have same "random" inputs
 	SimulationBasedAnalysis sba(circuit, num_err_latches);
 	sba.analyze(tcs);
-	const set<unsigned> &sim_vulnerabilities = sba.getVulnerableElements();
+	const set<unsigned> &sim_vulnerabilities = sba.getDetectedLatches();
 	L_INF("test: " << path_to_aiger_circuit);
 	L_INF(
 			"vulnerabilities found with SIMULATION="<<sim_vulnerabilities.size() <<", with SYMBTIME="<<symb_vulnerabilities.size());

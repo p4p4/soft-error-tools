@@ -28,6 +28,8 @@
 
 #include "defines.h"
 #include "BackEnd.h"
+#include "SatSolver.h"
+#include "SymbolicSimulator.h"
 
 struct aiger;
 
@@ -63,6 +65,7 @@ public:
 	void analyze();
 	void findDefinitelyProtected_1();
 	void findDefinitelyProtected_2();
+	void findDefinitelyProtected_3();
 
 	void printResults();
 
@@ -71,6 +74,7 @@ public:
 
 
 protected:
+	void test_single_latch(SatSolver* solver, SymbolicSimulator& sim_symb, int& next_free_cnf_var, unsigned latch_aig);
 	// -------------------------------------------------------------------------------------------
 	///
 	/// @brief the circuit to analyze

@@ -60,6 +60,8 @@ void DefinitelyProtected::analyze()
 		findDefinitelyProtected_1();
 	else if (mode_ == 1)
 		findDefinitelyProtected_2();
+	else if (mode_ == 2)
+		findDefinitelyProtected_3();
 	else
 		MASSERT(false, "unknown mode!");
 
@@ -217,7 +219,7 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
-		unsigned component_cnf = latches_to_check[l_cnt] >> 1;
+		int component_cnf = latches_to_check[l_cnt] >> 1;
 
 		// compute faulty transition relation
 		sim_symb.setResultValue(component_cnf, -sim_symb.getResultValue(component_cnf)); // flip latch
@@ -273,6 +275,129 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 
 	delete solver;
 
+}
+
+void DefinitelyProtected::findDefinitelyProtected_3()
+{
+	int next_free_cnf_var = 2;
+	SatSolver* solver = Options::instance().getSATSolver();
+	vector<int> vars_to_keep; // empty
+	solver->startIncrementalSession(vars_to_keep);
+	SymbolicSimulator sim_symb(circuit_, solver, next_free_cnf_var);
+
+
+	// variables for the state
+	for(unsigned i = 0; i < circuit_->num_latches; i++)
+	{
+		//solver->addVarToKeep(next_free_cnf_var);
+		sim_symb.setResultValue(circuit_->latches[i].lit/2, next_free_cnf_var++);
+	}
+
+
+	// variables for the inputs
+	for(unsigned i = 0; i < circuit_->num_inputs; i++)
+	{
+		//solver->addVarToKeep(next_free_cnf_var);
+		sim_symb.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
+	}
+
+	// compute transition relation T(x,i,o,a,x')
+	sim_symb.simulateOneTimeStep();
+
+	// additional time steps
+//	AndCacheMap cache(solver);
+	unsigned num_steps = 1;
+	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
+	{
+		//if (s_cnt == num_steps - 1) // last iteration
+		//	sim_symb.setCache(&cache);
+		sim_symb.switchToNextState();
+		for(unsigned i = 0; i < circuit_->num_inputs; i++)
+		{
+			solver->addVarToKeep(next_free_cnf_var);
+			sim_symb.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
+		}
+
+		sim_symb.simulateOneTimeStep();
+	}
+
+	int next_free_cnf_var_after_first_step = next_free_cnf_var;
+	solver->incPush();
+	vector<int> results_bakcup = sim_symb.getResults();
+
+	// ---------------- BEGIN 'for each latch' -------------------------
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
+	{
+		test_single_latch(solver, sim_symb, next_free_cnf_var, latches_to_check[l_cnt]);
+
+		// reset solver session
+		solver->incPop();
+		solver->incPush();
+		sim_symb.setResults(results_bakcup);
+		next_free_cnf_var = next_free_cnf_var_after_first_step;
+	}
+
+	delete solver;
+}
+
+void DefinitelyProtected::test_single_latch(SatSolver* solver, SymbolicSimulator& sim_symb, int& next_free_cnf_var, unsigned latch_aig)
+{
+
+	vector<int> next_state_normal = sim_symb.getNextLatchValues();
+	vector<int> outpus_normal = sim_symb.getOutputValues();
+
+//	solver->addVarsToKeep(next_state_normal);
+//	solver->addVarsToKeep(outpus_normal);
+
+	//--------------------
+
+	int component_cnf = latch_aig >> 1;
+
+		// compute faulty transition relation
+		sim_symb.setResultValue(component_cnf, -sim_symb.getResultValue(component_cnf)); // flip latch
+		sim_symb.simulateOneTimeStep();
+
+		vector<int> next_state_flip = sim_symb.getNextLatchValues();
+		vector<int> outpus_flip = sim_symb.getOutputValues();
+
+		// we only care about situations where the alarm is false
+		solver->incAddUnitClause(-sim_symb.getAlarmValue()); // no alarm
+
+
+		// create clauses saying that
+		//		(next_state_normal != next_state_flip) OR (outpus_normal != outpus_flip)
+		vector<int> output_or_next_state_different_clause;
+
+		for(unsigned i = 0; i < circuit_->num_outputs -1; i++)
+		{
+			solver->addVarToKeep(next_free_cnf_var);
+			int out_is_diff_enable = next_free_cnf_var++;
+			output_or_next_state_different_clause.push_back(-out_is_diff_enable);
+			solver->incAdd3LitClause(out_is_diff_enable, outpus_normal[i], outpus_flip[i]);
+			solver->incAdd3LitClause(out_is_diff_enable, -outpus_normal[i], -outpus_flip[i]);
+		}
+
+		for(unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
+		{
+			solver->addVarToKeep(next_free_cnf_var);
+			int state_is_diff_enable = next_free_cnf_var++;
+			output_or_next_state_different_clause.push_back(-state_is_diff_enable);
+			solver->incAdd3LitClause(state_is_diff_enable, next_state_normal[i], next_state_flip[i]);
+			solver->incAdd3LitClause(state_is_diff_enable, -next_state_normal[i], -next_state_flip[i]);
+		}
+
+		solver->incAddClause(output_or_next_state_different_clause);
+
+		if(solver->incIsSat() == false)
+		{
+			detected_latches_.insert(latch_aig);
+			L_DBG("Definitely protected latch "<< latch_aig << " found. (UNSAT)");
+		}
+		else
+		{
+			L_DBG("SAT.. " << latch_aig)
+		}
 }
 
 void DefinitelyProtected::printResults()

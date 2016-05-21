@@ -265,7 +265,7 @@ void TestBdd::test4_analysis_basic()
 	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(1,3);
 	bddAnalysis.analyze(tcs);
 
-	CPPUNIT_ASSERT(bddAnalysis.getVulnerableElements().size() == 0);
+	CPPUNIT_ASSERT(bddAnalysis.getDetectedLatches().size() == 0);
 	aiger_reset(circuit);
 
 	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
@@ -275,7 +275,7 @@ void TestBdd::test4_analysis_basic()
 	vector<TestCase> tcs2 = TestCaseProvider::instance().generateRandomTestCases(1,3);
 	bddAnalysis2.analyze(tcs2);
 
-	CPPUNIT_ASSERT(bddAnalysis2.getVulnerableElements().size() == 1);
+	CPPUNIT_ASSERT(bddAnalysis2.getDetectedLatches().size() == 1);
 	aiger_reset(circuit2);
 }
 
@@ -289,7 +289,7 @@ void TestBdd::test5_analysis_3latches()
 	bddAnalysis.analyze(tcs);
 
 	//	L_DBG("VULNERABLE size = " << bddAnalysis.getVulnerableElements().size());
-	CPPUNIT_ASSERT(bddAnalysis.getVulnerableElements().size() == 0);
+	CPPUNIT_ASSERT(bddAnalysis.getDetectedLatches().size() == 0);
 	aiger_reset(circuit);
 
 	aiger* circuit2 = Utils::readAiger("inputs/two_latches.unprotected.aag");
@@ -299,7 +299,7 @@ void TestBdd::test5_analysis_3latches()
 	vector<TestCase> tcs2 = TestCaseProvider::instance().generateRandomTestCases(1,3);
 	bddAnalysis2.analyze(tcs2);
 
-	CPPUNIT_ASSERT(bddAnalysis2.getVulnerableElements().size() == 2);
+	CPPUNIT_ASSERT(bddAnalysis2.getDetectedLatches().size() == 2);
 	aiger_reset(circuit2);
 }
 
@@ -316,7 +316,7 @@ void TestBdd::checkVulnerabilities(string path_to_aiger_circuit,
 	vector<TestCase> tcs = TestCaseProvider::instance().readTestcasesFromFiles(tc_files);
 	BddAnalysis bddAnalysis(circuit, num_err_latches, mode);
 	bddAnalysis.analyze(tcs);
-	const set<unsigned> &vulnerabilities = bddAnalysis.getVulnerableElements();
+	const set<unsigned> &vulnerabilities = bddAnalysis.getDetectedLatches();
 
 	// DEBUG: print the vulnerable latches
 //	for (set<unsigned>::iterator it = vulnerabilities.begin();
@@ -343,11 +343,11 @@ void TestBdd::compareWithSimulation(string path_to_aiger_circuit,
 	TestCaseProvider::instance().setCircuit(circuit);
 	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(num_tc,num_timesteps);
 	bddAnalysis.analyze(tcs);
-	const set<unsigned> &symb_vulnerabilities = bddAnalysis.getVulnerableElements();
+	const set<unsigned> &symb_vulnerabilities = bddAnalysis.getDetectedLatches();
 
 	SimulationBasedAnalysis sba(circuit, num_err_latches);
 	sba.analyze(tcs);
-	const set<unsigned> &sim_vulnerabilities = sba.getVulnerableElements();
+	const set<unsigned> &sim_vulnerabilities = sba.getDetectedLatches();
 	L_INF("test: " << path_to_aiger_circuit);
 	L_INF(
 			"vulnerabilities found with SIMULATION="<<sim_vulnerabilities.size() <<", with SYMBTIME="<<symb_vulnerabilities.size());

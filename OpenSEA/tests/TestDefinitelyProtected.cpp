@@ -35,28 +35,54 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestDefinitelyProtected);
 void TestDefinitelyProtected::setUp()
 {
   //setup for testcases
+//	Logger::instance().enable(Logger::DBG);
 }
 
 // -------------------------------------------------------------------------------------------
 void TestDefinitelyProtected::tearDown()
 {
   //define here post processing steps
+	Logger::instance().disable(Logger::DBG);
 }
 
 // -------------------------------------------------------------------------------------------
 void TestDefinitelyProtected::test1()
 {
-	Logger::instance().enable(Logger::DBG);
-	aiger* circuit = Utils::readAiger("inputs/toggle.perfect.aag");
-//	aiger* circuit = Utils::readAiger("inputs/toggle.1vulnerability.aag");
-//	aiger* circuit = Utils::readAiger("inputs/toggle.2vulnerabilities.aag");
-//	aiger* circuit = Utils::readAiger("inputs/toggle.3vulnerabilities.aag");
-	DefinitelyProtected dp(circuit, 0);
+	unsigned number_of_modes = 2;
 
-	dp.findDefinitelyProtected_1();
-//  CPPUNIT_FAIL("test not implemented");
-//  CPPUNIT_ASSERT(1 == 1);
-//  CPPUNIT_ASSERT_MESSAGE("error occurred", 1 == 0);
+
+	aiger* circuit = Utils::readAiger("inputs/toggle.perfect.aag");
+	for (unsigned mode = 0; mode <= number_of_modes; mode++)
+	{
+		L_DBG("mode = " << mode)
+		DefinitelyProtected dp(circuit, 0, mode);
+		dp.analyze();
+		CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 4);
+	}
+	aiger_reset(circuit);
+
+	circuit = Utils::readAiger("inputs/toggle.1vulnerability.aag");
+	for (unsigned mode = 0; mode <= number_of_modes; mode++)
+	{
+		L_DBG("mode = " << mode)
+		DefinitelyProtected dp(circuit, 0, mode);
+		dp.analyze();
+		CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 3);
+	}
+	aiger_reset(circuit);
+
+	circuit = Utils::readAiger("inputs/toggle.3vulnerabilities.aag");
+	for (unsigned mode = 0; mode <= number_of_modes; mode++)
+	{
+		L_DBG("mode = " << mode)
+		DefinitelyProtected dp(circuit, 0, mode);
+		dp.analyze();
+		CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 0);
+	}
+	aiger_reset(circuit);
+
+	//	aiger* circuit = Utils::readAiger("inputs/toggle.2vulnerabilities.aag");
+
 }
 
 

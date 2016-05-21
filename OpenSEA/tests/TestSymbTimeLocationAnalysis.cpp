@@ -64,7 +64,7 @@ void TestSymbTimeLocationAnalysis::checkVulnerabilities(string path_to_aiger_cir
 	TestCaseProvider::instance().setCircuit(circuit);
 	vector<TestCase> tcs = TestCaseProvider::instance().readTestcasesFromFiles(tc_files);
 	sta.analyze(tcs);
-	const set<unsigned> &vulnerabilities = sta.getVulnerableElements();
+	const set<unsigned> &vulnerabilities = sta.getDetectedLatches();
 
 	// DEBUG: print the vulnerable latches
 //	for (set<unsigned>::iterator it = vulnerabilities.begin();
@@ -90,11 +90,11 @@ void TestSymbTimeLocationAnalysis::compareWithSimulation(string path_to_aiger_ci
 	TestCaseProvider::instance().setCircuit(circuit);
 	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(num_tc, num_timesteps);
 	sta.analyze(tcs);
-	const set<unsigned> &symb_vulnerabilities = sta.getVulnerableElements();
+	const set<unsigned> &symb_vulnerabilities = sta.getDetectedLatches();
 
 	SimulationBasedAnalysis sba(circuit, num_err_latches);
 	sba.analyze(tcs);
-	const set<unsigned> &sim_vulnerabilities = sba.getVulnerableElements();
+	const set<unsigned> &sim_vulnerabilities = sba.getDetectedLatches();
 	L_INF("test: " << path_to_aiger_circuit);
 	L_INF(
 			"vulnerabilities found with SIMULATION="<<sim_vulnerabilities.size() <<", with SYMBTIME="<<symb_vulnerabilities.size());
@@ -125,14 +125,14 @@ void TestSymbTimeLocationAnalysis::test1()
 	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(1, 3);
 	sta.analyze(tcs);
 //	Logger::instance().disable(Logger::DBG);
-	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+	CPPUNIT_ASSERT(sta.getDetectedLatches().size() == 0);
 	aiger_reset(circuit);
 
 		Logger::instance().enable(Logger::DBG);
 	aiger* circuit2 = Utils::readAiger("inputs/one_latch.unprotected.aag");
 	SymbTimeLocationAnalysis sta2(circuit2, 0, SymbTimeLocationAnalysis::STANDARD);
 	sta2.analyze(tcs);
-	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 1);
+	CPPUNIT_ASSERT(sta2.getDetectedLatches().size() == 1);
 	aiger_reset(circuit2);
 }
 
@@ -146,7 +146,7 @@ void TestSymbTimeLocationAnalysis::test3_two_latches()
 	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(1, 2);
 	sta.analyze(tcs);
 //	L_DBG("VULNERABLE size = " << sta.getVulnerableElements().size());
-	CPPUNIT_ASSERT(sta.getVulnerableElements().size() == 0);
+	CPPUNIT_ASSERT(sta.getDetectedLatches().size() == 0);
 	aiger_reset(circuit);
 
 	aiger* circuit2 = Utils::readAiger("inputs/two_latches.unprotected.aag");
@@ -154,7 +154,7 @@ void TestSymbTimeLocationAnalysis::test3_two_latches()
 	SymbTimeLocationAnalysis sta2(circuit2, 0, SymbTimeLocationAnalysis::STANDARD);
 	tcs = TestCaseProvider::instance().generateRandomTestCases(1, 3);
 	sta2.analyze(tcs);
-	CPPUNIT_ASSERT(sta2.getVulnerableElements().size() == 2);
+	CPPUNIT_ASSERT(sta2.getDetectedLatches().size() == 2);
 	aiger_reset(circuit2);
 }
 
