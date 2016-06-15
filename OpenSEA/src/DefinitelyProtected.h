@@ -66,6 +66,8 @@ public:
 	void findDefinitelyProtected_1();
 	void findDefinitelyProtected_2();
 	void findDefinitelyProtected_3();
+	void findDefinitelyProtected_4();
+	void findDefinitelyProtected_5();
 
 	void printResults();
 
