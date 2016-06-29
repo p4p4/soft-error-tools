@@ -32,7 +32,10 @@ class BackEnd;
 
 typedef pair<clock_t, time_t> PointInTime;
 
-struct aiger;
+extern "C"
+{
+#include "aiger.h"
+}
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -233,6 +236,11 @@ class Options
 	bool isDiagnosticOutputToFile() const
 	{
 		return diagnostic_output_to_file_;
+	}
+
+	unsigned getNumberOfLatchesToCheck()
+	{
+		return circuit_->num_latches - num_err_latches_ - latches_to_exclude_.size();
 	}
 
 	const string& getAigEnvFileName() const;

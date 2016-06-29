@@ -34,7 +34,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestDefinitelyProtected);
 // -------------------------------------------------------------------------------------------
 void TestDefinitelyProtected::setUp()
 {
-  //setup for testcases
+	start_mode_ = DefinitelyProtected::STANDARD;
+	last_mode_ = 4;
 //	Logger::instance().enable(Logger::DBG);
 }
 
@@ -48,11 +49,12 @@ void TestDefinitelyProtected::tearDown()
 // -------------------------------------------------------------------------------------------
 void TestDefinitelyProtected::test1()
 {
-	unsigned last_mode = 3;
 
+
+	Logger::instance().enable(Logger::DBG);
 
 	aiger* circuit = Utils::readAiger("inputs/toggle.perfect.aag");
-	for (unsigned mode = 0; mode <= last_mode; mode++)
+	for (unsigned mode = start_mode_; mode <= last_mode_; mode++)
 	{
 		L_DBG(endl << endl << "mode = " << mode)
 		DefinitelyProtected dp(circuit, 0, mode);
@@ -63,7 +65,7 @@ void TestDefinitelyProtected::test1()
 	aiger_reset(circuit);
 
 	circuit = Utils::readAiger("inputs/toggle.1vulnerability.aag");
-	for (unsigned mode = 0; mode <= last_mode; mode++)
+	for (unsigned mode = start_mode_; mode <= last_mode_; mode++)
 	{
 		L_DBG(endl << endl << "mode = " << mode)
 		DefinitelyProtected dp(circuit, 0, mode);
@@ -73,7 +75,7 @@ void TestDefinitelyProtected::test1()
 	aiger_reset(circuit);
 
 	circuit = Utils::readAiger("inputs/toggle.3vulnerabilities.aag");
-	for (unsigned mode = 0; mode <= last_mode; mode++)
+	for (unsigned mode = start_mode_; mode <= last_mode_; mode++)
 	{
 		L_DBG(endl << endl << "mode = " << mode)
 		DefinitelyProtected dp(circuit, 0, mode);
@@ -86,4 +88,35 @@ void TestDefinitelyProtected::test1()
 
 }
 
+void TestDefinitelyProtected::test_multi_step()
+{
+	Logger::instance().enable(Logger::DBG);
+	aiger* circuit = Utils::readAiger("inputs/toggle.perfect_2step.aag");
+	for (unsigned mode = 3; mode <= 4; mode++)
+	{
+		L_DBG(endl << endl << "mode = " << mode)
+		DefinitelyProtected dp(circuit, 0, mode);
+		dp.analyze();
+		cout << "detected = " << dp.getDetectedLatches().size() << endl;
+		cout << *dp.getDetectedLatches().begin() << endl;
+		CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 5);
+	}
+	aiger_reset(circuit);
+}
+
+void TestDefinitelyProtected::test3()
+{
+	Logger::instance().enable(Logger::DBG);
+	aiger* circuit = Utils::readAiger("inputs/testme.aig");
+	for (unsigned mode = start_mode_; mode <= last_mode_; mode++)
+	{
+		L_DBG(endl << endl << "mode = " << mode)
+		DefinitelyProtected dp(circuit, 0, mode);
+		dp.analyze();
+		cout << "detected = " << dp.getDetectedLatches().size() << endl;
+		cout << *dp.getDetectedLatches().begin() << endl;
+		//CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 4);
+	}
+	aiger_reset(circuit);
+}
 
