@@ -304,7 +304,7 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 void DefinitelyProtected::findDefinitelyProtected_4()
 {
 
-	unsigned k_steps = 4; // TODO: use parameter
+	unsigned k_steps = 3; // TODO: use parameter
 	int next_free_cnf_var = 2;
 	SatSolver* solver = Options::instance().getSATSolver();
 	vector<int> vars_to_keep; // empty
@@ -343,14 +343,17 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
 
+
 		unsigned latch_aig = latches_to_check[l_cnt];
 		int component_cnf = latch_aig >> 1;
+
+		cout << "test latch " << latch_aig << endl;
 
 		SymbolicSimulator sim_faulty(circuit_, solver, next_free_cnf_var);
 		sim_faulty.setResults(results_fault_free);
 
-		vector<unsigned> alarms_in_flipped_version_at_step_i; // maps i -> alarm signal of faulty verstion at step i
-		vector<unsigned> output_different_at_step_i; // maps i -> different_at_i
+		vector<int> alarms_in_flipped_version_at_step_i; // maps i -> alarm signal of faulty verstion at step i
+		vector<int> output_different_at_step_i; // maps i -> different_at_i
 		int final_nxt_state_diff_enable = next_free_cnf_var++;
 
 		for (unsigned i = 0; i < k_steps; i++)
@@ -381,16 +384,16 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 			int output_different_now_enable = next_free_cnf_var++;
 			output_different_at_step_i.push_back(output_different_now_enable);
 			vector<int> output_different_now_clause;
-			output_different_now_clause.push_back(output_different_now_enable);
+			output_different_now_clause.push_back(-output_different_now_enable);
 			for(unsigned i = 0; i < circuit_->num_outputs -1; i++)
 			{
 				solver->addVarToKeep(next_free_cnf_var);
 				int out_is_diff_enable = next_free_cnf_var++; // o_i_diff
-				output_different_now_clause.push_back(-out_is_diff_enable);
+				output_different_now_clause.push_back(out_is_diff_enable);
 
 				// o_i_diff <-> (o_i_ok != o_i_faulty)
-				solver->incAdd3LitClause(out_is_diff_enable, outputs_ok[i], outpus_flip[i]);
-				solver->incAdd3LitClause(out_is_diff_enable, -outputs_ok[i], -outpus_flip[i]);
+				solver->incAdd3LitClause(-out_is_diff_enable, outputs_ok[i], outpus_flip[i]);
+				solver->incAdd3LitClause(-out_is_diff_enable, -outputs_ok[i], -outpus_flip[i]);
 			}
 			// (disabled OR o1_diff OR o2_diff OR ... OR on_diff):
 			solver->incAddClause(output_different_now_clause);
@@ -411,8 +414,8 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 					next_state_different.push_back(state_is_diff_enable);
 
 					// x'i_diff <-> (x'i_ok != x'i_faulty)
-					solver->incAdd3LitClause(state_is_diff_enable, next_ok[i], next_faulty[i]);
-					solver->incAdd3LitClause(state_is_diff_enable, -next_ok[i], -next_faulty[i]);
+					solver->incAdd3LitClause(-state_is_diff_enable, next_ok[i], next_faulty[i]);
+					solver->incAdd3LitClause(-state_is_diff_enable, -next_ok[i], -next_faulty[i]);
 				}
 
 			}
@@ -423,6 +426,8 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 			}
 
 		}
+
+		Utils::debugPrint(alarms_in_flipped_version_at_step_i, "alarm outputs");
 
 		// maps a literal that is true if there was no alarm set to true until time step k
 		vector<int> no_alarm_until;
@@ -450,7 +455,7 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 			possibly_vulnerable.push_back(error_at_i);
 
 			int problem_at_i;
-			if (i < output_different_at_step_i.size() - 1) // last step special case
+			if (i == output_different_at_step_i.size() - 1) // last step special case
 			{
 				// error_at_i <-> (no_alarm_until[k] AND **((o_k != o_e_k) OR (x'_k != x'_e_k))** )
 				int out_or_next_different = next_free_cnf_var++;
@@ -471,15 +476,31 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 		}
 
 		solver->incAddClause(possibly_vulnerable);
-		if(solver->incIsSat() == false)
+
+		vector<int> no_assumptions;
+		vector<int> model;
+
+		vector<int> interest;
+		interest.push_back(final_nxt_state_diff_enable);
+		interest.insert(interest.end(), output_different_at_step_i.begin(), output_different_at_step_i.end());
+		interest.insert(interest.end(), no_alarm_until.begin(), no_alarm_until.end());
+
+		L_DBG("---")
+		cout << "final next state different:" << final_nxt_state_diff_enable << endl;
+		Utils::debugPrint(output_different_at_step_i, "output_different_at_step_i");
+		Utils::debugPrint(no_alarm_until, "no_alarm_until");
+		if(solver->incIsSatModelOrCore(no_assumptions, interest, model) == false)
 		{
 			detected_latches_.insert(latch_aig);
 			L_DBG("Definitely protected latch "<< latch_aig << " found. (UNSAT)");
 		}
 		else
 		{
+			Utils::debugPrint(model, "model");
 			L_DBG("SAT " << latch_aig << "(not k-step protected)")
 		}
+
+		L_DBG(" ");
 
 		// reset solver session
 		solver->incPop();
