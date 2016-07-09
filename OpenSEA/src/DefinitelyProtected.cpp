@@ -453,8 +453,6 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 		vector<int> possibly_vulnerable;
 		for (unsigned i = 0; i < output_different_at_step_i.size(); i++)
 		{
-
-
 			int problem_at_i;
 			if (i == output_different_at_step_i.size() - 1) // last step special case
 			{
@@ -539,217 +537,209 @@ void DefinitelyProtected::findDefinitelyProtected_5()
 	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
 	{
 		sim_ok.switchToNextState();
-		for(unsigned i = 0; i < circuit_->num_inputs; i++)
+		for (unsigned i = 0; i < circuit_->num_inputs; i++)
 		{
 			solver->addVarToKeep(next_free_cnf_var);
-			sim_ok.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
+			sim_ok.setResultValue(circuit_->inputs[i].lit / 2, next_free_cnf_var++);
 		}
 
 		sim_ok.simulateOneTimeStep();
 	}
 
+	SymbolicSimulator sim_faulty(circuit_, solver, next_free_cnf_var);
+	sim_faulty.setResults(sim_ok.getResults());
 
+	vector<int> alarms_in_flipped_version_at_step_i; // maps i -> alarm signal of faulty verstion at step i
+	vector<int> output_different_at_step_i; // maps i -> different_at_i
+	int final_nxt_state_diff_enable = next_free_cnf_var++;
 
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_,
+			num_err_latches_);
+	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
+	vector<int> c_vars;
 
-
-
-		SymbolicSimulator sim_faulty(circuit_, solver, next_free_cnf_var);
-		sim_faulty.setResults(sim_ok.getResults());
-
-		vector<int> alarms_in_flipped_version_at_step_i; // maps i -> alarm signal of faulty verstion at step i
-		vector<int> output_different_at_step_i; // maps i -> different_at_i
-		int final_nxt_state_diff_enable = next_free_cnf_var++;
-
-
-		vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
-						map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
-						vector<int> c_vars;
-
-		for (unsigned i = 0; i < k_steps; i++)
+	for (unsigned i = 0; i < k_steps; i++)
+	{
+		if (i == 0) // flip in first step
 		{
-			if (i == 0) // flip in first step
+			//------------------------------------------------------------------------------------------
+			// set up ci signals
+			// each latch has a corresponding cj literal that indicates whether the latch is flipped or not.
+
+			for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 			{
-				//------------------------------------------------------------------------------------------
-				// set up ci signals
-				// each latch has a corresponding cj literal that indicates whether the latch is flipped or not.
+				detected_latches_.insert(latches_to_check[l_cnt]); // first insert all
+				int latch_cnf = latches_to_check[l_cnt] >> 1;
+				int cj = next_free_cnf_var++;
+				c_vars.push_back(cj);
+				solver->addVarToKeep(cj);
+				cj_to_latch[cj] = latches_to_check[l_cnt];
 
-				for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
-				{
-					detected_latches_.insert(latches_to_check[l_cnt]); // first insert all
-					int latch_cnf = latches_to_check[l_cnt] >> 1;
-					int cj = next_free_cnf_var++;
-					c_vars.push_back(cj);
-					solver->addVarToKeep(cj);
-					cj_to_latch[cj] = latches_to_check[l_cnt];
+				// add multiplexer to flip the latch
+				int old_value = sim_faulty.getResultValue(latch_cnf);
+				int new_value = next_free_cnf_var++;
+				sim_faulty.setResultValue(latch_cnf, new_value);
+				solver->addVarToKeep(new_value);
+				// new_value == cj ? -old_value : old_value
+				solver->incAdd3LitClause(cj, old_value, -new_value);
+				solver->incAdd3LitClause(cj, -old_value, new_value);
+				solver->incAdd3LitClause(-cj, old_value, new_value);
+				solver->incAdd3LitClause(-cj, -old_value, -new_value);
 
-					// add multiplexer to flip the latch
-					int old_value = sim_faulty.getResultValue(latch_cnf);
-					int new_value = next_free_cnf_var++;
-					sim_faulty.setResultValue(latch_cnf, new_value);
-					solver->addVarToKeep(new_value);
-					// new_value == cj ? -old_value : old_value
-					solver->incAdd3LitClause(cj, old_value, -new_value);
-					solver->incAdd3LitClause(cj, -old_value, new_value);
-					solver->incAdd3LitClause(-cj, old_value, new_value);
-					solver->incAdd3LitClause(-cj, -old_value, -new_value);
-
-				}
-
-				// require that one c-variable is true
-				// TODO: this should not be necessary, right?
-				solver->incAddClause(c_vars);
-
-				//--------------------------------------------------------------------------------------
-				// single fault assumption: there might be at most one flipped component
-				// if c is true, all other c must be false (ci -> -c1, ci -> -c2, ...)
-				for (unsigned i = 0; i < c_vars.size(); i++)
-				{
-					for (int j = i + 1; j < c_vars.size(); j++)
-						solver->incAdd2LitClause(-c_vars[i], -c_vars[j]);
-				}
 			}
 
-			// set same open input values for both copies
-			sim_ok.setInputValuesOpen();
-			sim_faulty.setInputValues(sim_ok.getInputValues());
+			// require that one c-variable is true
+			// TODO: this should not be necessary, right?
+			solver->incAddClause(c_vars);
 
-			// create transition relations and add to solver
-			sim_faulty.simulateOneTimeStep();	// T_ok(x,i,o,a,x')
-			sim_ok.simulateOneTimeStep();		// T_err(x_e,i,o_e,a_e,x'e)
+			//--------------------------------------------------------------------------------------
+			// single fault assumption: there might be at most one flipped component
+			// if c is true, all other c must be false (ci -> -c1, ci -> -c2, ...)
+			for (unsigned i = 0; i < c_vars.size(); i++)
+			{
+				for (int j = i + 1; j < c_vars.size(); j++)
+					solver->incAdd2LitClause(-c_vars[i], -c_vars[j]);
+			}
+		}
 
-			// store a_e
-			alarms_in_flipped_version_at_step_i.push_back(sim_faulty.getAlarmValue());
+		// set same open input values for both copies
+		sim_ok.setInputValuesOpen();
+		sim_faulty.setInputValues(sim_ok.getInputValues());
 
-			// require no alarm in fault-free version
-			solver->incAddUnitClause(-sim_ok.getAlarmValue()); // -a
+		// create transition relations and add to solver
+		sim_faulty.simulateOneTimeStep();	// T_ok(x,i,o,a,x')
+		sim_ok.simulateOneTimeStep();		// T_err(x_e,i,o_e,a_e,x'e)
 
-			// create clause saying that output is different
-			vector<int> outputs_ok = sim_ok.getOutputValues();		// o
-			vector<int> outpus_flip = sim_faulty.getOutputValues(); // o_e
+		// store a_e
+		alarms_in_flipped_version_at_step_i.push_back(sim_faulty.getAlarmValue());
 
-			int output_different_now_enable = next_free_cnf_var++;
-			output_different_at_step_i.push_back(output_different_now_enable);
-			vector<int> output_different_now_clause;
-			output_different_now_clause.push_back(-output_different_now_enable);
-			for(unsigned i = 0; i < circuit_->num_outputs -1; i++)
+		// require no alarm in fault-free version
+		solver->incAddUnitClause(-sim_ok.getAlarmValue()); // -a
+
+		// create clause saying that output is different
+		vector<int> outputs_ok = sim_ok.getOutputValues();		// o
+		vector<int> outpus_flip = sim_faulty.getOutputValues(); // o_e
+
+		int output_different_now_enable = next_free_cnf_var++;
+		output_different_at_step_i.push_back(output_different_now_enable);
+		vector<int> output_different_now_clause;
+		output_different_now_clause.push_back(-output_different_now_enable);
+		for (unsigned i = 0; i < circuit_->num_outputs - 1; i++)
+		{
+			solver->addVarToKeep(next_free_cnf_var);
+			int out_is_diff_enable = next_free_cnf_var++; // o_i_diff
+			output_different_now_clause.push_back(out_is_diff_enable);
+
+			// o_i_diff <-> (o_i_ok != o_i_faulty)
+			solver->incAdd3LitClause(-out_is_diff_enable, outputs_ok[i], outpus_flip[i]);
+			solver->incAdd3LitClause(-out_is_diff_enable, -outputs_ok[i], -outpus_flip[i]);
+		}
+		// (disabled OR o1_diff OR o2_diff OR ... OR on_diff):
+		solver->incAddClause(output_different_now_clause);
+
+		if (i == k_steps - 1) // last step
+		{
+			// clause saying next state is still different (x' != x_e'):
+			vector<int> next_ok = sim_ok.getNextLatchValues();			// x'
+			vector<int> next_faulty = sim_faulty.getNextLatchValues();	// x_e'
+			// (x'1_diff OR x'2_diff OR ... OR x'n_diff):
+
+			vector<int> next_state_different;
+			next_state_different.push_back(-final_nxt_state_diff_enable);
+			for (unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
 			{
 				solver->addVarToKeep(next_free_cnf_var);
-				int out_is_diff_enable = next_free_cnf_var++; // o_i_diff
-				output_different_now_clause.push_back(out_is_diff_enable);
+				int state_is_diff_enable = next_free_cnf_var++; // x'i_diff
+				next_state_different.push_back(state_is_diff_enable);
 
-				// o_i_diff <-> (o_i_ok != o_i_faulty)
-				solver->incAdd3LitClause(-out_is_diff_enable, outputs_ok[i], outpus_flip[i]);
-				solver->incAdd3LitClause(-out_is_diff_enable, -outputs_ok[i], -outpus_flip[i]);
-			}
-			// (disabled OR o1_diff OR o2_diff OR ... OR on_diff):
-			solver->incAddClause(output_different_now_clause);
-
-			if (i == k_steps - 1) // last step
-			{
-				// clause saying next state is still different (x' != x_e'):
-				vector<int> next_ok = sim_ok.getNextLatchValues();			// x'
-				vector<int> next_faulty = sim_faulty.getNextLatchValues();	// x_e'
-				// (x'1_diff OR x'2_diff OR ... OR x'n_diff):
-
-				vector<int> next_state_different;
-				next_state_different.push_back(-final_nxt_state_diff_enable);
-				for(unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
-				{
-					solver->addVarToKeep(next_free_cnf_var);
-					int state_is_diff_enable = next_free_cnf_var++; // x'i_diff
-					next_state_different.push_back(state_is_diff_enable);
-
-					// x'i_diff <-> (x'i_ok != x'i_faulty)
-					solver->incAdd3LitClause(-state_is_diff_enable, next_ok[i], next_faulty[i]);
-					solver->incAdd3LitClause(-state_is_diff_enable, -next_ok[i], -next_faulty[i]);
-				}
-
-			}
-			else // has further steps
-			{
-				sim_ok.switchToNextState();
-				sim_faulty.switchToNextState();
+				// x'i_diff <-> (x'i_ok != x'i_faulty)
+				solver->incAdd3LitClause(-state_is_diff_enable, next_ok[i], next_faulty[i]);
+				solver->incAdd3LitClause(-state_is_diff_enable, -next_ok[i], -next_faulty[i]);
 			}
 
 		}
-
-		Utils::debugPrint(alarms_in_flipped_version_at_step_i, "alarm outputs");
-
-		// maps a literal that is true if there was no alarm set to true until time step k
-		vector<int> no_alarm_until;
-		no_alarm_until.push_back(-alarms_in_flipped_version_at_step_i[0]); // i=0: not a_0
-		for (unsigned i = 1; i < alarms_in_flipped_version_at_step_i.size(); i++)
+		else // has further steps
 		{
-			if(no_alarm_until[i-1] == CNF_FALSE)
-			{
-				no_alarm_until.push_back(CNF_FALSE);
-				continue;
-			}
-			// no_alarm_until[i] <-> no_alarm_until_[i-1] AND not a_i:
-			int no_alarm_until_k = next_free_cnf_var++;
-			no_alarm_until.push_back(no_alarm_until_k);
-
-			solver->incAdd2LitClause(-no_alarm_until_k, no_alarm_until[i-1]);
-			solver->incAdd2LitClause(-no_alarm_until_k, -alarms_in_flipped_version_at_step_i[i]);
-			solver->incAdd3LitClause(no_alarm_until_k, -no_alarm_until[i-1], alarms_in_flipped_version_at_step_i[i]);
+			sim_ok.switchToNextState();
+			sim_faulty.switchToNextState();
 		}
 
-		// create final clause for sat solver call:
-		// there exists a point in time where the outputs are different and alarm has not been raised so far,
-		// or the next state of the last iteration is different without raising an alarm:
-		// 		_OR_ for i = 1..k-1: (no_alarm_until[i] AND o_i != o_e_i)
-		// 		special case: i = k: (no_alarm_until[k] AND ((o_k != o_e_k) OR (x'_k != x'_e_k)) )
-		vector<int> possibly_vulnerable;
-		for (unsigned i = 0; i < output_different_at_step_i.size(); i++)
+	}
+
+	Utils::debugPrint(alarms_in_flipped_version_at_step_i, "alarm outputs");
+
+	// maps a literal that is true if there was no alarm set to true until time step k
+	vector<int> no_alarm_until;
+	no_alarm_until.push_back(-alarms_in_flipped_version_at_step_i[0]); // i=0: not a_0
+	for (unsigned i = 1; i < alarms_in_flipped_version_at_step_i.size(); i++)
+	{
+		if (no_alarm_until[i - 1] == CNF_FALSE)
 		{
-
-
-			int problem_at_i;
-			if (i == output_different_at_step_i.size() - 1) // last step special case
-			{
-				// problem_at_i <-> ((o_k != o_e_k) OR (x'_k != x'_e_k))
-				int out_or_next_different = next_free_cnf_var++;
-				problem_at_i = out_or_next_different;
-				solver->incAdd2LitClause(out_or_next_different, -output_different_at_step_i[i]);
-				solver->incAdd2LitClause(out_or_next_different, -final_nxt_state_diff_enable);
-				solver->incAdd3LitClause(-out_or_next_different, output_different_at_step_i[i], final_nxt_state_diff_enable);
-			}
-			else
-			{
-				//problem_at_i <-> (o_i != o_e_i):
-				problem_at_i = output_different_at_step_i[i];
-			}
-
-			int error_at_i = next_free_cnf_var++;
-			possibly_vulnerable.push_back(error_at_i);
-
-
-			solver->incAdd2LitClause(-error_at_i, no_alarm_until[i]);
-			solver->incAdd2LitClause(-error_at_i, problem_at_i);
-			solver->incAdd3LitClause(error_at_i, -no_alarm_until[i], -problem_at_i);
+			no_alarm_until.push_back(CNF_FALSE);
+			continue;
 		}
+		// no_alarm_until[i] <-> no_alarm_until_[i-1] AND not a_i:
+		int no_alarm_until_k = next_free_cnf_var++;
+		no_alarm_until.push_back(no_alarm_until_k);
 
-		solver->incAddClause(possibly_vulnerable);
+		solver->incAdd2LitClause(-no_alarm_until_k, no_alarm_until[i - 1]);
+		solver->incAdd2LitClause(-no_alarm_until_k, -alarms_in_flipped_version_at_step_i[i]);
+		solver->incAdd3LitClause(no_alarm_until_k, -no_alarm_until[i - 1],
+				alarms_in_flipped_version_at_step_i[i]);
+	}
 
-		vector<int> no_assumptions; // empty
-		vector<int> model;
-		while (solver->incIsSatModelOrCore(no_assumptions, c_vars, model))
+	// create final clause for sat solver call:
+	// there exists a point in time where the outputs are different and alarm has not been raised so far,
+	// or the next state of the last iteration is different without raising an alarm:
+	// 		_OR_ for i = 1..k-1: (no_alarm_until[i] AND o_i != o_e_i)
+	// 		special case: i = k: (no_alarm_until[k] AND ((o_k != o_e_k) OR (x'_k != x'_e_k)) )
+	vector<int> possibly_vulnerable;
+	for (unsigned i = 0; i < output_different_at_step_i.size(); i++)
+	{
+
+		int problem_at_i;
+		if (i == output_different_at_step_i.size() - 1) // last step special case
 		{
-			Utils::debugPrint(model, "model:");
-			for (unsigned i = 0; i < model.size(); i++)
-			{
-				int c = model[i];
-				if (c > 0) // found the c with positive face
-				{
-					solver->incAddUnitClause(-c);
-					detected_latches_.erase(cj_to_latch[c]);
-					L_DBG("latch " << cj_to_latch[c] << " not n-step protected")
-				}
-			}
+			// problem_at_i <-> ((o_k != o_e_k) OR (x'_k != x'_e_k))
+			int out_or_next_different = next_free_cnf_var++;
+			problem_at_i = out_or_next_different;
+			solver->incAdd2LitClause(out_or_next_different, -output_different_at_step_i[i]);
+			solver->incAdd2LitClause(out_or_next_different, -final_nxt_state_diff_enable);
+			solver->incAdd3LitClause(-out_or_next_different, output_different_at_step_i[i],
+					final_nxt_state_diff_enable);
+		}
+		else
+		{
+			//problem_at_i <-> (o_i != o_e_i):
+			problem_at_i = output_different_at_step_i[i];
 		}
 
+		int error_at_i = next_free_cnf_var++;
+		possibly_vulnerable.push_back(error_at_i);
 
+		solver->incAdd2LitClause(-error_at_i, no_alarm_until[i]);
+		solver->incAdd2LitClause(-error_at_i, problem_at_i);
+		solver->incAdd3LitClause(error_at_i, -no_alarm_until[i], -problem_at_i);
+	}
 
+	solver->incAddClause(possibly_vulnerable);
+
+	vector<int> no_assumptions; // empty
+	vector<int> model;
+	while (solver->incIsSatModelOrCore(no_assumptions, c_vars, model))
+	{
+		Utils::debugPrint(model, "model:");
+		for (unsigned i = 0; i < model.size(); i++)
+		{
+			int c = model[i];
+			if (c > 0) // found the c with positive face
+			{
+				solver->incAddUnitClause(-c);
+				detected_latches_.erase(cj_to_latch[c]);
+				L_DBG("latch " << cj_to_latch[c] << " not n-step protected")
+			}
+		}
+	}
 
 	delete solver;
 }

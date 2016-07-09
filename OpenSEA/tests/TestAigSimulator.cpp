@@ -74,6 +74,31 @@ void TestAigSimulator::compareOutputVector(int* c_array, std::vector<int> c_vect
 	}
 }
 
+
+void TestAigSimulator::test0()
+{
+	aiger* aig_input = readAigerFile("inputs/testme.aig");
+	AigSimulator sim(aig_input);
+
+	vector<int> input;
+	input.push_back(0);
+	input.push_back(0);
+	input.push_back(0);
+	input.push_back(0);
+
+	vector<int> latch;
+	latch.push_back(0);
+	latch.push_back(0);
+	latch.push_back(0);
+	latch.push_back(0);
+	latch.push_back(1);
+
+
+	sim.simulateOneTimeStep(input, latch);
+
+	cout << sim.getStateString() << endl;
+}
+
 // -------------------------------------------------------------------------------------------
 void TestAigSimulator::AigSimDiff(AigSimulator& sim, string aigsim_input_file,
 		string aigsim_output_file)
