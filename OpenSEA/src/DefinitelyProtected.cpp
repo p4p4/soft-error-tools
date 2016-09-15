@@ -31,6 +31,8 @@
 #include "Utils.h"
 #include "Logger.h"
 #include "AndCacheMap.h"
+#include "SatAssignmentParser.h"
+
 
 extern "C"
 {
@@ -57,11 +59,11 @@ void DefinitelyProtected::analyze()
 	detected_latches_.clear();
 
 	if (mode_ == DefinitelyProtected::STANDARD)
-		findDefinitelyProtected_1();
+		findDefinitelyProtected_1step_deprecated();
 	else if (mode_ == 1)
-		findDefinitelyProtected_2();
+		findDefinitelyProtected_1step_single();
 	else if (mode_ == 2)
-		findDefinitelyProtected_3();
+		findDefinitelyProtected_1step_simultaneously();
 	else if (mode_ == 3)
 		findDefinitelyProtected_4();
 	else if (mode_ == 4)
@@ -71,7 +73,7 @@ void DefinitelyProtected::analyze()
 
 }
 
-void DefinitelyProtected::findDefinitelyProtected_1()
+void DefinitelyProtected::findDefinitelyProtected_1step_deprecated()
 {
 	// ---------------- BEGIN 'for each latch' -------------------------
 	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
@@ -116,7 +118,7 @@ void DefinitelyProtected::findDefinitelyProtected_1()
 }
 
 
-void DefinitelyProtected::findDefinitelyProtected_2()
+void DefinitelyProtected::findDefinitelyProtected_1step_single()
 {
 	int next_free_cnf_var = 2;
 	SatSolver* solver = Options::instance().getSATSolver();
@@ -138,12 +140,7 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
 	{
 		sim_symb.switchToNextState();
-		for(unsigned i = 0; i < circuit_->num_inputs; i++)
-		{
-			solver->addVarToKeep(next_free_cnf_var);
-			sim_symb.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
-		}
-
+		sim_symb.setInputValuesOpen();
 		sim_symb.simulateOneTimeStep();
 	}
 
@@ -168,7 +165,173 @@ void DefinitelyProtected::findDefinitelyProtected_2()
 
 }
 
-void DefinitelyProtected::findDefinitelyProtected_3()
+void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
+{
+	int next_free_cnf_var = 2;
+	SatSolver* solver = Options::instance().getSATSolver();
+	vector<int> vars_to_keep; // empty
+	solver->startIncrementalSession(vars_to_keep);
+	SymbolicSimulator sim_symb(circuit_, solver, next_free_cnf_var);
+
+	SatAssignmentParser parser;
+
+	// literals for the initial state (x)
+	sim_symb.setStateValuesOpen();
+	parser.addVectorOfInterest(sim_symb.getLatchValues(), "initial_state");
+
+	// literals for the inputs at the first time-step (i)
+	sim_symb.setInputValuesOpen();
+	parser.addVectorOfInterest(sim_symb.getInputValues(), "initial_input");
+
+	// compute transition relation T(x,i,o,a,x')
+	sim_symb.simulateOneTimeStep();
+
+	solver->incAddUnitClause(-sim_symb.getAlarmValue());
+	parser.addLiteralOfInterest(sim_symb.getAlarmValue(), "initial alarm");
+
+	// additional time steps
+	unsigned num_steps = 1;
+	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
+	{
+		sim_symb.switchToNextState();
+		sim_symb.setInputValuesOpen();
+		sim_symb.simulateOneTimeStep();
+		solver->incAddUnitClause(-sim_symb.getAlarmValue());
+	}
+
+	parser.addVectorOfInterest(sim_symb.getLatchValues(), "current_state_ok");
+
+	//---------------------------------------
+	vector<int> next_state_normal = sim_symb.getNextLatchValues();
+	vector<int> outpus_normal = sim_symb.getOutputValues();
+
+	//------------------------------------------------------------------------------------------
+	// set up ci signals
+	// each latch has a corresponding cj literal that indicates whether the latch is flipped or not.
+	vector<unsigned> latches_to_check = Options::instance().removeExcludedLatches(circuit_, num_err_latches_);
+	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
+	vector<int> c_vars;
+	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
+	{
+		detected_latches_.insert(latches_to_check[l_cnt]); // first insert all
+		int latch_cnf = latches_to_check[l_cnt] >> 1;
+		int cj = next_free_cnf_var++;
+		c_vars.push_back(cj);
+		solver->addVarToKeep(cj);
+		cj_to_latch[cj] = latches_to_check[l_cnt];
+
+		// add multiplexer to flip the latch
+		int old_value = sim_symb.getResultValue(latch_cnf);
+		int new_value = next_free_cnf_var++;
+		sim_symb.setResultValue(latch_cnf, new_value);
+		solver->addVarToKeep(new_value);
+		// new_value == cj ? -old_value : old_value
+		solver->incAdd3LitClause(cj, old_value, -new_value);
+		solver->incAdd3LitClause(cj, -old_value, new_value);
+		solver->incAdd3LitClause(-cj, old_value, new_value);
+		solver->incAdd3LitClause(-cj, -old_value, -new_value);
+		cout << "replace L" << latches_to_check[l_cnt] << " cnf lit " <<  old_value << " with " << new_value << endl;
+	}
+	parser.addVectorOfInterest(c_vars, "c-Vars");
+
+	// require that one c-variable is true
+	// TODO: this should not be necessary, right?
+	//solver->incAddClause(c_vars);		// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	//--------------------------------------------------------------------------------------
+	// single fault assumption: there might be at most one flipped component
+	// if c is true, all other c must be false (ci -> -c1, ci -> -c2, ...)
+	for (unsigned i = 0; i < c_vars.size(); i++)
+	{
+		for (int j = i + 1; j < c_vars.size(); j++)
+			solver->incAdd2LitClause(-c_vars[i], -c_vars[j]);
+	}
+
+	// T_err(x,i,c,o,x'): faulty transition relation where latches can be flipped by SAT-solver
+	sim_symb.simulateOneTimeStep();
+	parser.addVectorOfInterest(sim_symb.getLatchValues(), "current_state_flip");
+
+	vector<int> next_state_flip = sim_symb.getNextLatchValues();
+	vector<int> outpus_flip = sim_symb.getOutputValues();
+
+	// we only care about situations where the alarm is false
+	solver->incAddUnitClause(-sim_symb.getAlarmValue()); // no alarm
+
+
+	// create clauses saying that
+	//		(next_state_normal != next_state_flip) OR (outpus_normal != outpus_flip)
+	vector<int> output_or_next_state_different_clause;
+
+
+	vector<int> interest;
+
+	for(unsigned i = 0; i < circuit_->num_outputs -1; i++)
+	{
+		solver->addVarToKeep(next_free_cnf_var);
+		int out_is_diff_enable = next_free_cnf_var++;
+		output_or_next_state_different_clause.push_back(-out_is_diff_enable);
+		solver->incAdd3LitClause(out_is_diff_enable, outpus_normal[i], outpus_flip[i]);
+		solver->incAdd3LitClause(out_is_diff_enable, -outpus_normal[i], -outpus_flip[i]);
+		cout << "out_ok=" << outpus_normal[i] << ", out_flip=" << outpus_flip[i] << " | ";
+		cout << "output different literal " << out_is_diff_enable << " corresponds to " << circuit_->outputs[i].name << " (lit = "<< circuit_->outputs[i].lit << ")" << endl;
+		interest.push_back(outpus_normal[i]);
+		interest.push_back(outpus_flip[i]);
+		parser.addLiteralOfInterest(out_is_diff_enable, string(circuit_->outputs[i].name) + "is_ok");
+	}
+
+	for(unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
+	{
+		solver->addVarToKeep(next_free_cnf_var);
+		int state_is_diff_enable = next_free_cnf_var++;
+		output_or_next_state_different_clause.push_back(-state_is_diff_enable);
+		solver->incAdd3LitClause(state_is_diff_enable, next_state_normal[i], next_state_flip[i]);
+		solver->incAdd3LitClause(state_is_diff_enable, -next_state_normal[i], -next_state_flip[i]);
+
+		parser.addLiteralOfInterest(state_is_diff_enable, string(circuit_->latches[i].name) + "_is_ok");
+		cout << "nxt state diff literal " << state_is_diff_enable << " corresponds to " << circuit_->latches[i].name << " (lit = "<< circuit_->latches[i].lit << ", nxt="<< circuit_->latches[i].next <<")" << endl;
+	}
+
+	solver->incAddClause(output_or_next_state_different_clause);
+
+
+	vector<int> var_of_int = parser.getVarsOfInterrest();
+	interest.insert(interest.end(),var_of_int.begin(), var_of_int.end());
+
+	interest.insert(interest.end(), output_or_next_state_different_clause.begin(), output_or_next_state_different_clause.end());
+
+
+	vector<int> no_assumptions; // empty
+	vector<int> model;
+	unsigned count = 0;
+	while (solver->incIsSatModelOrCore(no_assumptions, interest, model))
+	{
+
+		if (count++ > 3)
+			break;
+
+
+		Utils::debugPrint(model, "model:");
+		parser.parseAssignment(model);
+
+		cout << endl << endl << endl << endl << "ignore result!!!!!!!!!!!!!!!!" << endl;
+		//return;
+		for (unsigned i = 0; i < model.size(); i++)
+		{
+			int c = model[i];
+			if (c > 0 && cj_to_latch[c] > 0) // found the c with positive face
+			{
+				solver->incAddUnitClause(-c);
+				detected_latches_.erase(cj_to_latch[c]);
+				L_DBG("latch " << cj_to_latch[c] << "(cj=" << c << " not protected")
+			}
+		}
+	}
+
+	delete solver;
+}
+
+/*
+ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 {
 	int next_free_cnf_var = 2;
 	SatSolver* solver = Options::instance().getSATSolver();
@@ -185,18 +348,16 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 	// compute transition relation T(x,i,o,a,x')
 	sim_symb.simulateOneTimeStep();
 
+	solver->incAddUnitClause(-sim_symb.getAlarmValue());
+
 	// additional time steps
 	unsigned num_steps = 1;
 	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
 	{
 		sim_symb.switchToNextState();
-		for(unsigned i = 0; i < circuit_->num_inputs; i++)
-		{
-			solver->addVarToKeep(next_free_cnf_var);
-			sim_symb.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
-		}
-
+		sim_symb.setInputValuesOpen();
 		sim_symb.simulateOneTimeStep();
+		solver->incAddUnitClause(-sim_symb.getAlarmValue());
 	}
 
 
@@ -234,7 +395,7 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 
 	// require that one c-variable is true
 	// TODO: this should not be necessary, right?
-	solver->incAddClause(c_vars);
+	//solver->incAddClause(c_vars);		// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	//--------------------------------------------------------------------------------------
 	// single fault assumption: there might be at most one flipped component
@@ -298,12 +459,12 @@ void DefinitelyProtected::findDefinitelyProtected_3()
 
 	delete solver;
 }
-
+ */
 
 void DefinitelyProtected::findDefinitelyProtected_4()
 {
 
-	unsigned k_steps = 3; // TODO: use parameter
+	unsigned k_steps = 5; // TODO: use parameter
 	int next_free_cnf_var = 2;
 	SatSolver* solver = Options::instance().getSATSolver();
 	vector<int> vars_to_keep; // empty
@@ -324,12 +485,7 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
 	{
 		sim_ok.switchToNextState();
-		for(unsigned i = 0; i < circuit_->num_inputs; i++)
-		{
-			solver->addVarToKeep(next_free_cnf_var);
-			sim_ok.setResultValue(circuit_->inputs[i].lit/2, next_free_cnf_var++);
-		}
-
+		sim_ok.setInputValuesOpen();
 		sim_ok.simulateOneTimeStep();
 	}
 
@@ -516,7 +672,7 @@ void DefinitelyProtected::findDefinitelyProtected_4()
 
 void DefinitelyProtected::findDefinitelyProtected_5()
 {
-	unsigned k_steps = 3; // TODO: use parameter
+	unsigned k_steps = 5; // TODO: use parameter
 	int next_free_cnf_var = 2;
 	SatSolver* solver = Options::instance().getSATSolver();
 	vector<int> vars_to_keep; // empty
@@ -532,18 +688,16 @@ void DefinitelyProtected::findDefinitelyProtected_5()
 	// compute transition relation T(x,i,o,a,x')
 	sim_ok.simulateOneTimeStep();
 
+	solver->incAddUnitClause(-sim_ok.getAlarmValue());
+
 	// additional time steps
 	unsigned num_steps = 1;
 	for (unsigned s_cnt = 0; s_cnt < num_steps; s_cnt++)
 	{
 		sim_ok.switchToNextState();
-		for (unsigned i = 0; i < circuit_->num_inputs; i++)
-		{
-			solver->addVarToKeep(next_free_cnf_var);
-			sim_ok.setResultValue(circuit_->inputs[i].lit / 2, next_free_cnf_var++);
-		}
-
+		sim_ok.setInputValuesOpen();
 		sim_ok.simulateOneTimeStep();
+		solver->incAddUnitClause(-sim_ok.getAlarmValue());
 	}
 
 	SymbolicSimulator sim_faulty(circuit_, solver, next_free_cnf_var);
@@ -615,6 +769,7 @@ void DefinitelyProtected::findDefinitelyProtected_5()
 
 		// require no alarm in fault-free version
 		solver->incAddUnitClause(-sim_ok.getAlarmValue()); // -a
+		solver->incAddUnitClause(-sim_faulty.getAlarmValue()); // -a
 
 		// create clause saying that output is different
 		vector<int> outputs_ok = sim_ok.getOutputValues();		// o
@@ -753,6 +908,9 @@ void DefinitelyProtected::test_single_latch(SatSolver* solver, SymbolicSimulator
 	//--------------------
 
 	int component_cnf = latch_aig >> 1;
+
+	// test:
+	solver->incAddUnitClause(-sim_symb.getAlarmValue()); // -a
 
 	// compute faulty transition relation
 	sim_symb.setResultValue(component_cnf, -sim_symb.getResultValue(component_cnf)); // flip latch

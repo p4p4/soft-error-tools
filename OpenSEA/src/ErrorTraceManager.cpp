@@ -55,11 +55,20 @@ string ErrorTraceManager::errorTraceToString(ErrorTrace* et)
 	unsigned timestep = et->error_timestep_;
 	oss << "Latch: " << et->latch_index_;
 	oss << " flipped at i=" << et->flipped_timestep_ << endl;
+	aiger* circuit = Options::instance().getCircuit();
+	for(unsigned i = 0; i < circuit->num_latches; i++)
+	{
+		if(circuit->latches[i].lit == et->latch_index_ && circuit->latches[i].name != 0)
+		{
+			oss << "Latch name: " << circuit->latches[i].name << endl;
+			break;
+		}
+	}
 
 	oss << "Error happened at timestep i=" << timestep << endl;
 
-	AigSimulator sim(Options::instance().getCircuit());
-	AigSimulator sim_ok(Options::instance().getCircuit());
+	AigSimulator sim(circuit);
+	AigSimulator sim_ok(circuit);
 	oss << "[SIM] i=?: state | inputs | outputs | next state" << endl;
 	oss << "-------------------------------------------------" << endl; // todo: make fancy
 	for (unsigned j = 0; j <= timestep; j++)
@@ -88,6 +97,15 @@ string ErrorTraceManager::errorTraceToString(ErrorTrace* et)
 
 void ErrorTraceManager::printErrorTraces()
 {
+	ostringstream oss;
+
+	oss << "=================================================" << endl;
+	for (unsigned i = 0; i < error_traces_.size(); i++)
+	{
+		oss << errorTraceToString(error_traces_[i]);
+		oss << endl << endl;
+		oss << "=================================================" << endl;
+	}
 
 	if (Options::instance().isDiagnosticOutputToFile())
 	{
@@ -96,24 +114,14 @@ void ErrorTraceManager::printErrorTraces()
 		MASSERT(out_file,
 				"could not write diagnostic output file: " + Options::instance().getDiagnosticOutputPath())
 
-	  out_file << "--------------------------------------------" << endl;
-		for (unsigned i = 0; i < error_traces_.size(); i++)
-		{
-			out_file << errorTraceToString(error_traces_[i]);
-			out_file << "--------------------------------------------" << endl;
-		}
+	  out_file << oss.str();
 
 	  out_file.close();
 	}
 	else
 	{
 		cout << endl << endl;
-		cout << "=================================================" << endl;
-		for (unsigned i = 0; i < error_traces_.size(); i++)
-		{
-			cout << errorTraceToString(error_traces_[i]);
-			cout << endl << endl;
-			cout << "================================================="  << endl;
-		}
+		cout << oss.str();
+
 	}
 }
