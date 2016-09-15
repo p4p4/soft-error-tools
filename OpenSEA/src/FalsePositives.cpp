@@ -1303,6 +1303,16 @@ void FalsePositives::printResults()
 					<< ", alarm_timestep=" << sf->alarm_timestep_ << ", error_gone_ts="
 					<< sf->error_gone_timestep_ << endl;
 
+			aiger* circuit = Options::instance().getCircuit();
+			for(unsigned i = 0; i < circuit->num_latches; i++)
+			{
+				if(circuit->latches[i].lit == sf->component_ && circuit->latches[i].name != 0)
+				{
+					oss << "Latch name: " << circuit->latches[i].name << endl;
+					break;
+				}
+			}
+
 			//---------------
 			AigSimulator sim(Options::instance().getCircuit());
 			AigSimulator sim_ok(Options::instance().getCircuit());

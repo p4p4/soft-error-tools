@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) 2015 by Graz University of Technology
+// Copyright (c) 2016 by Graz University of Technology
 //
 // This is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,83 +19,50 @@
 // ----------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------
-/// @file DefinitelyProtected.h
-/// @brief Contains the declaration of the class DefinitelyProtected.
+/// @file SatAssignmentParser.h
+/// @brief Contains the declaration of the class SatAssignmentParser.
 // -------------------------------------------------------------------------------------------
 
-#ifndef DefinitelyProtected_H__
-#define DefinitelyProtected_H__
+#ifndef SatAssignmentParser_H__
+#define SatAssignmentParser_H__
 
 #include "defines.h"
-#include "BackEnd.h"
-#include "SatSolver.h"
-#include "SymbolicSimulator.h"
-
-struct aiger;
 
 // -------------------------------------------------------------------------------------------
 ///
-/// @class DefinitelyProtected
+/// @class SatAssignmentParser
 /// @brief TODO
 ///
 /// @author TODO
 /// @version 1.2.0
-class DefinitelyProtected : public BackEnd
+class SatAssignmentParser
 {
 public:
-	using BackEnd::analyze;
 
-
-	enum AnalysisMode
-	{
-		STANDARD = 0
-	};
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-	DefinitelyProtected(aiger* circuit, int num_err_latches, int mode = 0);
+  SatAssignmentParser();
 
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Destructor.
-	virtual ~DefinitelyProtected();
+  virtual ~SatAssignmentParser();
 
+  void addLiteralOfInterest(int literal, string description);
+  void addVectorOfInterest(vector<int> literals, string description);
+  void parseAssignment(vector<int> assignment);
 
-
-	void analyze();
-	void findDefinitelyProtected_1step_deprecated();
-	void findDefinitelyProtected_1step_single();
-	void findDefinitelyProtected_1step_simultaneously();
-	void findDefinitelyProtected_4();
-	void findDefinitelyProtected_5();
-
-	void printResults();
-
-
-
-
+	vector<int> getVarsOfInterrest()
+	{
+		return vars_of_interrest_;
+	}
 
 protected:
-	void test_single_latch(SatSolver* solver, SymbolicSimulator& sim_symb, int& next_free_cnf_var, unsigned latch_aig);
-	// -------------------------------------------------------------------------------------------
-	///
-	/// @brief the circuit to analyze
-	aiger* circuit_;
-
-	// -------------------------------------------------------------------------------------------
-	///
-	/// @brief the mode (if there are more than one version and/or optimizations to enable)
-	int mode_;
-
-	// -------------------------------------------------------------------------------------------
-	///
-	/// @brief the number of error-latches. Error latches are additional latches used for the
-	/// protection circuit.
-	unsigned num_err_latches_;
-
+  map<int, string> lit_to_description_map_;
+  vector<int> vars_of_interrest_;
 
 private:
-
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -104,7 +71,7 @@ private:
 /// The copy constructor is disabled (set private) and not implemented.
 ///
 /// @param other The source for creating the copy.
-	DefinitelyProtected(const DefinitelyProtected &other);
+  SatAssignmentParser(const SatAssignmentParser &other);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -114,8 +81,8 @@ private:
 ///
 /// @param other The source for creating the copy.
 /// @return The result of the assignment, i.e, *this.
-	DefinitelyProtected& operator=(const DefinitelyProtected &other);
+  SatAssignmentParser& operator=(const SatAssignmentParser &other);
 
 };
 
-#endif // DefinitelyProtected_H__
+#endif // SatAssignmentParser_H__

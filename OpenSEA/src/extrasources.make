@@ -15,6 +15,7 @@ Logger.cpp
 MiniSatApi.cpp
 Options.cpp
 PicoSatApi.cpp
+SatAssignmentParser.cpp
 SatSolver.cpp
 SimulationBasedAnalysis.cpp
 Stopwatch.cpp
