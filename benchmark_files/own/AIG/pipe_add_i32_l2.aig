@@ -1,0 +1,605 @@
+aig 2475 34 136 33 2305
+1
+2347
+2351
+2355
+2359
+2363
+2367
+2371
+2375
+2379
+2383
+2387
+2391
+2395
+2399
+2403
+2407
+2411
+2415
+2419
+2423
+2427
+2431
+2435
+2439
+2443
+2447
+2451
+2455
+2459
+2463
+2467
+2471
+2661
+1
+2857
+2861
+2865
+2869
+2873
+2877
+2881
+2885
+2889
+2893
+2897
+2901
+2905
+2909
+2913
+2917
+2921
+2925
+2929
+2933
+2937
+2941
+2945
+2949
+2953
+2957
+2961
+2965
+2969
+2973
+2977
+2981
+3175
+1
+4301
+4305
+4309
+4313
+4317
+4321
+4325
+4329
+4333
+4337
+4341
+4345
+4349
+4353
+4357
+4361
+4365
+4369
+4373
+4377
+4381
+4385
+4389
+4393
+4397
+4401
+4405
+4409
+4413
+4417
+4421
+4425
+4621
+1
+4817
+4821
+4825
+4829
+4833
+4837
+4841
+4845
+4849
+4853
+4857
+4861
+4865
+4869
+4873
+4877
+4881
+4885
+4889
+4893
+4897
+4901
+4905
+4909
+4913
+4917
+4921
+4925
+4929
+4933
+4937
+4941
+4951
+344
+350
+356
+362
+368
+374
+380
+386
+392
+398
+404
+410
+416
+422
+428
+434
+440
+446
+452
+458
+464
+470
+476
+482
+488
+494
+500
+506
+512
+518
+524
+530
+1909
+…ˆ‰‰Œ•‘	”›•˜
+¡™œ§ ­¡¤³¥¨¹©¬¿­°Å±´Ëµ¸Ñ¹¼×½ÀİÁ!Ä ãÅ#È"éÉ%Ì$ïÍ'Ğ&õÑ)Ô(ûÕ+Ø*Ù-Ü,‡İ/à.á1ä0“å3è2™é5ì4Ÿí7ğ6¥ñ9ô8«õ;ø:±ù=ü<·ı?€>½A„@ÃÉCÌB’““–™	 ¥§	ª±±´
+½»¾ÉÅÈÕÏÒáÙÜíãæùíğ…÷ú‘„‹©•˜µŸ!¢ Á©#¬"Í³%¶$Ù½'À&åÇ)Ê(ñÑ+Ô*ıÛ-Ş,‰å/è.•ï1ò0¡ù3ü2­ƒ5†4¹76Å—9š8Ñ¡;¤:İ«=®<éµ?¸>õ¿AÂ@úü“C–B×ÙÜİİàã	çêïñ	ôûûş
+‡…ˆ“’Ÿ™œ«£¦·­°Ã·ºÏÁÄÛËÎçÕØóßâÿé!ì ‹ó#ö"—ı%€$£‡'Š&¯‘)”(»›+*Ç¥-¨,Ó¯/².ß¹1¼0ëÃ3Æ2÷Í5Ğ4ƒ	×7Ú6	á9ä8›	ë;î:§	õ=ø<³	ÿ?‚	>¿	‰	AŒ	@Ë	úü†
+ÑCÔB•—š››¡	¥¨­¯	²¹¹¼
+ÅÃÆÑÍĞİ×Úéáäõëî	õø	ÿ‚	™	‰	Œ	¥	“	–	±		 	½	§	!ª	 É	±	#´	"Õ	»	%¾	$á	Å	'È	&í	Ï	)Ò	(ù	Ù	+Ü	*…
+ã	-æ	,‘
+í	/ğ	.
+÷	1ú	0©
+
+3„
+2µ
+‹
+5
+4Á
+•
+7˜
+6Í
+Ÿ
+9¢
+8Ù
+©
+;¬
+:å
+³
+=¶
+<ñ
+½
+?À
+>ı
+Ç
+AÊ
+@‰úü›CBßÔ
+Ó
+	Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+Ò
+Ğ
+º¼ÆÍÒ¢ïòúÖ¨	òúûˆØ´	ş†‡–ÚÀ	Š’“¤ÜÌ	–Ÿ²ŞØ	¢ª«Ààä	®¶·Îâğ	ºÂÃÜäü	ÆÎÏêæˆ	ÒÚÛøè”	Şæç†ê 	êòó”ì¬	öşÿ¢î¸	‚Š‹°ğÄ	–—¾òĞ	š¢£ÌôÜ	¦®¯Úöè	²º»èøô	¾ÆÇöú€		ÊÒÓ„üŒ		ÖŞß’ş˜		âêë €¤		îö÷®‚°		ú‚ƒ¼„¼		†Ê†È		’š›ØˆÔ		¦§æŠà		ª²³ôŒì		¶¾¿‚ø		ÂÊË„
+	ÎÖ×’
+²ó²©€¬Ÿ¢•œ˜‹ª¸„÷ÆúíÔğãâæÙğÜÏşÒÅŒÈ»š¾±¨´§¶ªÄ “Ò–‰àŒÿî‚õüøëŠîá˜ä×¦ÚÍ´ĞÃÂÆ¹Ğ¼¯Ş²¥ì¨›ú‘ˆ”‡–Š}¤€ “•‹ƒ…ûıóõëíãåÛİÓÕËÍÃÅ»½³µ«­£¥›“•‹ƒ…ûıóõëíãåÛİÓÕËÍÃÅ»½³µØÀœŞàÊœäÊ¢èÄ®ì	¾ºğ¸Æô²Òø¬Şü¦ê€ ö„š‚ˆ”Œšˆ¦”‚²˜ü¾œ!öÊ #ğÖ¤%êâ¨'äî¬)Şú°+Ø†´-Ò’¸/Ì¼1ÆªÀ3À¶Ä5ºÂÈ7´ÎÌ9®ÚĞ;¨æÔ=¢òØ?œşÜA–Š»è¾¹î¼·ôºµú¸³€¶±†´¯Œ²­’°«˜®©¬§¤ª¥ª¨£°¦¡¶¤Ÿ¼¢Â ›È™Îœ—Ôš•Ú˜“à–‘æ”ì’ò‹ø‰şŒ‡„Š…Šˆƒ†–„œ‚}¢€®¢¢¦¦ªª®®²²¶¶ºº¾¾ÂÂÆÆÊÊÎÎÒÒÖÖÚÚŞŞââææêêîîòòööúúşş‚‚††ŠŠ’’ÚÈ–àÁ‰ÆƒÊ†èšÔÉ†Í‰ÖƒÜ††°Ú$Ê&Äá†å‰îƒô†ªÎàéãù†ı‰†ƒŒ†Îìæû‘†•‰ƒ¤†òŠì™“©†­‰¶ƒ¼†–¨ò±«Á†Å‰ÎƒÔ†ºÆøÉÃÙ†İ‰æƒì†ŞäşáÛñ†õ‰şƒ„†‚‚„ùó‰†‰–ƒœ†¦ Š‘‹¡†¥‰®ƒ´†Ê¾©£¹†½‰ÆƒÌ†îÜ–Á»Ñ†Õ‰Şƒä†’úœÙÓé†í‰öƒü†¶˜¢ñë†…‰ƒ”†Ú¶¨‰ƒ™†‰¦ƒ¬†şÔ®¡›±†µ‰¾ƒÄ†¢ò´¹³É†Í‰ÖƒÜ†ÆºÑËá†å‰îƒô†ê®Àéãù†ı‰†ƒŒ†ÌÆû‘†•‰ƒ¤†²êÌ™“©†­‰¶ƒ¼†ÖˆÒ±«Á†Å‰ÎƒÔ†ú¦ØÉÃÙ†İ‰æƒì†ÄŞáÛñ†õ‰şƒ„†Ââäùó‰†‰–ƒœ†æ€ê‘‹¡†¥‰®ƒ´†Š ğ©£¹†½‰ÆƒÌ†® ¼öÁ»Ñ†Õ‰Şƒä†Ò ÚüÙÓé†í‰öƒü†ö ø‚ñë†…‰ƒ”†š!–ˆ‰ƒ™†‰¦ƒ¬†¾!´ÕğØ½ŒÀ° ıÔ€İøà½œÀÀ ıä€İˆà½¬ÀĞ ıô€İ˜à½¼Àà ı„€İ¨à½ÌÀğ ı”€İ¸à½ÜÀ€ ı¤€İÈà½ìÀ  ı´ €İØ à½ü À ! }Ä!€¿	Â	Ÿ	¡		ƒ	ãåÅÇ§©‰‹ëíÍÏ¯±‘“óõÕ×·¹™›ûıİß¿Á¡£ƒ…åçÇÉ©«‹íïÏÑ±³“•õ÷×Ù¹»ş#Øª„$ğ™âª
+ğŸâ°
+ê«Ü¼
+ä·ÖÈ
+ŞÃĞÔ
+ØÏÊà
+ÒÛÄì
+Ìç¾ø
+Æó¸„Àÿ²º‹¬œ´—¦¨®£ ´¨¯šÀ¢»”ÌœÇØ–Óˆäß‚ğŠëüü„÷öˆşƒğ”øê ò›ä¬ì§Ş¸æ³ØÄà¿ÒĞÚËÌÜÔ×ÆèÎãÀôÈïº€Âû´Œ¼‡®˜»$¾¹”$¼·š$ºµ $¸³¦$¶±¬$´¯²$²­¸$°«¾$®©Ä$¬§Ê$ª¥Ğ$¨£Ö$¦¡Ü$¤Ÿâ$¢è$ ›î$™ô$œ—ú$š•€%˜“†%–‘Œ%”’%’˜%‹%‰¤%Œ‡ª%Š…°%ˆƒ¶%†¼%„Â%‚}È%€¹¨¤
+Î&i0 hold_signals<0>
+i1 hold_signals<1>
+i2 input_vector<0>
+i3 input_vector<1>
+i4 input_vector<2>
+i5 input_vector<3>
+i6 input_vector<4>
+i7 input_vector<5>
+i8 input_vector<6>
+i9 input_vector<7>
+i10 input_vector<8>
+i11 input_vector<9>
+i12 input_vector<10>
+i13 input_vector<11>
+i14 input_vector<12>
+i15 input_vector<13>
+i16 input_vector<14>
+i17 input_vector<15>
+i18 input_vector<16>
+i19 input_vector<17>
+i20 input_vector<18>
+i21 input_vector<19>
+i22 input_vector<20>
+i23 input_vector<21>
+i24 input_vector<22>
+i25 input_vector<23>
+i26 input_vector<24>
+i27 input_vector<25>
+i28 input_vector<26>
+i29 input_vector<27>
+i30 input_vector<28>
+i31 input_vector<29>
+i32 input_vector<30>
+i33 input_vector<31>
+l0 top|full_adder_nbit(1)|parity_protected_memory(2)|n133
+l1 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<0>_out
+l2 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<1>_out
+l3 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<2>_out
+l4 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<3>_out
+l5 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<4>_out
+l6 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<5>_out
+l7 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<6>_out
+l8 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<7>_out
+l9 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<8>_out
+l10 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<9>_out
+l11 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<10>_out
+l12 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<11>_out
+l13 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<12>_out
+l14 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<13>_out
+l15 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<14>_out
+l16 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<15>_out
+l17 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<16>_out
+l18 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<17>_out
+l19 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<18>_out
+l20 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<19>_out
+l21 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<20>_out
+l22 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<21>_out
+l23 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<22>_out
+l24 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<23>_out
+l25 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<24>_out
+l26 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<25>_out
+l27 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<26>_out
+l28 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<27>_out
+l29 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<28>_out
+l30 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<29>_out
+l31 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<30>_out
+l32 top|full_adder_nbit(1)|parity_protected_memory(2)|memory<31>_out
+l33 top|full_adder_nbit(1)|parity_protected_memory(2)|parity_reg_out
+l34 top|full_adder_nbit(1)|parity_protected_memory(3)|n133
+l35 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<0>_out
+l36 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<1>_out
+l37 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<2>_out
+l38 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<3>_out
+l39 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<4>_out
+l40 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<5>_out
+l41 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<6>_out
+l42 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<7>_out
+l43 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<8>_out
+l44 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<9>_out
+l45 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<10>_out
+l46 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<11>_out
+l47 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<12>_out
+l48 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<13>_out
+l49 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<14>_out
+l50 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<15>_out
+l51 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<16>_out
+l52 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<17>_out
+l53 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<18>_out
+l54 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<19>_out
+l55 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<20>_out
+l56 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<21>_out
+l57 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<22>_out
+l58 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<23>_out
+l59 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<24>_out
+l60 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<25>_out
+l61 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<26>_out
+l62 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<27>_out
+l63 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<28>_out
+l64 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<29>_out
+l65 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<30>_out
+l66 top|full_adder_nbit(1)|parity_protected_memory(3)|memory<31>_out
+l67 top|full_adder_nbit(1)|parity_protected_memory(3)|parity_reg_out
+l68 top|full_adder_nbit(4)|parity_protected_memory(5)|n133
+l69 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<0>_out
+l70 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<1>_out
+l71 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<2>_out
+l72 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<3>_out
+l73 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<4>_out
+l74 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<5>_out
+l75 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<6>_out
+l76 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<7>_out
+l77 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<8>_out
+l78 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<9>_out
+l79 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<10>_out
+l80 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<11>_out
+l81 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<12>_out
+l82 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<13>_out
+l83 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<14>_out
+l84 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<15>_out
+l85 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<16>_out
+l86 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<17>_out
+l87 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<18>_out
+l88 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<19>_out
+l89 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<20>_out
+l90 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<21>_out
+l91 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<22>_out
+l92 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<23>_out
+l93 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<24>_out
+l94 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<25>_out
+l95 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<26>_out
+l96 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<27>_out
+l97 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<28>_out
+l98 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<29>_out
+l99 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<30>_out
+l100 top|full_adder_nbit(4)|parity_protected_memory(5)|memory<31>_out
+l101 top|full_adder_nbit(4)|parity_protected_memory(5)|parity_reg_out
+l102 top|full_adder_nbit(4)|parity_protected_memory(6)|n133
+l103 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<0>_out
+l104 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<1>_out
+l105 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<2>_out
+l106 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<3>_out
+l107 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<4>_out
+l108 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<5>_out
+l109 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<6>_out
+l110 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<7>_out
+l111 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<8>_out
+l112 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<9>_out
+l113 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<10>_out
+l114 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<11>_out
+l115 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<12>_out
+l116 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<13>_out
+l117 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<14>_out
+l118 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<15>_out
+l119 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<16>_out
+l120 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<17>_out
+l121 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<18>_out
+l122 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<19>_out
+l123 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<20>_out
+l124 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<21>_out
+l125 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<22>_out
+l126 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<23>_out
+l127 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<24>_out
+l128 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<25>_out
+l129 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<26>_out
+l130 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<27>_out
+l131 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<28>_out
+l132 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<29>_out
+l133 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<30>_out
+l134 top|full_adder_nbit(4)|parity_protected_memory(6)|memory<31>_out
+l135 top|full_adder_nbit(4)|parity_protected_memory(6)|parity_reg_out
+o0 sum<0>
+o1 sum<1>
+o2 sum<2>
+o3 sum<3>
+o4 sum<4>
+o5 sum<5>
+o6 sum<6>
+o7 sum<7>
+o8 sum<8>
+o9 sum<9>
+o10 sum<10>
+o11 sum<11>
+o12 sum<12>
+o13 sum<13>
+o14 sum<14>
+o15 sum<15>
+o16 sum<16>
+o17 sum<17>
+o18 sum<18>
+o19 sum<19>
+o20 sum<20>
+o21 sum<21>
+o22 sum<22>
+o23 sum<23>
+o24 sum<24>
+o25 sum<25>
+o26 sum<26>
+o27 sum<27>
+o28 sum<28>
+o29 sum<29>
+o30 sum<30>
+o31 sum<31>
+o32 Err_out_Final
+c
+top 
+This file was written by ABC on Fri Sep 16 17:38:47 2016
+For information about AIGER format, refer to http://fmv.jku.at/aiger
+The verilog file pipe_add_i32_l2.v has been converted using the following commands:
+vl2mv pipe_add_i32_l2.v       # generates pipe_add_i32_l2.mv
+abc -c "read_blif_mv pipe_add_i32_l2.mv; write_aiger -s pipe_add_i32_l2.aig"
+pipe_add_i32_l2.v:
+___________________________
+// this file uses jinja templates for code generation, see http://jinja.pocoo.org
+`define WORD_WIDTH 32  // the bit width of the input, adders, and output signals
+`define LAYERS 2      // defines how often the adder is cascaded
+
+module top(
+    input_vector,   // the input vector, WORD_WIDTH broad
+    hold_signals,
+    sum,            // the final result, WORD_WIDTH broad
+    clk,
+    Err_out_Final   // the alarm output
+    );
+    
+    input   clk;
+    input   [`WORD_WIDTH-1:0] input_vector;
+    input   [`LAYERS-1:0] hold_signals;
+    output  [`WORD_WIDTH-1:0] sum;
+    output  Err_out_Final;
+
+    wire [`WORD_WIDTH-1:0] b_out_0 = input_vector;
+    wire [`WORD_WIDTH-1:0] result_0 = input_vector;
+    wire [`LAYERS-1:0] error_signals;
+
+    // -- begin unrolled code --
+{% for idx in range(1,`LAYERS+1) %}
+    wire [`WORD_WIDTH-1:0] b_out_{{ idx }};
+    wire [`WORD_WIDTH-1:0] result_{{ idx }};
+    full_adder_nbit adder2(clk, result_{{idx - 1}}, b_out_{{idx - 1}}, result_{{idx}}, b_out_{{idx}}, hold_signals[{{idx - 1}}], error_signals[{{idx - 1}}]);
+{% endfor %}
+    // -- end unrolled code --
+
+    checker myChecker(hold_signals, error_signals, Err_out_Final);
+
+
+    assign sum = result_`LAYERS;
+
+endmodule // top module
+
+
+module full_adder_nbit(
+    clk,
+    in_a,
+    in_b,
+    sum,
+    out_b,
+    hold,
+    not_valid
+    );
+    
+    input   [`WORD_WIDTH-1:0] in_a;
+    input   [`WORD_WIDTH-1:0] in_b;
+    input clk;
+    input hold;
+    output [`WORD_WIDTH-1:0] sum;
+    output [`WORD_WIDTH-1:0] out_b;
+    output not_valid;
+    
+    wire [`WORD_WIDTH-1:0] res; 
+    assign res = in_a + in_b;
+
+    wire sum_latches_invalid;
+    wire in_latches_invalid;
+    parity_protected_memory result(clk, res, sum, hold, sum_latches_invalid);
+    parity_protected_memory input_delay(clk, in_b, out_b, hold, in_latches_invalid);
+
+    assign not_valid = in_latches_invalid | sum_latches_invalid;
+endmodule // full_adder_nbit
+
+module parity_protected_memory(clk, in, out, hold, not_valid);
+    input clk;
+    input  [`WORD_WIDTH-1:0] in;
+    input hold;
+    output [`WORD_WIDTH-1:0] out;
+    output not_valid;
+
+    reg [`WORD_WIDTH-1:0] memory;
+    reg parity_reg;
+
+    wire parity_in;
+    wire parity_out;
+
+    assign parity_in = in[0]{% for idx in range(1,`WORD_WIDTH) %} ^ in[{{idx}}]{% endfor %};
+    assign parity_out = out[0]{% for idx in range(1,`WORD_WIDTH) %} ^ out[{{idx}}]{% endfor %};
+
+    assign not_valid = parity_reg ^ parity_out;
+    assign out = memory;
+
+    initial begin
+        memory = 1'b0;
+        parity_reg = 0;
+    end
+
+    always @(posedge clk) begin
+        if (~hold) begin
+            memory = in;
+            parity_reg = parity_in;
+        end
+    end
+endmodule // parity_protected_memory
+
+
+module checker(hold_signals, error_signals, alarm_output);
+    input [`LAYERS-1:0] hold_signals;
+    input [`LAYERS-1:0] error_signals;
+    output alarm_output;
+
+
+    // -- begin unrolled code --
+{% for i1 in range(0,`LAYERS) %}
+    // error in layer {{i1}}:
+    wire err_in_L{{i1}} = error_signals[{{i1}}]{% if i1 is not equalto `LAYERS - 1%}  & ~hold_signals[{{i1+1}}] {% endif %};
+{% endfor %}
+
+    assign alarm_output = err_in_L0{% for i1 in range(1,`LAYERS) %} | err_in_L{{i1}}{% endfor %};
+    // -- end unrolled code --
+
+endmodule // checker
+
+
