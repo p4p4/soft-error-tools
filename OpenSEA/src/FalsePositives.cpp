@@ -38,12 +38,13 @@ extern "C"
 }
 
 // -------------------------------------------------------------------------------------------
-FalsePositives::FalsePositives(aiger* circuit, int num_err_latches, int mode) :
+FalsePositives::FalsePositives(aiger* circuit, int num_err_latches, bool only_one_trace_per_latch, int mode) :
 				BackEnd(circuit, num_err_latches, mode)
 {
 	circuit_ = circuit;
 	num_err_latches_ = num_err_latches;
 	mode_ = mode;
+	only_one_trace_per_latch_ = only_one_trace_per_latch;
 
 }
 
@@ -93,10 +94,11 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 	map<unsigned, unsigned> literal_to_idx;
 	Utils::genLit2IndexMap(latches_to_check, circuit_, literal_to_idx);
 
+	bool continue_with_next_latch;
 	// ---------------- BEGIN 'for each latch' -------------------------
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
-
+		continue_with_next_latch = false;
 		next_free_cnf_var = 2;
 
 		unsigned component_aig = latches_to_check[l_cnt];
@@ -173,6 +175,12 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 
 					// switch concrete simulation to next state
 					concrete_state_ok = next_state_ok; // OR: change to sim_->switchToNextState();
+
+					if (only_one_trace_per_latch_)
+					{
+						continue_with_next_latch = true;
+						break;
+					}
 					continue;
 				}
 
@@ -339,11 +347,22 @@ bool FalsePositives::findFalsePositives_1b(vector<TestCase>& testcases)
 					}
 					L_DBG("[sat]  flip_timestep=" << sf->flip_timestep_ << ", alarm_timestep=" << sf->alarm_timestep_ << ",error_gone_ts=" << timestep+1)
 					superfluous.push_back(sf);
+
+					if (only_one_trace_per_latch_)
+					{
+						continue_with_next_latch = true;
+						break;
+					}
+
 				}
 
-
+				if (continue_with_next_latch)
+					break;
 
 			} // -- END "for each timestep in testcase" --
+
+			if (continue_with_next_latch)
+				break;
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
 
@@ -617,8 +636,17 @@ bool FalsePositives::findFalsePositives_2b(vector<TestCase>& testcases)
 					}
 				}
 
-				// blocking clause: ignore flips at this particular time step for this particular latch in the future
-				solver_->incAdd2LitClause(-fi, -cj);
+
+				if (only_one_trace_per_latch_)
+				{
+					solver_->incAddUnitClause(-cj);
+					latches_to_check.erase(cj_to_latch[cj]);
+				}
+				else
+				{
+					// blocking clause: ignore flips at this particular time step for this particular latch in the future
+					solver_->incAdd2LitClause(-fi, -cj);
+				}
 
 				SuperfluousTrace* sf = new SuperfluousTrace(testcase);
 				sf->error_gone_timestep_ = timestep +1;
@@ -667,9 +695,10 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 	Utils::genLit2IndexMap(latches_to_check, circuit_, literal_to_idx);
 
 	// ---------------- BEGIN 'for each latch' -------------------------
+	bool continue_with_next_latch;
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
-
+		continue_with_next_latch = false;
 		next_free_cnf_var = 2;
 
 		unsigned component_aig = latches_to_check[l_cnt];
@@ -925,11 +954,21 @@ bool FalsePositives::findFalsePositives_1b_free_inputs(vector<TestCase>& testcas
 					}
 
 					superfluous.push_back(sf);
+
+					if (only_one_trace_per_latch_)
+					{
+						continue_with_next_latch = true;
+						break;
+					}
 				}
 
-
+				if (continue_with_next_latch)
+					break;
 
 			} // -- END "for each timestep in testcase" --
+
+			if (continue_with_next_latch)
+				break;
 		} // end "for each testcase"
 	} // ------ END 'for each latch' ---------------
 
@@ -1241,8 +1280,16 @@ bool FalsePositives::findFalsePositives_2b_free_inputs(vector<TestCase>& testcas
 					}
 				}
 
-				// blocking clause: ignore flips at this particular time step for this particular latch in the future
-				solver_->incAdd2LitClause(-fi, -cj);
+				if (only_one_trace_per_latch_)
+				{
+					solver_->incAddUnitClause(-cj);
+					latches_to_check.erase(cj_to_latch[cj]);
+				}
+				else
+				{
+					// blocking clause: ignore flips at this particular time step for this particular latch in the future
+					solver_->incAdd2LitClause(-fi, -cj);
+				}
 
 				SuperfluousTrace* sf = new SuperfluousTrace();
 				sf->error_gone_timestep_ = timestep +1;

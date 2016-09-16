@@ -55,7 +55,7 @@ public:
 // -------------------------------------------------------------------------------------------
 ///
 /// @brief Constructor.
-	FalsePositives(aiger* circuit, int num_err_latches, int mode = 0);
+	FalsePositives(aiger* circuit, int num_err_latches, bool only_one_trace_per_latch = false, int mode = 0);
 
 // -------------------------------------------------------------------------------------------
 ///
@@ -125,6 +125,9 @@ protected:
 	///
 	/// @brief the mode (if there are more than one version and/or optimizations to enable)
 	int mode_;
+
+
+	bool only_one_trace_per_latch_;
 
 	// -------------------------------------------------------------------------------------------
 	///

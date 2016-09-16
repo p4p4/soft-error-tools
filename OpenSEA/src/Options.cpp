@@ -430,7 +430,11 @@ BackEnd* Options::getBackEnd()
 	}
 	else if (back_end_ == "fp")
 	{
-		back_end_instance_ = new FalsePositives(circuit_, num_err_latches_, mode_);
+		back_end_instance_ = new FalsePositives(circuit_, num_err_latches_, false, mode_);
+	}
+	else if (back_end_ == "fps")
+	{
+		back_end_instance_ = new FalsePositives(circuit_, num_err_latches_, true, mode_);
 	}
 	else if (back_end_ == "bdd")
 	{
