@@ -60,8 +60,6 @@ public:
 /// @brief Destructor.
 	virtual ~DefinitelyProtected();
 
-
-
 	void analyze();
 	void findDefinitelyProtected_1step_deprecated();
 	void findDefinitelyProtected_1step_single();
@@ -72,11 +70,10 @@ public:
 	void printResults();
 
 
-
-
-
 protected:
 	void test_single_latch(SatSolver* solver, SymbolicSimulator& sim_symb, int& next_free_cnf_var, unsigned latch_aig);
+	void computeInitialTransitionRelation(SatSolver* solver, SymbolicSimulator& sim_symb, unsigned num_steps);
+
 	// -------------------------------------------------------------------------------------------
 	///
 	/// @brief the circuit to analyze
