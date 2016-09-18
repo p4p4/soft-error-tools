@@ -309,7 +309,7 @@ const vector<int> &SymbolicSimulator::getLatchValues()
 const vector<int> &SymbolicSimulator::getNextLatchValues()
 {
 
-	if (!next_values_is_latest_)
+	if (true)
 	{
 		next_values_.clear();
 		next_values_.reserve(circuit_->num_latches);
@@ -319,7 +319,6 @@ const vector<int> &SymbolicSimulator::getNextLatchValues()
 			int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].next);
 			next_values_.push_back(next_state_var);
 		}
-		next_values_is_latest_ = true;
 	}
 
 	return next_values_;
