@@ -247,14 +247,24 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 
 		// add multiplexer to flip the latch
 		int old_value = sim_symb.getResultValue(latch_cnf);
-		int new_value = next_free_cnf_var++;
-		sim_symb.setResultValue(latch_cnf, new_value);
-		solver->addVarToKeep(new_value);
-		// new_value == cj ? -old_value : old_value
-		solver->incAdd3LitClause(cj, old_value, -new_value);
-		solver->incAdd3LitClause(cj, -old_value, new_value);
-		solver->incAdd3LitClause(-cj, old_value, new_value);
-		solver->incAdd3LitClause(-cj, -old_value, -new_value);
+		if (old_value == CNF_TRUE) // old value is true
+			sim_symb.setResultValue(latch_cnf, -cj);
+		else if (old_value == CNF_FALSE) // old value is false
+			sim_symb.setResultValue(latch_cnf, cj);
+		else
+		{
+			int new_value = next_free_cnf_var++;
+			parser.addLiteralOfInterest(cj, "cj");
+			parser.addLiteralOfInterest(old_value, "old_value");
+			parser.addLiteralOfInterest(new_value, "new_value");
+			solver->addVarToKeep(new_value);
+			// new_value == cj ? -old_value : old_value
+			solver->incAdd3LitClause(cj, old_value, -new_value);
+			solver->incAdd3LitClause(cj, -old_value, new_value);
+			solver->incAdd3LitClause(-cj, old_value, new_value);
+			solver->incAdd3LitClause(-cj, -old_value, -new_value);
+			sim_symb.setResultValue(latch_cnf, new_value);
+		}
 
 	}
 	parser.addVectorOfInterest(	sim_symb.getLatchValues(), "state_faulty");
@@ -284,7 +294,7 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 	// create clauses saying that
 	//		(next_state_normal != next_state_flip) OR (outpus_normal != outpus_flip)
 	vector<int> output_or_next_state_different_clause;
-/*
+
 	for (unsigned i = 0; i < circuit_->num_outputs - 1; i++)
 	{
 		solver->addVarToKeep(next_free_cnf_var);
@@ -293,7 +303,7 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 		solver->incAdd3LitClause(out_is_diff_enable, outpus_normal[i], outpus_flip[i]);
 		solver->incAdd3LitClause(out_is_diff_enable, -outpus_normal[i], -outpus_flip[i]);
 	}
-*/
+
 	for (unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
 	{
 		solver->addVarToKeep(next_free_cnf_var);
@@ -617,14 +627,21 @@ void DefinitelyProtected::findDefinitelyProtected_5()
 
 				// add multiplexer to flip the latch
 				int old_value = sim_faulty.getResultValue(latch_cnf);
-				int new_value = next_free_cnf_var++;
-				sim_faulty.setResultValue(latch_cnf, new_value);
-				solver->addVarToKeep(new_value);
-				// new_value == cj ? -old_value : old_value
-				solver->incAdd3LitClause(cj, old_value, -new_value);
-				solver->incAdd3LitClause(cj, -old_value, new_value);
-				solver->incAdd3LitClause(-cj, old_value, new_value);
-				solver->incAdd3LitClause(-cj, -old_value, -new_value);
+				if (old_value == CNF_TRUE) // old value is true
+					sim_faulty.setResultValue(latch_cnf, -cj);
+				else if (old_value == CNF_FALSE) // old value is false
+					sim_faulty.setResultValue(latch_cnf, cj);
+				else
+				{
+					int new_value = next_free_cnf_var++;
+					sim_faulty.setResultValue(latch_cnf, new_value);
+					solver->addVarToKeep(new_value);
+					// new_value == cj ? -old_value : old_value
+					solver->incAdd3LitClause(cj, old_value, -new_value);
+					solver->incAdd3LitClause(cj, -old_value, new_value);
+					solver->incAdd3LitClause(-cj, old_value, new_value);
+					solver->incAdd3LitClause(-cj, -old_value, -new_value);
+				}
 
 			}
 
