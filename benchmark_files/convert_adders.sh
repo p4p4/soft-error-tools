@@ -2,18 +2,94 @@
 ABC=$IMMORTALTP/abc/abc/abc
 A2A=$IMMORTALTP/aiger-1.9.4/aigtoaig
 
-SRC=./adders/
-TARGET=adders_aig/
+SRC=./own/
+TARGET=own/AIG/
 
 IN_FILES=(
-#0_two_modules
-#1_two_modules_two_instances
-#2_multiple_instances
-5_pipeline_param
-6_pipeline
-7_pipeline
-8_pipeline
-#b
+pipe_add_i1_l1
+pipe_add_i1_l2
+pipe_add_i1_l4
+pipe_add_i1_l6
+pipe_add_i1_l8
+pipe_add_i1_l10
+pipe_add_i2_l1
+pipe_add_i2_l2
+pipe_add_i2_l4
+pipe_add_i2_l6
+pipe_add_i2_l8
+pipe_add_i2_l10
+pipe_add_i8_l1
+pipe_add_i8_l2
+pipe_add_i8_l4
+pipe_add_i8_l6
+pipe_add_i8_l8
+pipe_add_i8_l10
+pipe_add_i16_l1
+pipe_add_i16_l2
+pipe_add_i16_l4
+pipe_add_i16_l6
+pipe_add_i16_l8
+pipe_add_i16_l10
+pipe_add_i32_l1
+pipe_add_i32_l2
+pipe_add_i32_l4
+pipe_add_i32_l6
+pipe_add_i32_l8
+pipe_add_i32_l10
+pipe_add_i64_l1
+pipe_add_i64_l2
+pipe_add_i64_l4
+pipe_add_i64_l6
+pipe_add_i64_l8
+pipe_add_i64_l10
+pipe_add_i128_l1
+pipe_add_i128_l2
+pipe_add_i128_l4
+pipe_add_i128_l6
+pipe_add_i128_l8
+pipe_add_i128_l10
+pipe_add_tmr_i1_l1
+pipe_add_tmr_i1_l2
+pipe_add_tmr_i1_l4
+pipe_add_tmr_i1_l6
+pipe_add_tmr_i1_l8
+pipe_add_tmr_i1_l10
+pipe_add_tmr_i2_l1
+pipe_add_tmr_i2_l2
+pipe_add_tmr_i2_l4
+pipe_add_tmr_i2_l6
+pipe_add_tmr_i2_l8
+pipe_add_tmr_i2_l10
+pipe_add_tmr_i8_l1
+pipe_add_tmr_i8_l2
+pipe_add_tmr_i8_l4
+pipe_add_tmr_i8_l6
+pipe_add_tmr_i8_l8
+pipe_add_tmr_i8_l10
+pipe_add_tmr_i16_l1
+pipe_add_tmr_i16_l2
+pipe_add_tmr_i16_l4
+pipe_add_tmr_i16_l6
+pipe_add_tmr_i16_l8
+pipe_add_tmr_i16_l10
+pipe_add_tmr_i32_l1
+pipe_add_tmr_i32_l2
+pipe_add_tmr_i32_l4
+pipe_add_tmr_i32_l6
+pipe_add_tmr_i32_l8
+pipe_add_tmr_i32_l10
+pipe_add_tmr_i64_l1
+pipe_add_tmr_i64_l2
+pipe_add_tmr_i64_l4
+pipe_add_tmr_i64_l6
+pipe_add_tmr_i64_l8
+pipe_add_tmr_i64_l10
+pipe_add_tmr_i128_l1
+pipe_add_tmr_i128_l2
+pipe_add_tmr_i128_l4
+pipe_add_tmr_i128_l6
+pipe_add_tmr_i128_l8
+pipe_add_tmr_i128_l10
 )
 
 echo "=============================="
@@ -47,7 +123,7 @@ do
   $A2A $TARGET$filename.aig $TARGET$filename.aag
 done
 
-rm $TARGET*.aig # remove binary files
+#rm $TARGET*.aig # remove binary files
 
 echo "=============================="
 echo "Statistics:"
