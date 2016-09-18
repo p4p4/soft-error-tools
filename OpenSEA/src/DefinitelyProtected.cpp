@@ -210,6 +210,8 @@ void DefinitelyProtected::test_single_latch(SatSolver* solver, SymbolicSimulator
 
 void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 {
+
+	SatAssignmentParser parser;
 	unsigned num_steps = 20;
 	int next_free_cnf_var = 2;
 	SatSolver* solver = Options::instance().getSATSolver();
@@ -229,6 +231,9 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 			num_err_latches_);
 	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
 	vector<int> c_vars;
+
+	parser.addVectorOfInterest(	sim_symb.getLatchValues(), "state_ok");
+	parser.addVectorOfInterest(	next_state_normal, "next_state_normal");
 
 	// T_err(x,i,c,o,a,x') & -a:
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
@@ -252,12 +257,15 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 		solver->incAdd3LitClause(-cj, -old_value, -new_value);
 
 	}
+	parser.addVectorOfInterest(	sim_symb.getLatchValues(), "state_faulty");
+	parser.addVectorOfInterest(c_vars, "c_vars");
+
 	sim_symb.simulateOneTimeStep();
 	solver->incAddUnitClause(-sim_symb.getAlarmValue());
 
 	// require that one c-variable is true
 	// TODO: this should not be necessary, right?
-	solver->incAddClause(c_vars);		// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//solver->incAddClause(c_vars);		// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	//--------------------------------------------------------------------------------------
 	// single fault assumption: there can be at most one flipped component
@@ -271,10 +279,12 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 	vector<int> next_state_flip = sim_symb.getNextLatchValues();
 	vector<int> outpus_flip = sim_symb.getOutputValues();
 
+	parser.addVectorOfInterest(	next_state_flip, "next_state_flip");
+
 	// create clauses saying that
 	//		(next_state_normal != next_state_flip) OR (outpus_normal != outpus_flip)
 	vector<int> output_or_next_state_different_clause;
-
+/*
 	for (unsigned i = 0; i < circuit_->num_outputs - 1; i++)
 	{
 		solver->addVarToKeep(next_free_cnf_var);
@@ -283,7 +293,7 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 		solver->incAdd3LitClause(out_is_diff_enable, outpus_normal[i], outpus_flip[i]);
 		solver->incAdd3LitClause(out_is_diff_enable, -outpus_normal[i], -outpus_flip[i]);
 	}
-
+*/
 	for (unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
 	{
 		solver->addVarToKeep(next_free_cnf_var);
@@ -293,23 +303,42 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 		solver->incAdd3LitClause(state_is_diff_enable, -next_state_normal[i], -next_state_flip[i]);
 	}
 
+	parser.addVectorOfInterest(	output_or_next_state_different_clause, "next_state_different");
+
 	solver->incAddClause(output_or_next_state_different_clause);
 
 	vector<int> no_assumptions; // empty
 	vector<int> model;
-	while (solver->incIsSatModelOrCore(no_assumptions, c_vars, model))
+	while (solver->incIsSatModelOrCore(no_assumptions, parser.getVarsOfInterrest(), model))
 	{
+		cout << "----------------------------------------" << endl;
 		Utils::debugPrint(model, "model:");
+		parser.parseAssignment(model);
+
+		int c_selected = parser.findFirstPositiveAssignmentOfVector(model, c_vars);
+		cout << "c literal found: " << c_selected << endl;
+
+		if (c_selected != 0)
+		{
+			solver->incAddUnitClause(-c_selected);
+			detected_latches_.erase(cj_to_latch[c_selected]);
+		}
+		else
+			return; // TODO analyze the error!
+
+
+		/*
 		for (unsigned i = 0; i < model.size(); i++)
 		{
 			int c = model[i];
 			if (c > 0) // found the c with positive face
 			{
-				solver->incAddUnitClause(-c);
+				//solver->incAddUnitClause(-c);
 				detected_latches_.erase(cj_to_latch[c]);
 				L_DBG("latch " << cj_to_latch[c] << " not 1-step protected")
 			}
 		}
+		*/
 	}
 
 	delete solver;

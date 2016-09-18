@@ -52,6 +52,7 @@ public:
   void addLiteralOfInterest(int literal, string description);
   void addVectorOfInterest(vector<int> literals, string description);
   void parseAssignment(vector<int> assignment);
+  int findFirstPositiveAssignmentOfVector(vector<int> assignment, vector<int> literals);
 
 	vector<int> getVarsOfInterrest()
 	{
@@ -60,6 +61,7 @@ public:
 
 protected:
   map<int, string> lit_to_description_map_;
+  vector<string> var_name_;
   vector<int> vars_of_interrest_;
 
 private:

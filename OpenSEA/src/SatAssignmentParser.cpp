@@ -38,7 +38,7 @@ SatAssignmentParser::~SatAssignmentParser()
 
 void SatAssignmentParser::addLiteralOfInterest(int literal, string description)
 {
-	lit_to_description_map_[literal] = description;
+	var_name_.push_back(description);
 	vars_of_interrest_.push_back(literal);
 }
 
@@ -55,22 +55,25 @@ void SatAssignmentParser::addVectorOfInterest(vector<int> literals, string descr
 void SatAssignmentParser::parseAssignment(vector<int> assignment)
 {
 	for(unsigned i = 0; i < assignment.size(); i++) {
-		/*bool assignmend_negated = false;
-		map<int,string>::iterator it = lit_to_description_map_.find(assignment[i]);
-		if (it == lit_to_description_map_.end()) {
-			lit_to_description_map_.find(-assignment[i]);
-			bool assignment_negated = true;
-		}*/
-
-		map<int,string>::iterator it = lit_to_description_map_.find(abs(assignment[i]));
-		if (it != lit_to_description_map_.end()) {
-			cout << it->first << "=" << ((assignment[i] > 0) ? 1 : 0) << " (" << it->second << ")" << endl;
-		}
-		else
-		{
-			cout << assignment[i] << "not found" << endl;
-		}
-
-
+		cout << var_name_[i] << " (" << vars_of_interrest_[i] << ") = " << (assignment[i] > 0) << endl;
 	}
+}
+
+int SatAssignmentParser::findFirstPositiveAssignmentOfVector(vector<int> assignment,
+		vector<int> literals)
+{
+	map<int,int> literal_to_assignment;
+
+	for(unsigned i = 0; i < assignment.size(); i++)
+	{
+		literal_to_assignment[abs(assignment[i])] = assignment[i] > 0;
+	}
+
+	for(unsigned i = 0; i < literals.size(); i++)
+	{
+		if (literal_to_assignment[literals[i]] > 0)
+			return literals[i];
+	}
+
+	return 0;
 }
