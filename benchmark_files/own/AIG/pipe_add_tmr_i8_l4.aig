@@ -1,0 +1,628 @@
+aig 1692 8 216 9 1468
+1
+0
+583
+591
+599
+607
+615
+623
+631
+1
+2
+4
+6
+8
+10
+12
+14
+16
+1
+0
+583
+591
+599
+607
+615
+623
+631
+1
+2
+4
+6
+8
+10
+12
+14
+16
+1
+0
+583
+591
+599
+607
+615
+623
+631
+1
+2
+4
+6
+8
+10
+12
+14
+16
+1
+649
+685
+727
+769
+811
+853
+895
+937
+1
+640
+660
+694
+736
+778
+820
+862
+904
+1
+955
+991
+1033
+1075
+1117
+1159
+1201
+1243
+1
+946
+966
+1000
+1042
+1084
+1126
+1168
+1210
+1
+1261
+1297
+1339
+1381
+1423
+1465
+1507
+1549
+1
+1252
+1272
+1306
+1348
+1390
+1432
+1474
+1516
+1
+1567
+1603
+1645
+1687
+1729
+1771
+1813
+1855
+1
+1558
+1578
+1612
+1654
+1696
+1738
+1780
+1822
+1
+1873
+1909
+1951
+1993
+2035
+2077
+2119
+2161
+1
+1864
+1884
+1918
+1960
+2002
+2044
+2086
+2128
+1
+2179
+2215
+2257
+2299
+2341
+2383
+2425
+2467
+1
+2170
+2190
+2224
+2266
+2308
+2350
+2392
+2434
+1
+2485
+2521
+2563
+2605
+2647
+2689
+2731
+2773
+1
+2476
+2496
+2530
+2572
+2614
+2656
+2698
+2740
+1
+2791
+2827
+2869
+2911
+2953
+2995
+3037
+3079
+1
+2782
+2802
+2836
+2878
+2920
+2962
+3004
+3046
+1
+3097
+3133
+3175
+3217
+3259
+3301
+3343
+3385
+1
+3088
+3108
+3142
+3184
+3226
+3268
+3310
+3352
+465
+481
+497
+513
+529
+545
+561
+577
+0
+jH(xV6ÜdDîrR¢
+Ä
+`
+∞énæú|Ã™äΩ¿¿¬√∆»…ÃŒœ“‘’ÿ⁄€ﬁ‡·„ÊÁ◊⁄€	
+ı¯˚ÈÏÔ	ïòùâåë&
+.		Ω	¿«±	¥ª#%		ÂË
+ÒŸ‹
+Â#%		çêõÅÑè#%		µ∏≈©¨π#%		›‡Ô—‘„#%		ÒÙıÂËÈ	
+ÉÜâ˜˙˝	£¶´óöü&
+.		À	Œ’ø	¬…#%		Ûˆ
+ˇÁÍ
+Û#%		õû©èíù#%		√∆”∑∫«#%		ÎÓ˝ﬂ‚Ò#%		ˇÇ	É	Ûˆ˜	
+ë	î	ó	Ö	à	ã		±	¥	π	•	®	≠	&
+.		Ÿ		‹	„	Õ		–	◊	#%		Å
+Ñ
+
+ç
+ı	¯	
+Å
+#%		©
+¨
+∑
+ù
+†
+´
+#%		—
+‘
+·
+≈
+»
+’
+#%		˘
+¸
+ãÌ
+
+ˇ
+#%		çêëÅÑÖ	
+ü¢•ìñô	ø¬«≥∂ª&
+.		Á	ÍÒ€	ﬁÂ#%		èí
+õÉÜ
+è#%		∑∫≈´Æπ#%		ﬂ‚Ô”÷„#%		áäô˚˛ç#%		õûüèíì	
+≠∞≥°§ß	Õ–’¡ƒ…&
+.		ı	¯ˇÈ	ÏÛ#%		ù†
+©ëî
+ù#%		≈»”πº«#%		Ì˝·‰Ò#%		ïòßâåõ#%		©¨≠ù†°	
+ªæ¡Ø≤µ	€ﬁ„œ“◊&
+.		É	Üç˜	˙Å#%		´Æ
+∑ü¢
+´#%		”÷·« ’#%		˚˛ãÔÚˇ#%		£¶µóö©#%		∑∫ª´ÆØ	
+…ÃœΩ¿√	ÈÏÒ›‡Â&
+.		ë	îõÖ	àè#%		πº
+≈≠∞
+π#%		·‰Ô’ÿ„#%		âåô˝Äç#%		±¥√•®∑#%		≈»…πºΩ	
+◊⁄›ÀŒ—	˜˙ˇÎÓÛ&
+.		ü	¢©ì	ñù#%		« 
+”ªæ
+«#%		ÔÚ˝„ÊÒ#%		óößãéõ#%		ø¬—≥∂≈#%		”÷◊« À	
+ÂËÎŸ‹ﬂ	Öàç˘¸Å&
+.		≠	∞∑°	§´#%		’ÿ
+·…Ã
+’#%		˝ÄãÒÙˇ#%		•®µôú©#%		Õ–ﬂ¡ƒ”#%		i0 input_vector<0>
+i1 input_vector<1>
+i2 input_vector<2>
+i3 input_vector<3>
+i4 input_vector<4>
+i5 input_vector<5>
+i6 input_vector<6>
+i7 input_vector<7>
+l0 top|full_adder_nbit(1)|d_ff(2)|n33
+l1 top|full_adder_nbit(1)|d_ff(2)|memory<0>_out
+l2 top|full_adder_nbit(1)|d_ff(2)|memory<1>_out
+l3 top|full_adder_nbit(1)|d_ff(2)|memory<2>_out
+l4 top|full_adder_nbit(1)|d_ff(2)|memory<3>_out
+l5 top|full_adder_nbit(1)|d_ff(2)|memory<4>_out
+l6 top|full_adder_nbit(1)|d_ff(2)|memory<5>_out
+l7 top|full_adder_nbit(1)|d_ff(2)|memory<6>_out
+l8 top|full_adder_nbit(1)|d_ff(2)|memory<7>_out
+l9 top|full_adder_nbit(1)|d_ff(3)|n33
+l10 top|full_adder_nbit(1)|d_ff(3)|memory<0>_out
+l11 top|full_adder_nbit(1)|d_ff(3)|memory<1>_out
+l12 top|full_adder_nbit(1)|d_ff(3)|memory<2>_out
+l13 top|full_adder_nbit(1)|d_ff(3)|memory<3>_out
+l14 top|full_adder_nbit(1)|d_ff(3)|memory<4>_out
+l15 top|full_adder_nbit(1)|d_ff(3)|memory<5>_out
+l16 top|full_adder_nbit(1)|d_ff(3)|memory<6>_out
+l17 top|full_adder_nbit(1)|d_ff(3)|memory<7>_out
+l18 top|full_adder_nbit(4)|d_ff(5)|n33
+l19 top|full_adder_nbit(4)|d_ff(5)|memory<0>_out
+l20 top|full_adder_nbit(4)|d_ff(5)|memory<1>_out
+l21 top|full_adder_nbit(4)|d_ff(5)|memory<2>_out
+l22 top|full_adder_nbit(4)|d_ff(5)|memory<3>_out
+l23 top|full_adder_nbit(4)|d_ff(5)|memory<4>_out
+l24 top|full_adder_nbit(4)|d_ff(5)|memory<5>_out
+l25 top|full_adder_nbit(4)|d_ff(5)|memory<6>_out
+l26 top|full_adder_nbit(4)|d_ff(5)|memory<7>_out
+l27 top|full_adder_nbit(4)|d_ff(6)|n33
+l28 top|full_adder_nbit(4)|d_ff(6)|memory<0>_out
+l29 top|full_adder_nbit(4)|d_ff(6)|memory<1>_out
+l30 top|full_adder_nbit(4)|d_ff(6)|memory<2>_out
+l31 top|full_adder_nbit(4)|d_ff(6)|memory<3>_out
+l32 top|full_adder_nbit(4)|d_ff(6)|memory<4>_out
+l33 top|full_adder_nbit(4)|d_ff(6)|memory<5>_out
+l34 top|full_adder_nbit(4)|d_ff(6)|memory<6>_out
+l35 top|full_adder_nbit(4)|d_ff(6)|memory<7>_out
+l36 top|full_adder_nbit(7)|d_ff(8)|n33
+l37 top|full_adder_nbit(7)|d_ff(8)|memory<0>_out
+l38 top|full_adder_nbit(7)|d_ff(8)|memory<1>_out
+l39 top|full_adder_nbit(7)|d_ff(8)|memory<2>_out
+l40 top|full_adder_nbit(7)|d_ff(8)|memory<3>_out
+l41 top|full_adder_nbit(7)|d_ff(8)|memory<4>_out
+l42 top|full_adder_nbit(7)|d_ff(8)|memory<5>_out
+l43 top|full_adder_nbit(7)|d_ff(8)|memory<6>_out
+l44 top|full_adder_nbit(7)|d_ff(8)|memory<7>_out
+l45 top|full_adder_nbit(7)|d_ff(9)|n33
+l46 top|full_adder_nbit(7)|d_ff(9)|memory<0>_out
+l47 top|full_adder_nbit(7)|d_ff(9)|memory<1>_out
+l48 top|full_adder_nbit(7)|d_ff(9)|memory<2>_out
+l49 top|full_adder_nbit(7)|d_ff(9)|memory<3>_out
+l50 top|full_adder_nbit(7)|d_ff(9)|memory<4>_out
+l51 top|full_adder_nbit(7)|d_ff(9)|memory<5>_out
+l52 top|full_adder_nbit(7)|d_ff(9)|memory<6>_out
+l53 top|full_adder_nbit(7)|d_ff(9)|memory<7>_out
+l54 top|full_adder_nbit(10)|d_ff(11)|n33
+l55 top|full_adder_nbit(10)|d_ff(11)|memory<0>_out
+l56 top|full_adder_nbit(10)|d_ff(11)|memory<1>_out
+l57 top|full_adder_nbit(10)|d_ff(11)|memory<2>_out
+l58 top|full_adder_nbit(10)|d_ff(11)|memory<3>_out
+l59 top|full_adder_nbit(10)|d_ff(11)|memory<4>_out
+l60 top|full_adder_nbit(10)|d_ff(11)|memory<5>_out
+l61 top|full_adder_nbit(10)|d_ff(11)|memory<6>_out
+l62 top|full_adder_nbit(10)|d_ff(11)|memory<7>_out
+l63 top|full_adder_nbit(10)|d_ff(12)|n33
+l64 top|full_adder_nbit(10)|d_ff(12)|memory<0>_out
+l65 top|full_adder_nbit(10)|d_ff(12)|memory<1>_out
+l66 top|full_adder_nbit(10)|d_ff(12)|memory<2>_out
+l67 top|full_adder_nbit(10)|d_ff(12)|memory<3>_out
+l68 top|full_adder_nbit(10)|d_ff(12)|memory<4>_out
+l69 top|full_adder_nbit(10)|d_ff(12)|memory<5>_out
+l70 top|full_adder_nbit(10)|d_ff(12)|memory<6>_out
+l71 top|full_adder_nbit(10)|d_ff(12)|memory<7>_out
+l72 top|full_adder_nbit(13)|d_ff(14)|n33
+l73 top|full_adder_nbit(13)|d_ff(14)|memory<0>_out
+l74 top|full_adder_nbit(13)|d_ff(14)|memory<1>_out
+l75 top|full_adder_nbit(13)|d_ff(14)|memory<2>_out
+l76 top|full_adder_nbit(13)|d_ff(14)|memory<3>_out
+l77 top|full_adder_nbit(13)|d_ff(14)|memory<4>_out
+l78 top|full_adder_nbit(13)|d_ff(14)|memory<5>_out
+l79 top|full_adder_nbit(13)|d_ff(14)|memory<6>_out
+l80 top|full_adder_nbit(13)|d_ff(14)|memory<7>_out
+l81 top|full_adder_nbit(13)|d_ff(15)|n33
+l82 top|full_adder_nbit(13)|d_ff(15)|memory<0>_out
+l83 top|full_adder_nbit(13)|d_ff(15)|memory<1>_out
+l84 top|full_adder_nbit(13)|d_ff(15)|memory<2>_out
+l85 top|full_adder_nbit(13)|d_ff(15)|memory<3>_out
+l86 top|full_adder_nbit(13)|d_ff(15)|memory<4>_out
+l87 top|full_adder_nbit(13)|d_ff(15)|memory<5>_out
+l88 top|full_adder_nbit(13)|d_ff(15)|memory<6>_out
+l89 top|full_adder_nbit(13)|d_ff(15)|memory<7>_out
+l90 top|full_adder_nbit(16)|d_ff(17)|n33
+l91 top|full_adder_nbit(16)|d_ff(17)|memory<0>_out
+l92 top|full_adder_nbit(16)|d_ff(17)|memory<1>_out
+l93 top|full_adder_nbit(16)|d_ff(17)|memory<2>_out
+l94 top|full_adder_nbit(16)|d_ff(17)|memory<3>_out
+l95 top|full_adder_nbit(16)|d_ff(17)|memory<4>_out
+l96 top|full_adder_nbit(16)|d_ff(17)|memory<5>_out
+l97 top|full_adder_nbit(16)|d_ff(17)|memory<6>_out
+l98 top|full_adder_nbit(16)|d_ff(17)|memory<7>_out
+l99 top|full_adder_nbit(16)|d_ff(18)|n33
+l100 top|full_adder_nbit(16)|d_ff(18)|memory<0>_out
+l101 top|full_adder_nbit(16)|d_ff(18)|memory<1>_out
+l102 top|full_adder_nbit(16)|d_ff(18)|memory<2>_out
+l103 top|full_adder_nbit(16)|d_ff(18)|memory<3>_out
+l104 top|full_adder_nbit(16)|d_ff(18)|memory<4>_out
+l105 top|full_adder_nbit(16)|d_ff(18)|memory<5>_out
+l106 top|full_adder_nbit(16)|d_ff(18)|memory<6>_out
+l107 top|full_adder_nbit(16)|d_ff(18)|memory<7>_out
+l108 top|full_adder_nbit(19)|d_ff(20)|n33
+l109 top|full_adder_nbit(19)|d_ff(20)|memory<0>_out
+l110 top|full_adder_nbit(19)|d_ff(20)|memory<1>_out
+l111 top|full_adder_nbit(19)|d_ff(20)|memory<2>_out
+l112 top|full_adder_nbit(19)|d_ff(20)|memory<3>_out
+l113 top|full_adder_nbit(19)|d_ff(20)|memory<4>_out
+l114 top|full_adder_nbit(19)|d_ff(20)|memory<5>_out
+l115 top|full_adder_nbit(19)|d_ff(20)|memory<6>_out
+l116 top|full_adder_nbit(19)|d_ff(20)|memory<7>_out
+l117 top|full_adder_nbit(19)|d_ff(21)|n33
+l118 top|full_adder_nbit(19)|d_ff(21)|memory<0>_out
+l119 top|full_adder_nbit(19)|d_ff(21)|memory<1>_out
+l120 top|full_adder_nbit(19)|d_ff(21)|memory<2>_out
+l121 top|full_adder_nbit(19)|d_ff(21)|memory<3>_out
+l122 top|full_adder_nbit(19)|d_ff(21)|memory<4>_out
+l123 top|full_adder_nbit(19)|d_ff(21)|memory<5>_out
+l124 top|full_adder_nbit(19)|d_ff(21)|memory<6>_out
+l125 top|full_adder_nbit(19)|d_ff(21)|memory<7>_out
+l126 top|full_adder_nbit(22)|d_ff(23)|n33
+l127 top|full_adder_nbit(22)|d_ff(23)|memory<0>_out
+l128 top|full_adder_nbit(22)|d_ff(23)|memory<1>_out
+l129 top|full_adder_nbit(22)|d_ff(23)|memory<2>_out
+l130 top|full_adder_nbit(22)|d_ff(23)|memory<3>_out
+l131 top|full_adder_nbit(22)|d_ff(23)|memory<4>_out
+l132 top|full_adder_nbit(22)|d_ff(23)|memory<5>_out
+l133 top|full_adder_nbit(22)|d_ff(23)|memory<6>_out
+l134 top|full_adder_nbit(22)|d_ff(23)|memory<7>_out
+l135 top|full_adder_nbit(22)|d_ff(24)|n33
+l136 top|full_adder_nbit(22)|d_ff(24)|memory<0>_out
+l137 top|full_adder_nbit(22)|d_ff(24)|memory<1>_out
+l138 top|full_adder_nbit(22)|d_ff(24)|memory<2>_out
+l139 top|full_adder_nbit(22)|d_ff(24)|memory<3>_out
+l140 top|full_adder_nbit(22)|d_ff(24)|memory<4>_out
+l141 top|full_adder_nbit(22)|d_ff(24)|memory<5>_out
+l142 top|full_adder_nbit(22)|d_ff(24)|memory<6>_out
+l143 top|full_adder_nbit(22)|d_ff(24)|memory<7>_out
+l144 top|full_adder_nbit(25)|d_ff(26)|n33
+l145 top|full_adder_nbit(25)|d_ff(26)|memory<0>_out
+l146 top|full_adder_nbit(25)|d_ff(26)|memory<1>_out
+l147 top|full_adder_nbit(25)|d_ff(26)|memory<2>_out
+l148 top|full_adder_nbit(25)|d_ff(26)|memory<3>_out
+l149 top|full_adder_nbit(25)|d_ff(26)|memory<4>_out
+l150 top|full_adder_nbit(25)|d_ff(26)|memory<5>_out
+l151 top|full_adder_nbit(25)|d_ff(26)|memory<6>_out
+l152 top|full_adder_nbit(25)|d_ff(26)|memory<7>_out
+l153 top|full_adder_nbit(25)|d_ff(27)|n33
+l154 top|full_adder_nbit(25)|d_ff(27)|memory<0>_out
+l155 top|full_adder_nbit(25)|d_ff(27)|memory<1>_out
+l156 top|full_adder_nbit(25)|d_ff(27)|memory<2>_out
+l157 top|full_adder_nbit(25)|d_ff(27)|memory<3>_out
+l158 top|full_adder_nbit(25)|d_ff(27)|memory<4>_out
+l159 top|full_adder_nbit(25)|d_ff(27)|memory<5>_out
+l160 top|full_adder_nbit(25)|d_ff(27)|memory<6>_out
+l161 top|full_adder_nbit(25)|d_ff(27)|memory<7>_out
+l162 top|full_adder_nbit(28)|d_ff(29)|n33
+l163 top|full_adder_nbit(28)|d_ff(29)|memory<0>_out
+l164 top|full_adder_nbit(28)|d_ff(29)|memory<1>_out
+l165 top|full_adder_nbit(28)|d_ff(29)|memory<2>_out
+l166 top|full_adder_nbit(28)|d_ff(29)|memory<3>_out
+l167 top|full_adder_nbit(28)|d_ff(29)|memory<4>_out
+l168 top|full_adder_nbit(28)|d_ff(29)|memory<5>_out
+l169 top|full_adder_nbit(28)|d_ff(29)|memory<6>_out
+l170 top|full_adder_nbit(28)|d_ff(29)|memory<7>_out
+l171 top|full_adder_nbit(28)|d_ff(30)|n33
+l172 top|full_adder_nbit(28)|d_ff(30)|memory<0>_out
+l173 top|full_adder_nbit(28)|d_ff(30)|memory<1>_out
+l174 top|full_adder_nbit(28)|d_ff(30)|memory<2>_out
+l175 top|full_adder_nbit(28)|d_ff(30)|memory<3>_out
+l176 top|full_adder_nbit(28)|d_ff(30)|memory<4>_out
+l177 top|full_adder_nbit(28)|d_ff(30)|memory<5>_out
+l178 top|full_adder_nbit(28)|d_ff(30)|memory<6>_out
+l179 top|full_adder_nbit(28)|d_ff(30)|memory<7>_out
+l180 top|full_adder_nbit(31)|d_ff(32)|n33
+l181 top|full_adder_nbit(31)|d_ff(32)|memory<0>_out
+l182 top|full_adder_nbit(31)|d_ff(32)|memory<1>_out
+l183 top|full_adder_nbit(31)|d_ff(32)|memory<2>_out
+l184 top|full_adder_nbit(31)|d_ff(32)|memory<3>_out
+l185 top|full_adder_nbit(31)|d_ff(32)|memory<4>_out
+l186 top|full_adder_nbit(31)|d_ff(32)|memory<5>_out
+l187 top|full_adder_nbit(31)|d_ff(32)|memory<6>_out
+l188 top|full_adder_nbit(31)|d_ff(32)|memory<7>_out
+l189 top|full_adder_nbit(31)|d_ff(33)|n33
+l190 top|full_adder_nbit(31)|d_ff(33)|memory<0>_out
+l191 top|full_adder_nbit(31)|d_ff(33)|memory<1>_out
+l192 top|full_adder_nbit(31)|d_ff(33)|memory<2>_out
+l193 top|full_adder_nbit(31)|d_ff(33)|memory<3>_out
+l194 top|full_adder_nbit(31)|d_ff(33)|memory<4>_out
+l195 top|full_adder_nbit(31)|d_ff(33)|memory<5>_out
+l196 top|full_adder_nbit(31)|d_ff(33)|memory<6>_out
+l197 top|full_adder_nbit(31)|d_ff(33)|memory<7>_out
+l198 top|full_adder_nbit(34)|d_ff(35)|n33
+l199 top|full_adder_nbit(34)|d_ff(35)|memory<0>_out
+l200 top|full_adder_nbit(34)|d_ff(35)|memory<1>_out
+l201 top|full_adder_nbit(34)|d_ff(35)|memory<2>_out
+l202 top|full_adder_nbit(34)|d_ff(35)|memory<3>_out
+l203 top|full_adder_nbit(34)|d_ff(35)|memory<4>_out
+l204 top|full_adder_nbit(34)|d_ff(35)|memory<5>_out
+l205 top|full_adder_nbit(34)|d_ff(35)|memory<6>_out
+l206 top|full_adder_nbit(34)|d_ff(35)|memory<7>_out
+l207 top|full_adder_nbit(34)|d_ff(36)|n33
+l208 top|full_adder_nbit(34)|d_ff(36)|memory<0>_out
+l209 top|full_adder_nbit(34)|d_ff(36)|memory<1>_out
+l210 top|full_adder_nbit(34)|d_ff(36)|memory<2>_out
+l211 top|full_adder_nbit(34)|d_ff(36)|memory<3>_out
+l212 top|full_adder_nbit(34)|d_ff(36)|memory<4>_out
+l213 top|full_adder_nbit(34)|d_ff(36)|memory<5>_out
+l214 top|full_adder_nbit(34)|d_ff(36)|memory<6>_out
+l215 top|full_adder_nbit(34)|d_ff(36)|memory<7>_out
+o0 sum<0>
+o1 sum<1>
+o2 sum<2>
+o3 sum<3>
+o4 sum<4>
+o5 sum<5>
+o6 sum<6>
+o7 sum<7>
+o8 Err_out_Final
+c
+top 
+This file was written by ABC on Sun Sep 18 21:00:47 2016
+For information about AIGER format, refer to http://fmv.jku.at/aiger
+The verilog file pipe_add_tmr_i8_l4.v has been converted using the following commands:
+vl2mv pipe_add_tmr_i8_l4.v       # generates pipe_add_tmr_i8_l4.mv
+abc -c "read_blif_mv pipe_add_tmr_i8_l4.mv; write_aiger -s pipe_add_tmr_i8_l4.aig"
+pipe_add_tmr_i8_l4.v:
+___________________________
+// this file uses jinja templates for code generation, see http://jinja.pocoo.org
+`define WORD_WIDTH 8  // the bit width of the input, adders, and output signals
+`define LAYERS 4      // defines how often the adder is cascaded
+
+module top(
+    input_vector,   // the input vector, WORD_WIDTH broad
+    sum,            // the final result, WORD_WIDTH broad
+    clk,
+    Err_out_Final   // the alarm output
+    );
+    
+    input   clk;
+    input   [`WORD_WIDTH-1:0] input_vector;
+    output  [`WORD_WIDTH-1:0] sum;
+    output  Err_out_Final;
+
+    wire [`WORD_WIDTH-1:0] b_out_R1_0 = input_vector;
+    wire [`WORD_WIDTH-1:0] result_R1_0 = input_vector;
+
+    wire [`WORD_WIDTH-1:0] b_out_R2_0 = input_vector;
+    wire [`WORD_WIDTH-1:0] result_R2_0 = input_vector;
+
+    wire [`WORD_WIDTH-1:0] b_out_R3_0 = input_vector;
+    wire [`WORD_WIDTH-1:0] result_R3_0 = input_vector;
+
+    // -- begin unrolled code --
+{% for idx in range(1,`LAYERS+1) %}
+    wire [`WORD_WIDTH-1:0] b_out_R1_{{ idx }};
+    wire [`WORD_WIDTH-1:0] result_R1_{{ idx }};
+    full_adder_nbit adder_R1_{{idx}}(clk, result_R1_{{idx - 1}}, b_out_R1_{{idx - 1}}, result_R1_{{idx}}, b_out_R1_{{idx}});
+
+    wire [`WORD_WIDTH-1:0] b_out_R2_{{ idx }};
+    wire [`WORD_WIDTH-1:0] result_R2_{{ idx }};
+    full_adder_nbit adder_R2_{{idx}}(clk, result_R2_{{idx - 1}}, b_out_R2_{{idx - 1}}, result_R2_{{idx}}, b_out_R2_{{idx}});
+
+    wire [`WORD_WIDTH-1:0] b_out_R3_{{ idx }};
+    wire [`WORD_WIDTH-1:0] result_R3_{{ idx }};
+    full_adder_nbit adder_R3_{{idx}}(clk, result_R3_{{idx - 1}}, b_out_R3_{{idx - 1}}, result_R3_{{idx}}, b_out_R3_{{idx}});
+{% endfor %}
+    // -- end unrolled code --
+
+    tmr tmr_module(result_R1_`LAYERS, result_R2_`LAYERS, result_R3_`LAYERS, sum);
+
+    //assign Err_out_Final = 0;
+
+
+endmodule // top module
+
+
+module full_adder_nbit(
+    clk,
+    in_a,
+    in_b,
+    sum,
+    out_b
+    );
+    
+    input   [`WORD_WIDTH-1:0] in_a;
+    input   [`WORD_WIDTH-1:0] in_b;
+    input clk;
+    output [`WORD_WIDTH-1:0] sum;
+    output [`WORD_WIDTH-1:0] out_b;
+    
+    wire [`WORD_WIDTH-1:0] res; 
+    assign res = in_a + in_b;
+
+    d_ff result(clk, res, sum);
+    d_ff input_delay(clk, in_b, out_b);
+
+endmodule // full_adder_nbit
+
+module d_ff(clk, in, out);
+    input clk;
+    input  [`WORD_WIDTH-1:0] in;
+    output [`WORD_WIDTH-1:0] out;
+
+    reg [`WORD_WIDTH-1:0] memory;
+
+    assign out = memory;
+
+    initial begin
+        memory = 1'b0;
+    end
+
+    always @(posedge clk) begin
+        memory = in;
+    end
+endmodule // d_ff
+
+module tmr(in_1, in_2, in_3, out);
+    input  [`WORD_WIDTH-1:0] in_1;
+    input  [`WORD_WIDTH-1:0] in_2;
+    input  [`WORD_WIDTH-1:0] in_3;
+    output [`WORD_WIDTH-1:0] out;
+
+    assign out = (in_1 & in_2) | (in_2 & in_3) | (in_1 & in_3);
+    
+endmodule
+
+
