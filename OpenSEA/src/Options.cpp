@@ -353,6 +353,20 @@ bool Options::parse(int argc, char **argv)
 			}
 			latches_to_exclude_file_path_ = string(argv[arg_count]);
 		}
+		else if (arg == "-k")
+		{
+			if (arg_count + 2 >= argc)
+			{
+				cerr << "Option -k must be followed by two integer numbers." << endl;
+				return true;
+			}
+
+			istringstream iss(argv[++arg_count]);
+			iss >> definitively_protected_k_steps_;
+
+			istringstream iss2(argv[++arg_count]);
+			iss2 >> definitevely_protected_num_initial_steps_;
+		}
 	}
 
 	if (aig_in_file_name_ == "")
@@ -715,7 +729,7 @@ void Options::initInputCircuit()
 
 // -------------------------------------------------------------------------------------------
 Options::Options() :
-		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), aig_in_file_name_(), aig_env_file_name_(), print_string_(
+		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), definitively_protected_k_steps_(1), definitevely_protected_num_initial_steps_(1), aig_in_file_name_(), aig_env_file_name_(), print_string_(
 				"ERWIL"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), env_model_(0), num_err_latches_(
 				0), seed_(0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
@@ -770,4 +784,14 @@ const string& Options::getLatchesResultPath() const
 bool Options::isUseLatchesResult() const
 {
 	return use_latches_result_;
+}
+
+int Options::getDefinitevelyProtectedNumInitialSteps() const
+{
+	return definitevely_protected_num_initial_steps_;
+}
+
+int Options::getDefinitivelyProtectedKSteps() const
+{
+	return definitively_protected_k_steps_;
 }

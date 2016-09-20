@@ -248,6 +248,8 @@ class Options
 	bool isUseLatchesResult() const;
 
 	vector<unsigned> removeExcludedLatches(aiger* circuit, unsigned num_err_latches = 0);
+	int getDefinitevelyProtectedNumInitialSteps() const;
+	int getDefinitivelyProtectedKSteps() const;
 
 	int num_open_inputs_; // only for tcr2 testcase mode (for benchmarking open inputs)
 
@@ -269,6 +271,9 @@ class Options
 
 	int num_testcases_; // only used for random testcases
 	int len_rand_testcases_; // only used for random testcases
+
+	int definitively_protected_k_steps_;
+	int definitevely_protected_num_initial_steps_;
 
 	vector<string> paths_to_testcases_;
 
