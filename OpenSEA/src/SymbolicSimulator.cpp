@@ -410,7 +410,6 @@ void SymbolicSimulator::setInputValuesOpen()
 {
 	for (unsigned cnt_i = 0; cnt_i < circuit_->num_inputs; ++cnt_i)
 	{
-//		open_input_vars_.push_back(next_free_cnf_var_);
 		results_[(circuit_->inputs[cnt_i].lit >> 1)] = next_free_cnf_var_++;
 	}
 }

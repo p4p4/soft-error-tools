@@ -64,8 +64,8 @@ public:
 	void findDefinitelyProtected_1step_deprecated();
 	void findDefinitelyProtected_1step_single();
 	void findDefinitelyProtected_1step_simultaneously();
-	void findDefinitelyProtected_4();
-	void findDefinitelyProtected_5();
+	void findDefinitelyProtected_kstep_single_latch();
+	void findDefinitelyProtected_kstep_simultaneously();
 
 	void printResults();
 

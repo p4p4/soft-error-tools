@@ -55,7 +55,12 @@ void SatAssignmentParser::addVectorOfInterest(vector<int> literals, string descr
 void SatAssignmentParser::parseAssignment(vector<int> assignment)
 {
 	for(unsigned i = 0; i < assignment.size(); i++) {
-		cout << var_name_[i] << " (" << vars_of_interrest_[i] << ") = " << (assignment[i] > 0) << endl;
+		bool result;
+		if (vars_of_interrest_[i] < 0)
+			result = assignment[i] < 0;
+		else
+			result = assignment[i] > 0;
+		cout << var_name_[i] << " (" << vars_of_interrest_[i] << ") = " << result << endl;
 	}
 }
 

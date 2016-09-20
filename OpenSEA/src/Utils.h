@@ -42,7 +42,7 @@ extern "C" {
 // -------------------------------------------------------------------------------------------
 ///
 /// @class Utils
-/// @brief Contains utility functions that can be usful in various back-ends.
+/// @brief Contains utility functions that can be useful in various back-ends.
 ///
 /// @author Robert Koenighofer (robert.koenighofer@iaik.tugraz.at)
 /// @version 1.2.0
