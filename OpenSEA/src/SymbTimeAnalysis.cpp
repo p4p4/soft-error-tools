@@ -865,7 +865,7 @@ void SymbTimeAnalysis::Analyze1_free_inputs(vector<TestCase>& testcases)
 					else if (!environment_model_ && out_cnf_values[out_idx] == CNF_TRUE)
 						o_is_diff_clause.push_back(-outputs_ok[out_idx]);
 					else if (!environment_model_ && out_cnf_values[out_idx] == CNF_FALSE)
-						o_is_diff_clause.push_back(-outputs_ok[out_idx]);
+						o_is_diff_clause.push_back(outputs_ok[out_idx]);
 					else if (out_cnf_values[out_idx] != outputs_ok[out_idx]) // both are symbolic and not equal
 					{
 						int o_is_different_var = next_free_cnf_var++;
