@@ -271,15 +271,12 @@ const vector<int> &SymbolicSimulator::getOutputValues()
 // -------------------------------------------------------------------------------------------
 const vector<int>& SymbolicSimulator::getInputValues()
 {
-	if (true) // TODO
+
+	input_values_.clear();
+	input_values_.reserve(circuit_->num_inputs);
+	for (unsigned b = 0; b < circuit_->num_inputs; ++b)
 	{
-		input_values_.clear();
-		input_values_.reserve(circuit_->num_inputs);
-		for (unsigned b = 0; b < circuit_->num_inputs; ++b)
-		{
-			input_values_.push_back(results_[(circuit_->inputs[b].lit >> 1)]);
-		}
-		//input_values_is_latest_ = true;
+		input_values_.push_back(results_[(circuit_->inputs[b].lit >> 1)]);
 	}
 
 	return input_values_;
@@ -288,19 +285,17 @@ const vector<int>& SymbolicSimulator::getInputValues()
 // -------------------------------------------------------------------------------------------
 const vector<int> &SymbolicSimulator::getLatchValues()
 {
-	if (!latch_values_is_latest_)
+
+	latch_values_.clear();
+	latch_values_.reserve(circuit_->num_latches);
+	for (unsigned b = 0; b < circuit_->num_latches; ++b)
 	{
-		latch_values_.clear();
-		latch_values_.reserve(circuit_->num_latches);
-		for (unsigned b = 0; b < circuit_->num_latches; ++b)
-		{
-			int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].lit);
-			latch_values_.push_back(next_state_var);
-			if (abs(next_state_var) > 1)
-				solver_->addVarToKeep(next_state_var);
-		}
-		latch_values_is_latest_ = true;
+		int next_state_var = Utils::readCnfValue(results_, circuit_->latches[b].lit);
+		latch_values_.push_back(next_state_var);
+		if (abs(next_state_var) > 1)
+			solver_->addVarToKeep(next_state_var);
 	}
+
 
 	return latch_values_;
 }

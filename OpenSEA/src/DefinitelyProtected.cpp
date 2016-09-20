@@ -232,8 +232,11 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 	map<int, int> cj_to_latch; // maps cj-literals(cnf) to corresponding latch-literals(aig)
 	vector<int> c_vars;
 
-	parser.addVectorOfInterest(	sim_symb.getLatchValues(), "state_ok");
-	parser.addVectorOfInterest(	next_state_normal, "next_state_normal");
+	if (Logger::instance().isEnabled(Logger::DBG))
+	{
+		parser.addVectorOfInterest(sim_symb.getLatchValues(), "state_ok");
+		parser.addVectorOfInterest(next_state_normal, "next_state_normal");
+	}
 
 	// T_err(x,i,c,o,a,x') & -a:
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
@@ -254,9 +257,6 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 		else
 		{
 			int new_value = next_free_cnf_var++;
-			parser.addLiteralOfInterest(cj, "cj");
-			parser.addLiteralOfInterest(old_value, "old_value");
-			parser.addLiteralOfInterest(new_value, "new_value");
 			solver->addVarToKeep(new_value);
 			// new_value == cj ? -old_value : old_value
 			solver->incAdd3LitClause(cj, old_value, -new_value);
@@ -267,8 +267,10 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 		}
 
 	}
-	parser.addVectorOfInterest(	sim_symb.getLatchValues(), "state_faulty");
 	parser.addVectorOfInterest(c_vars, "c_vars");
+
+	if (Logger::instance().isEnabled(Logger::DBG))
+		parser.addVectorOfInterest(	sim_symb.getLatchValues(), "state_faulty");
 
 	sim_symb.simulateOneTimeStep();
 	solver->incAddUnitClause(-sim_symb.getAlarmValue());
@@ -289,31 +291,66 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 	vector<int> next_state_flip = sim_symb.getNextLatchValues();
 	vector<int> outpus_flip = sim_symb.getOutputValues();
 
-	parser.addVectorOfInterest(	next_state_flip, "next_state_flip");
+	if (Logger::instance().isEnabled(Logger::DBG))
+		parser.addVectorOfInterest(	next_state_flip, "next_state_flip");
 
 	// create clauses saying that
 	//		(next_state_normal != next_state_flip) OR (outpus_normal != outpus_flip)
 	vector<int> output_or_next_state_different_clause;
 
-	for (unsigned i = 0; i < circuit_->num_outputs - 1; i++)
+	for (unsigned i = 0; i < outpus_normal.size() - 1; i++) // TODO: maybe create a CnfUtils class that does such low-level stuff
 	{
-		solver->addVarToKeep(next_free_cnf_var);
-		int out_is_diff_enable = next_free_cnf_var++;
-		output_or_next_state_different_clause.push_back(-out_is_diff_enable);
-		solver->incAdd3LitClause(out_is_diff_enable, outpus_normal[i], outpus_flip[i]);
-		solver->incAdd3LitClause(out_is_diff_enable, -outpus_normal[i], -outpus_flip[i]);
+
+		if (outpus_normal[i] == CNF_TRUE && outpus_flip[i] == CNF_TRUE)
+			continue;
+		else if (outpus_normal[i] == CNF_FALSE && outpus_flip[i] == CNF_FALSE)
+			continue;
+		else if (outpus_normal[i] == CNF_TRUE)
+			output_or_next_state_different_clause.push_back(-outpus_flip[i]);
+		else if (outpus_normal[i] == CNF_FALSE)
+			output_or_next_state_different_clause.push_back(outpus_flip[i]);
+		else if (outpus_flip[i] == CNF_TRUE)
+			output_or_next_state_different_clause.push_back(-outpus_normal[i]);
+		else if (outpus_flip[i] == CNF_FALSE)
+			output_or_next_state_different_clause.push_back(outpus_normal[i]);
+		else if (outpus_flip[i] != outpus_normal[i]) // both symbolic but not equal
+		{
+			solver->addVarToKeep(next_free_cnf_var);
+			int out_is_diff_enable = next_free_cnf_var++;
+			output_or_next_state_different_clause.push_back(out_is_diff_enable);
+			solver->incAdd3LitClause(-out_is_diff_enable, outpus_normal[i], outpus_flip[i]);
+			solver->incAdd3LitClause(-out_is_diff_enable, -outpus_normal[i], -outpus_flip[i]);
+		}
 	}
 
-	for (unsigned i = 0; i < circuit_->num_latches - num_err_latches_; i++)
+	for (unsigned i = 0; i < next_state_normal.size() - num_err_latches_; i++)
 	{
-		solver->addVarToKeep(next_free_cnf_var);
-		int state_is_diff_enable = next_free_cnf_var++;
-		output_or_next_state_different_clause.push_back(-state_is_diff_enable);
-		solver->incAdd3LitClause(state_is_diff_enable, next_state_normal[i], next_state_flip[i]);
-		solver->incAdd3LitClause(state_is_diff_enable, -next_state_normal[i], -next_state_flip[i]);
+		if (next_state_normal[i] == CNF_TRUE && next_state_flip[i] == CNF_TRUE)
+			continue;
+		else if (next_state_normal[i] == CNF_FALSE && next_state_flip[i] == CNF_FALSE)
+			continue;
+		else if (next_state_normal[i] == CNF_TRUE)
+			output_or_next_state_different_clause.push_back(-next_state_flip[i]);
+		else if (next_state_normal[i] == CNF_FALSE)
+			output_or_next_state_different_clause.push_back(next_state_flip[i]);
+		else if (next_state_flip[i] == CNF_TRUE)
+			output_or_next_state_different_clause.push_back(-next_state_normal[i]);
+		else if (next_state_flip[i] == CNF_FALSE)
+			output_or_next_state_different_clause.push_back(next_state_normal[i]);
+		else if (next_state_flip[i] != next_state_normal[i]) // both symbolic but not equal
+		{
+			solver->addVarToKeep(next_free_cnf_var);
+			int state_is_diff_enable = next_free_cnf_var++;
+			output_or_next_state_different_clause.push_back(state_is_diff_enable);
+			solver->incAdd3LitClause(-state_is_diff_enable, next_state_normal[i],
+					next_state_flip[i]);
+			solver->incAdd3LitClause(-state_is_diff_enable, -next_state_normal[i],
+					-next_state_flip[i]);
+		}
 	}
 
-	parser.addVectorOfInterest(	output_or_next_state_different_clause, "next_state_different");
+	if (Logger::instance().isEnabled(Logger::DBG))
+		parser.addVectorOfInterest(	output_or_next_state_different_clause, "next_state_different");
 
 	solver->incAddClause(output_or_next_state_different_clause);
 
@@ -321,34 +358,14 @@ void DefinitelyProtected::findDefinitelyProtected_1step_simultaneously()
 	vector<int> model;
 	while (solver->incIsSatModelOrCore(no_assumptions, parser.getVarsOfInterrest(), model))
 	{
-		cout << "----------------------------------------" << endl;
-		Utils::debugPrint(model, "model:");
-		parser.parseAssignment(model);
+		if (Logger::instance().isEnabled(Logger::DBG))
+			parser.parseAssignment(model);
 
 		int c_selected = parser.findFirstPositiveAssignmentOfVector(model, c_vars);
-		cout << "c literal found: " << c_selected << endl;
+		MASSERT(c_selected != 0, "Error: output or next state different without a flip!")
 
-		if (c_selected != 0)
-		{
-			solver->incAddUnitClause(-c_selected);
-			detected_latches_.erase(cj_to_latch[c_selected]);
-		}
-		else
-			return; // TODO analyze the error!
-
-
-		/*
-		for (unsigned i = 0; i < model.size(); i++)
-		{
-			int c = model[i];
-			if (c > 0) // found the c with positive face
-			{
-				//solver->incAddUnitClause(-c);
-				detected_latches_.erase(cj_to_latch[c]);
-				L_DBG("latch " << cj_to_latch[c] << " not 1-step protected")
-			}
-		}
-		*/
+		solver->incAddUnitClause(-c_selected);
+		detected_latches_.erase(cj_to_latch[c_selected]);
 	}
 
 	delete solver;
