@@ -7,6 +7,7 @@ BddAnalysis.cpp
 BddSimulator.cpp
 BddSimulator2.cpp
 CNF.cpp
+CnfUtils.cpp
 DefinitelyProtected.cpp
 ErrorTraceManager.cpp
 FalsePositives.cpp
