@@ -316,11 +316,8 @@ void DefinitelyProtected::findDefinitelyProtected_kstep_single_latch()
 	SymbolicSimulator sim_ok(circuit_, solver, next_free_cnf_var);
 
 	// first time steps T(x,i,o,a,x') & -a
-	computeInitialTransitionRelation(solver, sim_ok, num_initial_steps);
-	sim_ok.switchToNextState();
+	computeInitialTransitionRelation(solver, sim_ok, num_initial_steps + 1);
 
-	vector<int> alarms_in_flipped_version_at_step_i; // maps i -> alarm signal of faulty verstion at step i
-	vector<int> output_different_at_step_i; // maps i -> different_at_i
 	int final_nxt_state_diff_enable = next_free_cnf_var++;
 
 	// store solver session
@@ -333,6 +330,9 @@ void DefinitelyProtected::findDefinitelyProtected_kstep_single_latch()
 			num_err_latches_);
 	for (unsigned l_cnt = 0; l_cnt < latches_to_check.size(); ++l_cnt)
 	{
+		vector<int> alarms_in_flipped_version_at_step_i; // maps i -> alarm signal of faulty verstion at step i
+		vector<int> output_different_at_step_i; // maps i -> different_at_i
+
 		SymbolicSimulator sim_faulty(circuit_, solver, next_free_cnf_var);
 		unsigned latch_aig = latches_to_check[l_cnt];
 		int component_cnf = latch_aig >> 1;
@@ -347,7 +347,7 @@ void DefinitelyProtected::findDefinitelyProtected_kstep_single_latch()
 			if (i == 0) // flip in first step
 			{
 				sim_faulty.setResults(sim_ok.getResults());
-				sim_faulty.setResultValue(component_cnf, -sim_ok.getResultValue(component_cnf));
+				sim_faulty.setResultValue(component_cnf, -sim_faulty.getResultValue(component_cnf));
 			}
 			sim_faulty.simulateOneTimeStep();		// T_err(x_e,i,o_e,a_e,x'e)
 
@@ -457,14 +457,14 @@ void DefinitelyProtected::findDefinitelyProtected_kstep_single_latch()
 
 		solver->incAddClause(possibly_vulnerable);
 
-		if (solver->incIsSat() == false)
+		if (solver->incIsSat())
 		{
-			detected_latches_.insert(latch_aig);
-			L_DBG("Definitely protected latch "<< latch_aig << " found. (UNSAT)");
+			L_DBG("SAT " << latch_aig << "(not k-step protected)")
 		}
 		else
 		{
-			L_DBG("SAT " << latch_aig << "(not k-step protected)")
+			detected_latches_.insert(latch_aig);
+			L_DBG("Definitely protected latch "<< latch_aig << " found. (UNSAT)");
 		}
 
 		// reset solver session
