@@ -8,11 +8,11 @@ fi
 
 echo "Installing CPPUnit ..."
 
-VERSION="1.13.2"
+VERSION="1.12.1"
 CPPUNIT="cppunit-$VERSION"
 if [ ! -e "$CPPUNIT.tar.gz" ];
 then
-   wget http://dev-www.libreoffice.org/src/$CPPUNIT.tar.gz
+   wget -O $CPPUNIT.tar.gz http://sourceforge.net/projects/cppunit/files/cppunit/$VERSION/$CPPUNIT.tar.gz/download
 fi
 tar xzvf $CPPUNIT.tar.gz
 
