@@ -7,30 +7,40 @@
   4. other Folders
 
 
-# 1 openSEA
+# 1 OpenSEA
 in OpenSEA/
 
+OpenSEA can analyze circuits in [AIGER](http://fmv.jku.at/aiger/FORMAT.aiger) file-format
+with included error-detection or error-correction logic. The last output of the circuit has to be the *alarm*-output, which is raised if an error is *detected*. Set the *alarm*-output to constant `0` if only error-*correction* is used.
+
+OpenSEA implements algorithms to detect *Vulnerable Latches*,
+*False Positives* and *Definitely Protected Latches*
+
 ## 1.1 How to install:
-1. create a folder where you want to install the third-party libraries and set the path to it in 
-   the environment variable `IMMORTALTP`
-2. run `sh OpenSEA/ext_tools/install_all.sh`
-3. run `make` command in OpenSEA/ to compile the program.
+1. create a folder for third-party libraries and store the path in an environment variable `$IMMORTALTP`
 
-* NOTE: if you have installed [DEMIURGE](https://www.iaik.tugraz.at/content/research/opensource/demiurge/) on your computer, it suffices to set the environment variable
-`IMMORTALTP` to the same path as `DEMIURGETPD` instead of re-installing the libraries as in 1. and 2.
+    * create folder `mkdir /path/to/libs/`
 
-the *executable* is located in `OpenSEA/build/src/immortal-bin`
+    * append to  `.bashrc`: `export IMMORTALTP=/path/to/libs`
 
-Dependencies (tested for Ubuntu 16.10):
-`zlib1g-dev cmake build-essential`
+2. run `sh OpenSEA/ext_tools/install_all.sh` to install all necessary libraries
 
-ad 1.: in .bashrc, add something like
-`export IMMORTALTP=/path/to/libs`
+3. in folder *OpenSEA/* run `make` to compile the program.
 
+    the *executable* is located in `OpenSEA/build/src/immortal-bin`
+
+* NOTE: if [DEMIURGE](https://www.iaik.tugraz.at/content/research/opensource/demiurge/) is installed on your computer it suffices to set the environment variable
+`IMMORTALTP` to the same library folder as `DEMIURGETPD` instead of re-installing the libraries (instead of step 1. and 2.).
 
 
-## 1.2 How to use openSEA:
-openSEA tries to find soft-error vulnerabilities (or false-positives) in a given circuit
+### Dependencies (tested for Ubuntu 16.10):
+`zlib1g-dev cmake build-essential git`
+
+
+
+
+## 1.2 How to use OpenSEA:
+OpenSEA analyzes the quality of soft-error protection logic in circuits. It can detect vulnerable components, false-positives and definitely protected components.
 
  * this is basically the same information as the output of ./immortal-bin -h :
 ```
@@ -138,8 +148,16 @@ Options:
                    3: SYMB_TIME_LOCATION_INPUTS - as mode 1, but allows
                       to leave some or all values in the given TestCase
                       open (write '?' instead of '0' or '1')
-                 Back-end 'bdd': 
-                 Back-end 'dp': 
+                 Back-end 'bdd': find vulnerable latches using BDDs (uses CUDD)
+                   3: concrete input values only
+                   4: capable of free input values
+                 Back-end 'dp': find definitely protected latches
+                   1: testing latches individually for 1-step protection
+                   2: testing latches simultaneously for 1-step protection
+                   3: testing latches individually for k-step protection
+                   4: testing latches simultaneously for k-step protection
+                   [-k <k> <init>] <init> = number of overapproximation steps
+                                   <k> = the maximum number of steps to recover
                  The default is 0.
   -e FILE, --exclude=FILE
                  excludes the latches listed in FILE from the analysis.
