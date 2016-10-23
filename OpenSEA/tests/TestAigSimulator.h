@@ -51,7 +51,6 @@ class TestAigSimulator : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(test5_simulate_with_provided_state);
   CPPUNIT_TEST(test6);
   CPPUNIT_TEST(test7);
-  CPPUNIT_TEST(test0);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -111,9 +110,6 @@ protected:
 /// This test executes the circuit-simulation with our own AigSimulator class, which
 /// should not have this bug.
   void test7();
-
-  void test0();
-
 
 };
 

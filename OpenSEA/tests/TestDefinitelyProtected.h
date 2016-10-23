@@ -38,7 +38,6 @@ class TestDefinitelyProtected : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE(TestDefinitelyProtected);
   CPPUNIT_TEST(test1);
   CPPUNIT_TEST(test_multi_step);
-  CPPUNIT_TEST(test3);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -63,7 +62,6 @@ protected:
 /// @brief Give brief description of test here.
   void test1();
   void test_multi_step();
-  void test3();
 
 };
 

@@ -104,19 +104,3 @@ void TestDefinitelyProtected::test_multi_step()
 	aiger_reset(circuit);
 }
 
-void TestDefinitelyProtected::test3()
-{
-	Logger::instance().enable(Logger::DBG);
-	aiger* circuit = Utils::readAiger("inputs/testme.aig");
-	for (unsigned mode = start_mode_; mode <= last_mode_; mode++)
-	{
-		L_DBG(endl << endl << "mode = " << mode)
-		DefinitelyProtected dp(circuit, 0, mode);
-		dp.analyze();
-		cout << "detected = " << dp.getDetectedLatches().size() << endl;
-		cout << *dp.getDetectedLatches().begin() << endl;
-		//CPPUNIT_ASSERT(dp.getDetectedLatches().size() == 4);
-	}
-	aiger_reset(circuit);
-}
-

@@ -4,9 +4,11 @@
 # eclipse project files
 */.cproject
 */.project
+.settings
 
 # do not add binary to repository
 AddParityTool/addParityTool
+AlarmToMC/alarmToMC
 
 # do not upload the benchmarks to the repository (huge!)
 # there are scripts in the repository, which can download them.
@@ -21,4 +23,12 @@ benchmark_files/iwls2005_large_blif.zip
 benchmark_files/iwls2005_large_blif/
 benchmark_files/iwls_1.0.tar.gz
 benchmark_files/iwls_1.0/
-
+# do not add unrolled benchmarks to repo:
+benchmark_files/own/pipe_*_i*_l*.v
+benchmark_files/own/pipe_*_i*_l*.mv
+# do not add the aag (ASCII) files, since there exist smaller binary files
+benchmark_files/own/AIG/pipe_add_*.aag
+#tiny toy benchmarks
+benchmark_files/own/AIG/pipe_add_i1_*
+benchmark_files/own/AIG/pipe_add_i2_*
+benchmark_files/own/AIG/pipe_add_i*_l1.*
