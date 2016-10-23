@@ -28,7 +28,7 @@
 // -------------------------------------------------------------------------------------------
 
 #include "MiniSatApi.h"
-#include "core/Solver.h" // This is the MiniSat header file
+#include "minisat/core/Solver.h" // This is the MiniSat header file
 #include "Utils.h"
 #include "CNF.h"
 
