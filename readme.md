@@ -1,15 +1,176 @@
 # TOC:
-  1. AddParityTool
-  2. openSEA
+  1. OpenSEA
      - How to install
      - How to use
-     - Information for developers
+  2. AddParityTool
   3. AlarmToMC
   4. other Folders
 
 
+# 1 openSEA
+in OpenSEA/
 
-# 1 AddParityTool
+## 1.1 How to install:
+1. create a folder where you want to install the third-party libraries and set the path to it in 
+   the environment variable `IMMORTALTP`
+2. run `sh OpenSEA/ext_tools/install_all.sh`
+3. run `make` command in OpenSEA/ to compile the program.
+
+* NOTE: if you have installed [DEMIURGE](https://www.iaik.tugraz.at/content/research/opensource/demiurge/) on your computer, it suffices to set the environment variable
+`IMMORTALTP` to the same path as `DEMIURGETPD` instead of re-installing the libraries as in 1. and 2.
+
+the *executable* is located in `OpenSEA/build/src/immortal-bin`
+
+Dependencies (tested for Ubuntu 16.10):
+`zlib1g-dev cmake build-essential`
+
+ad 1.: in .bashrc, add something like
+`export IMMORTALTP=/path/to/libs`
+
+
+
+## 1.2 How to use openSEA:
+openSEA tries to find soft-error vulnerabilities (or false-positives) in a given circuit
+
+ * this is basically the same information as the output of ./immortal-bin -h :
+```
+Usage: immortal-bin [options]
+
+Options:
+  -h, --help
+                 Show this help message and exit.
+  -v, --version
+                 Print version information and exit.
+  -i INPUT_FILE, --in=INPUT_FILE
+                 The AIGER circuit with additional alarm output
+                 It can be:
+                  - a binary AIGER file (header starts with 'aig'),
+                  - an ASCII AIGER file (header starts with 'aag'),
+                  - a compressed file (INPUT_FILE ends with '.gz').
+  -env ENVIRONMENT_FILE
+                 An *optional* environment circuit in aiger representation
+                 which defines relevance of output values and optionally
+                 the allowed input combinations.
+  -tc TESTCASE_FILE(s)
+                The TestCase(s) to use. A TESTCASE_FILE contains a list 
+                of input-vectors. One input-vector contains values for 
+                each input to a given time-step.
+                One line of such a file represents one time-step,
+                containing '0's or '1's as input values. Some modes also
+                allow to leave inputs open(use '?' instead of constants)
+  -tcr NUM_TCs NUM_TIMESTEPS
+                can be used instead of -tc.
+                randomly generates NUM_TCs test-cases, each of them have
+                a length of NUM_TIMESTEPS time-steps
+  -mc NUM_TIMESTEPS
+                can be used instead of -tc for modes, which support free
+                input values. Generates a TestCase for the given length
+                with all input values open. (similar to model-checking)
+  -d [PATH] 
+                 Creates a diagnostic output, called ErrorTraces,
+                 which contains detailed information on how to reproduce
+                 an undetected soft-error.
+                 If -d is followed by a PATH, the diagnostic output gets
+                 written as text-file to that location, otherwise it is 
+                 printed to stdout.
+  -b BACKEND, --backend=BACKEND
+                 The back-end to be used for detecting vulnerabilities.
+                 Different back-ends implement different algorithms.
+                 The following back-ends are available:
+                 sim:  The simulation-bases analysis 
+                         Finds vulnerabilities using a test-case
+                 sta:  The symbolic-time analysis
+                         Finds vulnerabilities using a test-case
+                         SAT-Solver based algorithm. The point in time
+                         when to introduce a flip is symbolic, but the
+                         location (the latch) is fixed. 
+                 stla: The symbolic-time-location analysis
+                         Finds vulnerabilities using a test-case
+                         SAT-Solver based algorithm. The point in time
+                         when to introduce a flip is symbolic, the    
+                         location (the latch to flip) is  also 
+                         symbolic.  
+                 fp:   The false-positives analysis
+                         Finds false positives using a test-case
+                         Adoptions of the sta and stla algorithms to
+                         find false positives (instead of vulnerabilities)
+                 bdd:  The Binary Decision Diagram analysis
+                         Finds vulnerabilities using a test-case
+                         Similar to 'sta' and 'stla', but using BDDs
+                         instead of SAT-solvers
+                 dp:   The Definitely Protected latches analysis
+                         Finds definitely protected latches
+                 The default is 'sim'.
+  -m MODE , --mode=MODE
+                 Some back-ends can be used in several modes (certain
+                 optimizations enabled or disabled, etc.).
+                 MODE is an integer number to select one such mode. 
+                 The following modes are supported: 
+                 Back-end 'sim': 
+                   0: STANDARD mode
+                   1: FREE_INPUTS - as the previous method, but allows
+                      to leave some or all values in the given TestCase
+                      open (write '?' instead of '0' or '1')
+                 Back-end 'sta': 
+                   0: NAIVE mode - always copy whole transition relation
+                      when unrolling it.
+                   1: SYMBOLIC_SIMULATION - perform symbolic simulation
+                      and generate the unrolled transition relation 
+                      on the fly 
+                   2: FREE_INPUTS - as the previous method, but allows
+                      to leave some or all values in the given TestCase
+                      open (write '?' instead of '0' or '1')
+                 Back-end 'stla': 
+                   0: STANDARD - perform symbolic simulation
+                      and generate the unrolled transition relation 
+                      on the fly 
+                   1: FREE_INPUTS - as the previous method, but allows
+                      to leave some or all values in the given TestCase
+                      open (write '?' instead of '0' or '1')
+                 Back-end 'fp': 
+                   0: SYMB_TIME mode - find false positives with an algorithm
+                      working similar to the one of the 'sta' backend.
+                   1: SYMB_TIME_LOCATION - find false positives with an algorithm
+                      working similar to the one of the 'stla' backend.
+                   2: SYMB_TIME_INPUTS - as mode 0, but allows
+                      to leave some or all values in the given TestCase
+                      open (write '?' instead of '0' or '1')
+                   3: SYMB_TIME_LOCATION_INPUTS - as mode 1, but allows
+                      to leave some or all values in the given TestCase
+                      open (write '?' instead of '0' or '1')
+                 Back-end 'bdd': 
+                 Back-end 'dp': 
+                 The default is 0.
+  -e FILE, --exclude=FILE
+                 excludes the latches listed in FILE from the analysis.
+  -r FILE, --results=FILE
+                 stores the latches detected by the algorithm to FILE.
+  -p PRINT, --print=PRINT
+                 A string indicating which messages to print. Every
+                 character activates a certain type of message. The
+                 order and case of the characters does not matter.
+                 Possible characters are:
+                 E:      Enables the printing of error messages.
+                 W:      Enables the printing of warnings.
+                 R:      Enables the printing of results.
+                 D:      Enables the printing of debugging messages.
+                 I:      Enables the printing of extra information
+                         (such as progress information).
+                 L:      Enables the printing of statistics
+                         (such as performance measures).
+                 The default is 'EWRIL'.
+  -s SAT_SOLVER, --sat_sv=SAT_SOLVER
+                 The SAT solver to use.
+                 The following SAT solvers are available:
+                 lin_api: Uses the Lingeling solver via its API.
+                 min_api: Uses the MiniSat solver via its API.
+                 pic_api: Uses the PicoSat solver via its API.
+                 The default is 'min_api'.
+Have fun!
+```
+
+
+# 2 AddParityTool
 in AddParityTool/
 
 adds a protection-logic with the additional alarm output to a given circuit. The protection logic
@@ -27,154 +188,6 @@ protected and how many additional latches should be used therefore.
 	                             suffix and binary mode otherwise.
 
 
-
-# 2 openSEA
-in OpenSEA/
-
-## 2.1 How to install:
-1. create a folder where you want to install the third-party libraries and set the path to it in 
-   the environment variable IMMORTALTP
-2. run ImmortalTool/ext_tools/install_all.sh
-3. run "make" command in ImmortalTool/ to compile the program.
-
-* NOTE: if you have installed DEMIURGE on your computer, it suffices to set the environment variable
-IMMORTALTP to the same path as DEMIURGETPD instead of re-installing the libraries as in 1. and 2.
-
-the *executable* is located here: ImmortalTool/build/src/immortal-bin
-
-Dependencies (tested for Ubuntu 15.10):
-zlib1g-dev cmake build-essential
-
-ad 1.: in .bashrc, dadd something like
-export IMMORTALTP=/path/to/libs
-
-
-
-## 2.2 How to use openSEA:
-openSEA tries to find soft-error vulnerabilities (or false-positives) in a given circuit
-
- * this is basically the same information as the output of ./immortal-bin -h :
-
-        Usage: immortal-bin [options]
-
-        Options:
-          -h, --help
-                         Show this help message and exit.
-          -v, --version
-                         Print version information and exit.
-          -i INPUT_FILE, --in=INPUT_FILE
-                         The AIGER circuit with additional alarm output
-                         It can be:
-                          - a binary AIGER file (header starts with 'aig'),
-                          - an ASCII AIGER file (header starts with 'aag'),
-                          - a compressed file (INPUT_FILE ends with '.gz').
-          -env ENVIRONMENT_FILE
-                         An *optional* environment circuit in aiger representation
-                         which defines relevance of output values and optionally
-                         the allowed input combinations.
-          -tc TESTCASE_FILE(s)
-                        The TestCase(s) to use. A TESTCASE_FILE contains a list 
-                        of input-vectors. One input-vector contains values for 
-                        each input to a given time-step.
-                        One line of such a file represents one time-step,
-                        containing '0's or '1's as input values. Some modes also
-                        allow to leave inputs open(use '?' instead of constants)
-          -tcr NUM_TCs NUM_TIMESTEPS
-                        can be used instead of -tc.
-                        randomly generates NUM_TCs test-cases, each of them have
-                        a length of NUM_TIMESTEPS time-steps
-          -mc NUM_TIMESTEPS
-                        can be used instead of -tc for modes, which support free
-                        input values. Generates a TestCase for the given length
-                        with all input values open. (similar to model-checking)
-          -d [PATH] 
-                         Creates a diagnostic output, called ErrorTraces,
-                         which contains detailed information on how to reproduce
-                         an undetected soft-error.
-                         If -d is followed by a PATH, the diagnostic output gets
-                         written as text-file to that location, otherwise it is 
-                         printed to stdout.
-          -b BACKEND, --backend=BACKEND
-                         The back-end to be used for detecting vulnerabilities.
-                         Different back-ends implement different algorithms.
-                         The following back-ends are available:
-                         sim:  The simulation-bases analysis 
-                                 Can only handle concrete TestCase values 
-                         sta:  The symbolic-time analysis
-                                 SAT-Solver based algorithm. The point in time
-                                 when to introduce a flip is symbolic, but the
-                                 location (the latch) is fixed. 
-                         stla: The symbolic-time-location analysis
-                                 SAT-Solver based algorithm. The point in time
-                                 when to introduce a flip is symbolic, the    
-                                 location (the latch to flip) is  also 
-                                 symbolic.  
-                         fp: The false-positives analysis
-                                 Adoptions of the sta and stla algorithms to
-                                 find false positives (instead of vulnerabiliteis)
-                         The default is 'sim'.
-          -m MODE , --mode=MODE
-                         Some back-ends can be used in several modes (certain
-                         optimizations enabled or disabled, etc.).
-                         MODE is an integer number to select one such mode. 
-                         The following modes are supported: 
-                         Back-end 'sim': 
-                           0: standard mode
-                         Back-end 'sta': 
-                           0: NAIVE mode - always copy whole transition relation
-                              when unrolling it.
-                           1: SYMBOLIC_SIMULATION - perform symbolic simulation
-                              and generate the unrolled transition relation 
-                              on the fly 
-                           2: FREE_INPUTS - as the previous method, but allows
-                              to leave some or all values in the given TestCase
-                              to be left open (write '?' instead of '0' or '1')
-                         Back-end 'stla': 
-                           0: STANDARD - perform symbolic simulation
-                              and generate the unrolled transition relation 
-                              on the fly 
-                           1: FREE_INPUTS - as the previous method, but allows
-                              to leave some or all values in the given TestCase
-                              to be left open (write '?' instead of '0' or '1')
-                         Back-end 'fp': 
-                           0: SYMB_TIME mode - find false positives with an algorithm
-                              working similar to the one of the 'sta' backend.
-                           1: SYMB_TIME_LOCATION - find false positives with an algorithm
-                              working similar to the one of the 'stla' backend.
-                           2: SYMB_TIME_INPUTS - as mode 0, but allows
-                              to leave some or all values in the given TestCase
-                              to be left open (write '?' instead of '0' or '1')
-                           3: SYMB_TIME_LOCATION_INPUTS - as mode 1, but allows
-                              to leave some or all values in the given TestCase
-                              to be left open (write '?' instead of '0' or '1')
-                         The default is 0.
-          -p PRINT, --print=PRINT
-                         A string indicating which messages to print. Every
-                         character activates a certain type of message. The
-                         order and case of the characters does not matter.
-                         Possible characters are:
-                         E:      Enables the printing of error messages.
-                         W:      Enables the printing of warnings.
-                         R:      Enables the printing of results.
-                         D:      Enables the printing of debugging messages.
-                         I:      Enables the printing of extra information
-                                 (such as progress information).
-                         L:      Enables the printing of statistics
-                                 (such as performance measures).
-                         The default is 'EWRIL'.
-          -s SAT_SOLVER, --sat_sv=SAT_SOLVER
-                         The SAT solver to use.
-                         The following SAT solvers are available:
-                         lin_api: Uses the Lingeling solver via its API.
-                         min_api: Uses the MiniSat solver via its API.
-                         pic_api: Uses the PicoSat solver via its API.
-                         The default is 'min_api'.
-        Have fun!
-
-
-
-
-## 2.3 Information for Developers
 
 
 # 3 AlarmToMC 
