@@ -43,6 +43,7 @@ OpenSEA implements algorithms to detect *Vulnerable Latches*,
 OpenSEA analyzes the quality of soft-error protection logic in circuits. It can detect vulnerable components, false-positives and definitely protected components.
 
  * this is basically the same information as the output of ./immortal-bin -h :
+
 ```
 Usage: immortal-bin [options]
 
