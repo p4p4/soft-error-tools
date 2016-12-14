@@ -61,10 +61,6 @@ void BackEnd::printResults()
 	{
 		ErrorTraceManager::instance().printErrorTraces();
 	}
-	else
-	{
-		cout << "no diagnosis out!!" << endl;
-	}
 }
 
 void BackEnd::setEnvironmentModel(aiger* environmentModel)
