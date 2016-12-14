@@ -107,6 +107,7 @@ void ErrorTraceManager::printErrorTraces()
 		oss << "=================================================" << endl;
 	}
 
+	cout << "yablaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 	if (Options::instance().isDiagnosticOutputToFile())
 	{
 	  ofstream out_file;
@@ -120,6 +121,7 @@ void ErrorTraceManager::printErrorTraces()
 	}
 	else
 	{
+		cout << "blaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 		cout << endl << endl;
 		cout << oss.str();
 
