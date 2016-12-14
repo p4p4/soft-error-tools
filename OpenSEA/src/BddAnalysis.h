@@ -81,7 +81,7 @@ using BackEnd::analyze;
 
 protected:
   Cudd cudd_;
-  int next_free_cnf_var_ = 2;
+  int next_free_cnf_var_;
 
   void analyze_one_hot_enc_c_signals(vector<TestCase> &testcases);
   void analyze_one_hot_enc_c_constraints(vector<TestCase> &testcases);
@@ -89,7 +89,7 @@ protected:
   void analyze_binary_enc_c_and_f_signals(vector<TestCase> &testcases);
   void analyze_binary_enc_c_and_f_signals_FREE_INPUTS(vector<TestCase> &testcases);
 
-  bool useStatistics_ = true;
+  bool useStatistics_;
   enum Statistic { CREATE_C_SIGNALS, SIM_ANDs, SWITCH_NXT_ST, OUT_IS_DIFF, SATISFIABILITY, STORE_MODEL, INIT_Latches, SIDE_CONSTRAINTS, MODIFY_LATCHES, PARSE_MODEL };
   map<Statistic, double> accumulated_durations_;
   PointInTime start_time_;

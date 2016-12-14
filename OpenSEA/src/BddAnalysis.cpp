@@ -37,7 +37,7 @@
 
 // -------------------------------------------------------------------------------------------
 BddAnalysis::BddAnalysis(aiger* circuit, int num_err_latches, int mode) :
-		BackEnd(circuit, num_err_latches, mode)
+		BackEnd(circuit, num_err_latches, mode), useStatistics_(false)
 {
 }
 
