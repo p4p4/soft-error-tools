@@ -19,6 +19,3 @@ echo " Compiling MiniSat ..."
 cd $IMMORTALTP/minisat
 make config prefix=$IMMORTALTP/minisat
 make all
-
-echo " Patching MiniSat ..." # TODO: this is just a quick-fix to be able to compile OpenSEA again. consider updating MiniSAT
-sed -i -e 's/               const { return hash/               const { return hash<K>/g' "$IMMORTALTP/minisat/minisat/mtl/Map.h"
