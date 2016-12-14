@@ -17,6 +17,13 @@ OpenSEA implements algorithms to detect *Vulnerable Latches*,
 *False Positives* and *Definitely Protected Latches*
 
 ## 1.1 How to install:
+### Dependencies (tested for Ubuntu 16.10):
+`zlib1g-dev cmake build-essential git`
+
+### Dependencies (tested for CentOS/RHEL 6.5)
+`yum install -y gcc gcc-c++ make cmake zlib-devel git glibc-static zlib-static`
+
+Quick guide:
 1. create a folder for third-party libraries and store the path in an environment variable `$IMMORTALTP`
 
     * create folder `mkdir /path/to/libs/`
@@ -29,14 +36,7 @@ OpenSEA implements algorithms to detect *Vulnerable Latches*,
 
     the *executable* is located in `OpenSEA/build/src/immortal-bin`
 
-* NOTE: if [DEMIURGE](https://www.iaik.tugraz.at/content/research/opensource/demiurge/) is installed on your computer it suffices to set the environment variable
-`IMMORTALTP` to the same library folder as `DEMIURGETPD` instead of re-installing the libraries (instead of step 1. and 2.).
-
-
-### Dependencies (tested for Ubuntu 16.10):
-`zlib1g-dev cmake build-essential git`
-
-
+for more details, see `OpenSEA/HowToCompile.md`
 
 
 ## 1.2 How to use OpenSEA:
