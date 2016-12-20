@@ -16,6 +16,7 @@ include_directories("${LINGELING_INCLUDE_DIR}")
 #include_directories("${PICOSAT_INCLUDE_DIR}")
 include_directories(${cppunit_INCLUDE_DIRS})
 include_directories("${CUDD_INCLUDE_DIR}")
+include_directories("${CUDD_CPP_INCLUDE_DIR}")
 
 #SET_SOURCE_FILES_PROPERTIES(ParallelLearner.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -std=c++0x")
 SET_SOURCE_FILES_PROPERTIES(Options.cpp PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -std=c++0x")

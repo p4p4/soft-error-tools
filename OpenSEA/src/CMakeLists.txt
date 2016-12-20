@@ -24,6 +24,7 @@ include_directories("${LINGELING_INCLUDE_DIR}")
 include_directories("${MINISAT_INCLUDE_DIR}")
 include_directories("${PICOSAT_INCLUDE_DIR}")
 include_directories("${CUDD_INCLUDE_DIR}")
+include_directories("${CUDD_CPP_INCLUDE_DIR}")
 
 # set the default build type to 'debug'.
 SET(CMAKE_BUILD_TYPE Debug CACHE STRING "default to debug" FORCE)
