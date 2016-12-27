@@ -277,7 +277,7 @@ void BddAnalysis::analyze_one_hot_enc_c_signals(vector<TestCase>& testcases)
 
 				// find the one and only true f-signal from model
 				int fi = 0;
-				for (int i = 0; i < f_inputs.size(); i++)
+				for (unsigned i = 0; i < f_inputs.size(); i++)
 				{
 					if (model[f_inputs[i]] == 1)
 					{
@@ -346,7 +346,7 @@ void BddAnalysis::analyze_one_hot_enc_c_constraints(vector<TestCase>& testcases)
 		cj_to_latch[cj] = l_list[c_cnt];
 
 		// single fault assumption: there might be at most one flipped component
-		for (unsigned cnt = first_cj_var; cnt < cj; cnt++)
+		for (int cnt = first_cj_var; cnt < cj; cnt++)
 		{
 			c_cardinality_constraints &= ~(cudd_.bddVar(cj) & cudd_.bddVar(cnt));
 		}
@@ -500,7 +500,7 @@ void BddAnalysis::analyze_one_hot_enc_c_constraints(vector<TestCase>& testcases)
 
 				// find the one and only true f-signal from model
 				int fi = 0;
-				for (int i = 0; i < f_inputs.size(); i++)
+				for (unsigned i = 0; i < f_inputs.size(); i++)
 				{
 					if (model[f_inputs[i]] == 1)
 					{
@@ -768,7 +768,7 @@ void BddAnalysis::analyze_binary_enc_c_signals(vector<TestCase>& testcases)
 
 				// find the one and only true f-signal from model
 				int fi = 0;
-				for (int i = 0; i < f_inputs.size(); i++)
+				for (unsigned i = 0; i < f_inputs.size(); i++)
 				{
 					if (model[f_inputs[i]] == 1)
 					{

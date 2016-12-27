@@ -158,10 +158,10 @@ void TestBdd::test2_generate_cj_BDDs()
 {
 	Cudd cudd;
 
-	int num_of_cj_signals = 4;
+	unsigned num_of_cj_signals = 4;
 	map<int, int> latch_to_cj; // dummy cj literals
 
-	for(int i = 0; i < num_of_cj_signals; i++)
+	for(unsigned i = 0; i < num_of_cj_signals; i++)
 		latch_to_cj[i] = i;
 
 

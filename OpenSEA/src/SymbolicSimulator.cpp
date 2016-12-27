@@ -37,9 +37,8 @@ extern "C"
 // -------------------------------------------------------------------------------------------
 SymbolicSimulator::SymbolicSimulator(aiger* circuit, SatSolver* solver,
 		int& next_free_cnf_var_reference) :
-		time_index_(0), solver_(solver), next_free_cnf_var_(next_free_cnf_var_reference), cache_map_(0), cache_2sim_(0)
+		circuit_(circuit), solver_(solver), next_free_cnf_var_(next_free_cnf_var_reference), cache_map_(0), cache_2sim_(0), time_index_(0)
 {
-	circuit_ = circuit;
 	results_.resize(circuit_->maxvar + 1);
 	results_[0] = CNF_FALSE; // FALSE and TRUE constants
 

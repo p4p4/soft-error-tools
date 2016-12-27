@@ -692,8 +692,6 @@ void Options::initInputCircuit()
 {
 	circuit_ = Utils::readAiger(aig_in_file_name_);
 
-	circuit_->bad;
-
 	if(circuit_->num_bad == 1)
 	{
 		L_DBG("Alarm signal provided via \"bad\"-signal.")
@@ -738,11 +736,11 @@ void Options::initInputCircuit()
 
 // -------------------------------------------------------------------------------------------
 Options::Options() :
-		testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), definitively_protected_k_steps_(1), definitevely_protected_num_initial_steps_(1), aig_in_file_name_(), aig_env_file_name_(), print_string_(
+		num_open_inputs_(0), testcase_mode_(TC_UNDEFINED), num_testcases_(0), len_rand_testcases_(0), definitively_protected_k_steps_(1), definitevely_protected_num_initial_steps_(1), aig_in_file_name_(), aig_env_file_name_(), print_string_(
 				"ERWIL"), tmp_dir_("./tmp"), back_end_("sim"), back_end_instance_(0), mode_(0), sat_solver_(
 				"min_api"), tool_started_(Stopwatch::start()), circuit_(0), env_model_(0), num_err_latches_(
 				0), seed_(0), unsat_core_interval_(0), use_diagnostic_output_(false), diagnostic_output_to_file_(
-				false), diagnostic_output_path_(""), use_latches_result_(false), latches_result_path_(""), latches_to_exclude_file_path_(""), num_open_inputs_(0)
+				false), diagnostic_output_path_(""), use_latches_result_(false), latches_result_path_(""), latches_to_exclude_file_path_("")
 {
 	// nothing to be done
 }

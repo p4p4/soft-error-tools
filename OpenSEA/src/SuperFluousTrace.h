@@ -30,7 +30,7 @@
 	class SuperfluousTrace
 	{
 	public:
-		int component_;
+		unsigned component_;
 		int component_index_;
 		unsigned flip_timestep_;
 		unsigned alarm_timestep_;
@@ -38,8 +38,8 @@
 		TestCase testcase_;
 
 		SuperfluousTrace() : component_(0), component_index_(0), flip_timestep_(0), alarm_timestep_(0), error_gone_timestep_(0) {}
-		SuperfluousTrace(TestCase testcase)  : testcase_(testcase), component_(0), component_index_(0), flip_timestep_(0), alarm_timestep_(0), error_gone_timestep_(0) {}
-		SuperfluousTrace(int component, int component_index, TestCase testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts) : testcase_(testcase)
+		SuperfluousTrace(TestCase testcase)  : component_(0), component_index_(0), flip_timestep_(0), alarm_timestep_(0), error_gone_timestep_(0), testcase_(testcase) {}
+		SuperfluousTrace(unsigned component, int component_index, TestCase testcase,  unsigned flip_timestep, unsigned alarm_timestep, unsigned error_gone_ts) : testcase_(testcase)
 		{
 			component_ = component;
 			component_index_ = component_index;

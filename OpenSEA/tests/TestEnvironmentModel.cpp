@@ -78,7 +78,6 @@ void TestEnvironmentModel::basic_test_1(std::string backend_name, int mode)
 
 	TestCaseProvider::instance().setCircuit(circuit);
 	vector<TestCase> tcs = TestCaseProvider::instance().generateRandomTestCases(1,5);
-	unsigned vuln_elem;
 	if (backend_name == "sim")
 	{
 		SimulationBasedAnalysis* backend = new SimulationBasedAnalysis(circuit, 0, mode);

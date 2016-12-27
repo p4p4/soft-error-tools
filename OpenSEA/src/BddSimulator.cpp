@@ -36,7 +36,7 @@ extern "C"
 // -------------------------------------------------------------------------------------------
 BddSimulator::BddSimulator(aiger* circuit, const Cudd &cudd,
 		int& next_free_cnf_var_reference) :
-		next_free_cnf_var_(next_free_cnf_var_reference), cudd_(cudd)
+		cudd_(cudd), next_free_cnf_var_(next_free_cnf_var_reference)
 {
 	circuit_ = circuit;
 	results_.resize(circuit_->maxvar + 1);

@@ -52,8 +52,6 @@ void AndCacheFor2Simulators::addAndGate(int lhs_aig_lit, int rhs0_aig_lit, int r
 		int res = next_free_cnf_var_++;
 //		solver_->addVarToKeep(res);
 
-		int rhs1_cnf_value1 = Utils::readCnfValue(results1_, rhs1_aig_lit);
-		int rhs0_cnf_value1 = Utils::readCnfValue(results1_, rhs0_aig_lit);
 		int rhs1_cnf_value2 = Utils::readCnfValue(results2_, rhs1_aig_lit);
 		int rhs0_cnf_value2 = Utils::readCnfValue(results2_, rhs0_aig_lit);
 
