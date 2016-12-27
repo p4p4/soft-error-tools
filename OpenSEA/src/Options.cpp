@@ -691,6 +691,15 @@ void Options::initLogger() const
 void Options::initInputCircuit()
 {
 	circuit_ = Utils::readAiger(aig_in_file_name_);
+
+	circuit_->bad;
+
+	if(circuit_->num_bad == 1)
+	{
+		L_DBG("Alarm signal provided via \"bad\"-signal.")
+		aiger_add_output(circuit_, circuit_->bad[0].lit, "alarm_output");
+	}
+
 	const string prefix("Err_latch_");
 
 	if (num_err_latches_ == 0)
