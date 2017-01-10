@@ -706,16 +706,21 @@ void DefinitelyProtected::printResults()
 		if (detected_latches_.size() > 0)
 			oss << "Definitely protected latches:" << endl;
 
-		unsigned i = 0;
 		for (set<unsigned>::iterator it = detected_latches_.begin(); it != detected_latches_.end();
 				++it)
 		{
-			oss << *it << "\t";
+			oss << *it;
 
-			if ((i + 1) % 5 == 0 && i < detected_latches_.size() - 1)
-				oss << endl;
-
-			i++;
+			aiger* circuit = Options::instance().getCircuit();
+			for(unsigned i = 0; i < circuit->num_latches; i++)
+			{
+				if(circuit->latches[i].lit == *it && circuit->latches[i].name != 0)
+				{
+					oss << " " << circuit->latches[i].name;
+					break;
+				}
+			}
+			oss << endl;
 		}
 		if (Options::instance().isDiagnosticOutputToFile())
 		{
